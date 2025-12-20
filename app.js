@@ -21,7 +21,16 @@ function fileDownloadUrlFor(rel){
 // Fetch file as blob and trigger download via object URL. This avoids
 // relying on the `download` attribute which is ignored for cross-origin
 // links in many browsers.
-async function downloadViaFetch(rel, filename){
+async function downloadViaFetch(rel, filename, el){
+  if(el && el.dataset && el.dataset.downloading) return
+  let prevText = null
+  if(el){
+    el.dataset.downloading = '1'
+    prevText = el.textContent
+    try{ el.textContent = 'Đang tải...' }catch(e){}
+    try{ el.style.pointerEvents = 'none' }catch(e){}
+    el.classList.add && el.classList.add('loading')
+  }
   try{
     const res = await fetch(fileDownloadUrlFor(rel))
     if(!res.ok) throw new Error('Network error: ' + res.status)
@@ -37,6 +46,13 @@ async function downloadViaFetch(rel, filename){
     setTimeout(()=> URL.revokeObjectURL(url), 5000)
   }catch(err){
     alert('Không thể tải file: ' + (err.message||err))
+  }finally{
+    if(el){
+      try{ delete el.dataset.downloading }catch(e){ el.dataset.downloading = '' }
+      try{ el.textContent = prevText }catch(e){}
+      try{ el.style.pointerEvents = '' }catch(e){}
+      el.classList.remove && el.classList.remove('loading')
+    }
   }
 }
 
@@ -202,7 +218,7 @@ async function listPath(path=''){
     dl.download = name
     dl.textContent = 'Download'
     dl.className = 'link'
-    dl.addEventListener('click', (e)=>{ e.preventDefault(); downloadViaFetch(rel, name) })
+    dl.addEventListener('click', (e)=>{ e.preventDefault(); downloadViaFetch(rel, name, e.currentTarget) })
     const del = document.createElement('button')
     del.textContent = 'Xóa'
     del.className = 'btn-del-file'
@@ -290,7 +306,7 @@ async function performSearch(q, path=''){
     dl.download = name
     dl.textContent = 'Download'
     dl.className = 'link'
-    dl.addEventListener('click', (e)=>{ e.preventDefault(); downloadViaFetch(rel, name) })
+    dl.addEventListener('click', (e)=>{ e.preventDefault(); downloadViaFetch(rel, name, e.currentTarget) })
     const del=document.createElement('button')
     del.textContent='Xóa'
     del.className='btn-del-file'
@@ -350,7 +366,7 @@ function openPlayer(rel, name, type){
 
   dl.href = fileDownloadUrlFor(rel)
   dl.download = name
-  dl.onclick = (e)=>{ e.preventDefault(); downloadViaFetch(rel, name) }
+  dl.onclick = (e)=>{ e.preventDefault(); downloadViaFetch(rel, name, e.currentTarget) }
   modal.setAttribute('aria-hidden','false')
 }
 

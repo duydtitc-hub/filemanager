@@ -1,0 +1,56 @@
+body{font-family:Segoe UI, Tahoma, sans-serif;margin:0;padding:0;background:#fafafa;color:#222}
+header{background:linear-gradient(90deg,#0f172a,#334155);color:#fff;padding:14px}
+header h1{margin:0;font-size:18px}
+main{padding:14px;max-width:1100px;margin:0 auto}
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
+.controls form{display:flex;gap:8px;align-items:center}
+.controls input[type="text"], .controls input[type="search"], .controls select{padding:8px;border:1px solid #ddd;border-radius:6px}
+.controls button{padding:8px 12px;border-radius:6px;border:none;background:#0b5ed7;color:#fff;cursor:pointer}
+.controls button#clearSearch{background:#6c757d}
+.folder{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#fff;margin:6px;border-radius:8px;cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,0.05)}
+.folder .btn-del{background:#ef4444;color:#fff;border:none;padding:6px 8px;border-radius:6px;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px}
+.card{width:auto;border-radius:8px;overflow:hidden;background:transparent;padding:0;border:none}
+.card .thumb-wrap{aspect-ratio:1/1;border-radius:12px;overflow:hidden;background:#000;display:block}
+.card .thumb-wrap img,.card .thumb-wrap video,.card .thumb-wrap .fileicon{width:100%;height:100%;object-fit:cover;display:block}
+.caption{font-size:12px;padding:6px 4px;color:#374151}
+
+/* overlay label at bottom of thumbnail */
+.thumb-label{position:absolute;left:0;right:0;bottom:0;padding:6px 8px;color:#fff;font-size:12px;background:linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 100%);display:flex;justify-content:space-between;align-items:center}
+.card .thumb-wrap{position:relative}
+
+/* full filename under thumbnail */
+.thumb-name{padding:6px 2px 8px 2px;color:#111;font-size:13px;line-height:1.2;word-break:break-word}
+.thumb-name[title]{cursor:default}
+
+.fileicon{height:120px;display:flex;align-items:center;justify-content:center;background:#f3f4f6;color:#111;font-weight:600;border-radius:6px}
+.btn-del-file{background:#ef4444;color:#fff;border:none;padding:6px 8px;border-radius:6px;cursor:pointer}
+.link{color:#0b5ed7;text-decoration:none;margin-right:6px}
+
+/* Mobile responsiveness */
+@media (max-width: 700px){
+	.card{width:100%}
+	.controls{padding:8px}
+	.controls form{width:100%;}
+	.controls input, .controls select{width:100%}
+	.controls button{width:100%}
+	header h1{font-size:16px}
+}
+
+/* Modal player styles */
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.6);z-index:2000}
+.modal[aria-hidden="false"]{display:flex}
+.modal-content{background:#0f172a;color:#fff;padding:12px;border-radius:10px;max-width:960px;width:95%;box-shadow:0 10px 30px rgba(2,6,23,0.5)}
+.modal-close{background:transparent;border:none;color:#fff;font-size:22px;position:absolute;right:18px;top:12px;cursor:pointer}
+.modal-media{max-height:70vh;display:flex;align-items:center;justify-content:center}
+.modal-media img{max-width:100%;max-height:70vh;border-radius:6px}
+.modal-media video{max-width:100%;max-height:70vh;border-radius:6px}
+.modal-actions{margin-top:8px;text-align:right}
+.modal-actions .btn{background:#06b6d4;color:#033; padding:8px 12px;border-radius:6px;text-decoration:none}
+
+/* Thumbnail video style and play overlay */
+.thumb-video{width:100%;height:140px;object-fit:cover;border-radius:6px;cursor:pointer;background:#000}
+.play-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.5);color:#fff;padding:6px 10px;border-radius:50%;font-weight:700}
+.card .thumb-wrap{position:relative}
+
+

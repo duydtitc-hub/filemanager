@@ -10,6 +10,12 @@ function fileUrlFor(rel){
   return apiUrl('/files/' + rel.split('/').map(encodeURIComponent).join('/'))
 }
 
+function fileDownloadUrlFor(rel){
+  // append download flag so server returns Content-Disposition attachment
+  const base = fileUrlFor(rel)
+  return base + (base.includes('?') ? '&' : '?') + 'download=1'
+}
+
 let currentPath = ''
 
 function qs(sel){ return document.querySelector(sel) }
@@ -168,7 +174,7 @@ async function listPath(path=''){
     const caption = document.createElement('div')
     caption.className = 'caption'
     const dl = document.createElement('a')
-    dl.href = fileUrlFor(rel)
+    dl.href = fileDownloadUrlFor(rel)
     dl.download = name
     dl.textContent = 'Download'
     dl.className = 'link'
@@ -255,7 +261,7 @@ async function performSearch(q, path=''){
     const nameEl=document.createElement('div'); nameEl.className='thumb-name'; nameEl.textContent=name; nameEl.title=name; card.appendChild(nameEl)
     const caption=document.createElement('div'); caption.className='caption'
     const dl=document.createElement('a')
-    dl.href = fileUrlFor(rel)
+    dl.href = fileDownloadUrlFor(rel)
     dl.download = name
     dl.textContent = 'Download'
     dl.className = 'link'

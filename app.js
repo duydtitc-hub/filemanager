@@ -16,6 +16,28 @@ function fileDownloadUrlFor(rel){
   return base + (base.includes('?') ? '&' : '?') + 'download=1'
 }
 
+// Fetch file as blob and trigger download via object URL. This avoids
+// relying on the `download` attribute which is ignored for cross-origin
+// links in many browsers.
+async function downloadViaFetch(rel, filename){
+  try{
+    const res = await fetch(fileDownloadUrlFor(rel))
+    if(!res.ok) throw new Error('Network error: ' + res.status)
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.style.display = 'none'
+    a.href = url
+    a.download = filename || ''
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    setTimeout(()=> URL.revokeObjectURL(url), 5000)
+  }catch(err){
+    alert('Không thể tải file: ' + (err.message||err))
+  }
+}
+
 let currentPath = ''
 
 function qs(sel){ return document.querySelector(sel) }
@@ -178,6 +200,7 @@ async function listPath(path=''){
     dl.download = name
     dl.textContent = 'Download'
     dl.className = 'link'
+    dl.addEventListener('click', (e)=>{ e.preventDefault(); downloadViaFetch(rel, name) })
     const del = document.createElement('button')
     del.textContent = 'Xóa'
     del.className = 'btn-del-file'
@@ -265,6 +288,7 @@ async function performSearch(q, path=''){
     dl.download = name
     dl.textContent = 'Download'
     dl.className = 'link'
+    dl.addEventListener('click', (e)=>{ e.preventDefault(); downloadViaFetch(rel, name) })
     const del=document.createElement('button')
     del.textContent='Xóa'
     del.className='btn-del-file'
@@ -322,8 +346,9 @@ function openPlayer(rel, name, type){
     }, 150)
   }
 
-  dl.href = fileUrlFor(rel)
+  dl.href = fileDownloadUrlFor(rel)
   dl.download = name
+  dl.onclick = (e)=>{ e.preventDefault(); downloadViaFetch(rel, name) }
   modal.setAttribute('aria-hidden','false')
 }
 

@@ -10,6 +10,11 @@
       // Leave empty to use same-origin when served from the Flask app.
       window.APP_HOST = 'https://sandbox.travel.com.vn/file'
     </script>
+    <style>
+      .breadcrumb-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+      .breadcrumb-row #btnDeleteSelected{padding:8px 12px;border-radius:6px;border:none;background:#ef4444;color:#fff;cursor:pointer}
+      .breadcrumb-row #btnDeleteSelected:disabled{opacity:0.5;cursor:default}
+    </style>
     <link rel="stylesheet" href="style.css">
   </head>
   <body>

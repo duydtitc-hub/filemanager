@@ -4,6 +4,12 @@
 const APP_HOST = (window.APP_HOST || '').replace(/\/$/, '')
 function apiUrl(path){ return (APP_HOST || '') + path }
 
+// Encode each path segment but preserve '/' separators so nested paths work
+function fileUrlFor(rel){
+  if(!rel) return apiUrl('/files/')
+  return apiUrl('/files/' + rel.split('/').map(encodeURIComponent).join('/'))
+}
+
 let currentPath = ''
 
 function qs(sel){ return document.querySelector(sel) }
@@ -90,14 +96,14 @@ async function listPath(path=''){
 
     if(['png','jpg','jpeg','gif','bmp','webp'].includes(ext)){
       const img = document.createElement('img')
-      img.src = apiUrl('/files/' + encodeURIComponent(rel))
+      img.src = fileUrlFor(rel)
       img.alt = name
       img.onclick = ()=> openPlayer(rel, name, 'image')
       wrap.appendChild(img)
     } else if(['mp4','webm','ogg'].includes(ext)){
       const vid = document.createElement('video')
       vid.className = 'thumb-video'
-      vid.src = apiUrl('/files/' + encodeURIComponent(rel))
+      vid.src = fileUrlFor(rel)
       vid.muted = true
       vid.playsInline = true
       vid.preload = 'metadata'
@@ -147,7 +153,7 @@ async function listPath(path=''){
     const caption = document.createElement('div')
     caption.className = 'caption'
     const dl = document.createElement('a')
-    dl.href = apiUrl('/files/' + encodeURIComponent(rel))
+    dl.href = fileUrlFor(rel)
     dl.download = name
     dl.textContent = 'Download'
     dl.className = 'link'
@@ -199,9 +205,9 @@ async function performSearch(q, path=''){
     const name=r.name; const rel=r.rel; const ext = name.split('.').pop().toLowerCase(); const mtime = r.mtime
     const wrap = document.createElement('div'); wrap.className='thumb-wrap'
     if(['png','jpg','jpeg','gif','bmp','webp'].includes(ext)){
-      const img=document.createElement('img'); img.src=apiUrl('/files/'+encodeURIComponent(rel)); img.alt=name; img.onclick=()=>openPlayer(rel,name,'image'); wrap.appendChild(img)
+      const img=document.createElement('img'); img.src=fileUrlFor(rel); img.alt=name; img.onclick=()=>openPlayer(rel,name,'image'); wrap.appendChild(img)
     } else if(['mp4','webm','ogg'].includes(ext)){
-      const vid=document.createElement('video'); vid.className='thumb-video'; vid.src=apiUrl('/files/'+encodeURIComponent(rel)); vid.muted=true; vid.playsInline=true; vid.preload='metadata'; vid.loop=true; vid.onclick=()=>openPlayer(rel,name,'video'); vid.addEventListener('mouseenter',()=>{ try{ vid.play() }catch(e){} }); vid.addEventListener('mouseleave',()=>{ try{ vid.pause(); vid.currentTime=0 }catch(e){} }); wrap.appendChild(vid); const overlay=document.createElement('div'); overlay.className='play-overlay'; overlay.textContent='▶'; overlay.onclick=()=>openPlayer(rel,name,'video'); wrap.appendChild(overlay)
+      const vid=document.createElement('video'); vid.className='thumb-video'; vid.src=fileUrlFor(rel); vid.muted=true; vid.playsInline=true; vid.preload='metadata'; vid.loop=true; vid.onclick=()=>openPlayer(rel,name,'video'); vid.addEventListener('mouseenter',()=>{ try{ vid.play() }catch(e){} }); vid.addEventListener('mouseleave',()=>{ try{ vid.pause(); vid.currentTime=0 }catch(e){} }); wrap.appendChild(vid); const overlay=document.createElement('div'); overlay.className='play-overlay'; overlay.textContent='▶'; overlay.onclick=()=>openPlayer(rel,name,'video'); wrap.appendChild(overlay)
     } else if(['mp3','wav','m4a','aac','flac','oga'].includes(ext)){
       const ico=document.createElement('div'); ico.className='fileicon audioicon'; ico.textContent='♪'; ico.onclick=()=>openPlayer(rel,name,'audio'); wrap.appendChild(ico); const overlay=document.createElement('div'); overlay.className='play-overlay'; overlay.textContent='▶'; overlay.onclick=()=>openPlayer(rel,name,'audio'); wrap.appendChild(overlay)
     } else { const ico=document.createElement('div'); ico.className='fileicon'; ico.textContent=ext; wrap.appendChild(ico) }
@@ -225,12 +231,12 @@ function openPlayer(rel, name, type){
 
   if(type === 'image'){
     const img = document.createElement('img')
-    img.src = apiUrl('/files/' + encodeURIComponent(rel))
+    img.src = fileUrlFor(rel)
     img.alt = name
     media.appendChild(img)
   } else if(type === 'video'){
     const vid = document.createElement('video')
-    vid.src = apiUrl('/files/' + encodeURIComponent(rel))
+    vid.src = fileUrlFor(rel)
     vid.controls = true
     vid.autoplay = true
     vid.playsInline = true
@@ -239,7 +245,7 @@ function openPlayer(rel, name, type){
     setTimeout(()=>{ try{ vid.play().catch(()=>{}) }catch(e){} },120)
   } else if(type === 'audio'){
     const aud = document.createElement('audio')
-    aud.src = apiUrl('/files/' + encodeURIComponent(rel))
+    aud.src = fileUrlFor(rel)
     aud.controls = true
     aud.autoplay = true
     aud.style.width = '100%'
@@ -262,7 +268,7 @@ function openPlayer(rel, name, type){
     }, 150)
   }
 
-  dl.href = apiUrl('/files/' + encodeURIComponent(rel))
+  dl.href = fileUrlFor(rel)
   dl.download = name
   modal.setAttribute('aria-hidden','false')
 }

@@ -11,9 +11,11 @@ function fileUrlFor(rel){
 }
 
 function fileDownloadUrlFor(rel){
-  // append download flag so server returns Content-Disposition attachment
-  const base = fileUrlFor(rel)
-  return base + (base.includes('?') ? '&' : '?') + 'download=1'
+  // Construct a download-video API URL which accepts an encoded server-side
+  // file path as `video_name`. Matches example:
+  // /api/download-video?download=1&video_name=%2Fapp%2Foutputs%2F...%2Ffile.mp4
+  const serverPath = '/app/outputs/' + rel
+  return apiUrl('/api/download-video?download=1&video_name=' + encodeURIComponent(serverPath))
 }
 
 // Fetch file as blob and trigger download via object URL. This avoids

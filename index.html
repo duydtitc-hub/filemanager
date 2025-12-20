@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Album Manager — Standalone</title>
+    <script>
+      // Set this to your running Flask server (including protocol and port).
+      // Example: 'http://127.0.0.1:5000' or 'http://localhost:5000'
+      // Leave empty to use same-origin when served from the Flask app.
+      window.APP_HOST = 'https://sandbox.travel.com.vn/file'
+    </script>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <header>
+      <h1>Album Manager (standalone)</h1>
+    </header>
+    <main>
+      <div class="breadcrumb-row">
+        <button id="btnUp" class="btn-up" title="Quay lên thư mục trên">Quay lên</button>
+        <div id="breadcrumb"></div>
+      </div>
+
+      <div class="controls">
+        <form id="createAlbumForm">
+          <input type="text" name="name" placeholder="Tên album mới" required>
+          <button type="submit">Tạo album</button>
+        </form>
+
+        <form id="uploadForm" enctype="multipart/form-data">
+          <input type="file" id="uploadFiles" name="files" multiple>
+          <button type="submit">Upload</button>
+        </form>
+
+        <form id="searchForm">
+          <input type="search" id="searchInput" name="q" placeholder="Tìm theo tên file hoặc album">
+          <button type="submit">Tìm</button>
+          <button type="button" id="clearSearch">Bỏ tìm</button>
+        </form>
+        <label for="filterSelect">Lọc:</label>
+        <select id="filterSelect">
+          <option value="all">Tất cả</option>
+          <option value="image">Chỉ ảnh</option>
+          <option value="video">Chỉ video</option>
+          <option value="other">Chỉ file khác</option>
+        </select>
+
+        <label for="sortSelect">Sắp xếp:</label>
+        <select id="sortSelect">
+          <option value="newest">Mới nhất</option>
+          <option value="oldest">Cũ nhất</option>
+          <option value="name_asc">Tên A→Z</option>
+          <option value="name_desc">Tên Z→A</option>
+          <option value="type">Theo loại</option>
+        </select>
+      </div>
+
+      <section id="folders"></section>
+      <section id="files" class="grid"></section>
+    </main>
+
+    <!-- Modal player for video/image preview -->
+    <div id="playerModal" class="modal" aria-hidden="true">
+      <div class="modal-content">
+        <button id="modalClose" class="modal-close" aria-label="Close">×</button>
+        <div id="modalMedia" class="modal-media"></div>
+        <div class="modal-actions">
+          <a id="modalDownload" class="btn" href="#" download>Download</a>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

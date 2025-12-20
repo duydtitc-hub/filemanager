@@ -15,6 +15,13 @@ let currentPath = ''
 function qs(sel){ return document.querySelector(sel) }
 
 let lastSearch = ''
+let selectedFiles = new Set()
+
+function updateDeleteSelectedButton(){
+  const btn = qs('#btnDeleteSelected')
+  if(!btn) return
+  btn.disabled = selectedFiles.size === 0
+}
 
 function getFilter(){ const s = qs('#filterSelect'); return s ? s.value : 'all' }
 function getSort(){ const s = qs('#sortSelect'); return s ? s.value : 'newest' }
@@ -47,6 +54,9 @@ function sortFiles(files, sortKey){
 
 async function listPath(path=''){
   currentPath = path
+  // clear selection when changing view
+  selectedFiles.clear()
+  updateDeleteSelectedButton()
   const foldersEl = qs('#folders')
   const filesEl = qs('#files')
   if(foldersEl) foldersEl.innerHTML = ''
@@ -86,6 +96,11 @@ async function listPath(path=''){
   files.forEach(f=>{
     const card = document.createElement('div')
     card.className = 'card'
+    const cb = document.createElement('input')
+    cb.type = 'checkbox'
+    cb.className = 'select-checkbox'
+    cb.onclick = (e)=>{ e.stopPropagation(); if(cb.checked) selectedFiles.add(rel); else selectedFiles.delete(rel); updateDeleteSelectedButton() }
+    card.appendChild(cb)
     const name = f.name
     const rel = path ? path + '/' + name : name
     const ext = name.split('.').pop().toLowerCase()
@@ -184,6 +199,25 @@ qs('#sortSelect')?.addEventListener('change', ()=>{ if(lastSearch) performSearch
 
 qs('#btnUp')?.addEventListener('click', ()=>{ const p = parentPath(currentPath); listPath(p) })
 
+// Batch delete selected files
+async function deleteSelected(){
+  if(selectedFiles.size === 0) return
+  if(!confirm('Xóa ' + selectedFiles.size + ' mục đã chọn?')) return
+  const arr = Array.from(selectedFiles)
+  const results = await Promise.all(arr.map(rel =>
+    fetch(apiUrl('/api/delete'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:rel})})
+      .then(r=>r.json()).catch(e=>({error: e.message || String(e)}))
+  ))
+  const failed = []
+  results.forEach((res,i)=>{ if(!res || !res.ok) failed.push({rel: arr[i], err: res && res.error ? res.error : JSON.stringify(res)}) })
+  if(failed.length) alert('Một số mục không xóa được:\n' + failed.map(f=> f.rel + ': ' + f.err).join('\n'))
+  selectedFiles.clear()
+  updateDeleteSelectedButton()
+  if(lastSearch) performSearch(lastSearch,currentPath); else listPath(currentPath)
+}
+
+qs('#btnDeleteSelected')?.addEventListener('click', deleteSelected)
+
 async function performSearch(q, path=''){
   const foldersEl = qs('#folders')
   const filesEl = qs('#files')
@@ -203,6 +237,11 @@ async function performSearch(q, path=''){
   sorted.forEach(r=>{
     const card = document.createElement('div'); card.className='card'
     const name=r.name; const rel=r.rel; const ext = name.split('.').pop().toLowerCase(); const mtime = r.mtime
+    const cb = document.createElement('input')
+    cb.type = 'checkbox'
+    cb.className = 'select-checkbox'
+    cb.onclick = (e)=>{ e.stopPropagation(); if(cb.checked) selectedFiles.add(rel); else selectedFiles.delete(rel); updateDeleteSelectedButton() }
+    card.appendChild(cb)
     const wrap = document.createElement('div'); wrap.className='thumb-wrap'
     if(['png','jpg','jpeg','gif','bmp','webp'].includes(ext)){
       const img=document.createElement('img'); img.src=fileUrlFor(rel); img.alt=name; img.onclick=()=>openPlayer(rel,name,'image'); wrap.appendChild(img)
@@ -214,7 +253,16 @@ async function performSearch(q, path=''){
     const label=document.createElement('div'); label.className='thumb-label'; label.textContent = mtime ? formatDate(mtime) : ''; wrap.appendChild(label)
     card.appendChild(wrap)
     const nameEl=document.createElement('div'); nameEl.className='thumb-name'; nameEl.textContent=name; nameEl.title=name; card.appendChild(nameEl)
-    const caption=document.createElement('div'); caption.className='caption'; const dl=document.createElement('a'); dl.href=apiUrl('/files/'+encodeURIComponent(rel)); dl.download=name; dl.textContent='Download'; dl.className='link'; const del=document.createElement('button'); del.textContent='Xóa'; del.className='btn-del-file'; del.onclick=async (ev)=>{ ev.stopPropagation(); if(!confirm('Xóa file "'+name+'"?')) return; const r=await fetch(apiUrl('/api/delete'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:rel})}); const j=await r.json(); if(j.ok) performSearch(lastSearch,currentPath); else alert(j.error||'error') }
+    const caption=document.createElement('div'); caption.className='caption'
+    const dl=document.createElement('a')
+    dl.href = fileUrlFor(rel)
+    dl.download = name
+    dl.textContent = 'Download'
+    dl.className = 'link'
+    const del=document.createElement('button')
+    del.textContent='Xóa'
+    del.className='btn-del-file'
+    del.onclick = async (ev)=>{ ev.stopPropagation(); if(!confirm('Xóa file "'+name+'"?')) return; const r = await fetch(apiUrl('/api/delete'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:rel})}); const j = await r.json(); if(j.ok) performSearch(lastSearch,currentPath); else alert(j.error||'error') }
     caption.appendChild(dl); caption.appendChild(del); card.appendChild(caption)
     if(filesEl) filesEl.appendChild(card)
   })

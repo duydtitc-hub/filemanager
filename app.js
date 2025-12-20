@@ -15,7 +15,7 @@ function fileDownloadUrlFor(rel){
   // file path as `video_name`. Matches example:
   // /api/download-video?download=1&video_name=%2Fapp%2Foutputs%2F...%2Ffile.mp4
   const serverPath = '/app/outputs/' + rel
-  return apiUrl('/api/download-video_name?download=1&video_name=' + encodeURIComponent(serverPath))
+  return apiUrl('/api/download_video_name?download=1&video_name=' + encodeURIComponent(serverPath))
 }
 
 // Fetch file as blob and trigger download via object URL. This avoids
@@ -378,4 +378,3 @@ qs('#playerModal')?.addEventListener('click', (e)=>{ if(e.target.id === 'playerM
 // initial
 listPath('')
   
-

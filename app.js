@@ -18,6 +18,12 @@ function fileDownloadUrlFor(rel){
   return apiUrl('/api/download-video?download=1&video_name=' + encodeURIComponent(serverPath))
 }
 
+function filePreviewUrlFor(rel){
+  // Return URL that forces inline preview (useful for Safari/iOS long-press Save)
+  const serverPath = '/app/outputs/' + rel
+  return apiUrl('/api/download-video?inline=1&video_name=' + encodeURIComponent(serverPath))
+}
+
 // Fetch file as blob and trigger download via object URL. This avoids
 // relying on the `download` attribute which is ignored for cross-origin
 // links in many browsers.
@@ -210,7 +216,7 @@ async function listPath(path=''){
     } else if(['mp4','webm','ogg'].includes(ext)){
       const vid = document.createElement('video')
       vid.className = 'thumb-video'
-      vid.src = fileUrlFor(rel)
+      vid.src = filePreviewUrlFor(rel)
       vid.muted = true
       vid.playsInline = true
       vid.preload = 'metadata'
@@ -386,13 +392,14 @@ function openPlayer(rel, name, type){
     media.appendChild(img)
   } else if(type === 'video'){
     const vid = document.createElement('video')
-    vid.src = fileUrlFor(rel)
+    vid.src = filePreviewUrlFor(rel)
     vid.controls = true
-    vid.autoplay = true
+    // Do not autoplay in modal — user should tap to play / enter fullscreen
+    vid.autoplay = false
     vid.playsInline = true
+    vid.preload = 'metadata'
     vid.style.maxWidth = '100%'
     media.appendChild(vid)
-    setTimeout(()=>{ try{ vid.play().catch(()=>{}) }catch(e){} },120)
   } else if(type === 'audio'){
     const aud = document.createElement('audio')
     aud.src = fileUrlFor(rel)

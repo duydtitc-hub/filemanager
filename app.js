@@ -15,7 +15,7 @@ function fileDownloadUrlFor(rel){
   // file path as `video_name`. Matches example:
   // /api/download-video?download=1&video_name=%2Fapp%2Foutputs%2F...%2Ffile.mp4
   const serverPath = '/app/outputs/' + rel
-  return apiUrl('/api/download_video?download=1&video_name=' + encodeURIComponent(serverPath))
+  return apiUrl('/api/download-video?download=1&video_name=' + encodeURIComponent(serverPath))
 }
 
 // Fetch file as blob and trigger download via object URL. This avoids
@@ -53,6 +53,52 @@ async function downloadViaFetch(rel, filename, el){
       try{ el.style.pointerEvents = '' }catch(e){}
       el.classList.remove && el.classList.remove('loading')
     }
+  }
+}
+
+// Trigger native browser download without fetching the whole file into memory.
+// Uses a hidden iframe so the page is not navigated away and the browser
+// will show the Save As dialog immediately when the server responds
+// with Content-Disposition: attachment.
+function triggerNativeDownload(url){
+  try{
+    const iframe = document.createElement('iframe')
+    iframe.style.display = 'none'
+    // add a cache-busting param to avoid reusing an existing iframe src
+    iframe.src = url + (url.includes('?') ? '&' : '?') + '_dl=' + Date.now()
+    document.body.appendChild(iframe)
+    // remove after a minute to be safe
+    setTimeout(()=>{ try{ iframe.remove() }catch(e){} }, 60 * 1000)
+    return true
+  }catch(e){
+    // fallback: open in new tab/window
+    try{ window.open(url, '_blank') }catch(e){}
+    return false
+  }
+}
+
+// Try to save a file to iOS Photos via Web Share API (if supported).
+// Falls back to opening the video so user can long-press -> "Save Video".
+async function saveToPhotos(rel, name){
+  try{
+    const url = fileDownloadUrlFor(rel).replace(/download=1(&|$)/, '')
+    const res = await fetch(url)
+    if(!res.ok) throw new Error('Network: ' + res.status)
+    const blob = await res.blob()
+    const file = new File([blob], name, { type: blob.type || 'video/mp4' })
+    if(navigator.canShare && navigator.canShare({ files: [file] })){
+      await navigator.share({ files: [file], title: name })
+      return true
+    }
+    // Fallback: open in new tab/window so user can long-press and Save Video
+    const objUrl = URL.createObjectURL(blob)
+    const w = window.open(objUrl, '_blank')
+    setTimeout(()=> URL.revokeObjectURL(objUrl), 60000)
+    if(!w) alert('Mở video thất bại — cho phép popup hoặc dùng Long-press trên liên kết Download')
+    return false
+  }catch(err){
+    alert('Không thể lưu vào Photos: ' + (err.message || err))
+    return false
   }
 }
 
@@ -218,7 +264,12 @@ async function listPath(path=''){
     dl.download = name
     dl.textContent = 'Download'
     dl.className = 'link'
-    dl.addEventListener('click', (e)=>{ e.preventDefault(); downloadViaFetch(rel, name, e.currentTarget) })
+    dl.addEventListener('click', (e)=>{
+      e.preventDefault()
+      // Let the browser handle the download via native navigation.
+      // Use a hidden iframe so the page is not navigated away.
+      triggerNativeDownload(fileDownloadUrlFor(rel))
+    })
     const del = document.createElement('button')
     del.textContent = 'Xóa'
     del.className = 'btn-del-file'
@@ -306,7 +357,10 @@ async function performSearch(q, path=''){
     dl.download = name
     dl.textContent = 'Download'
     dl.className = 'link'
-    dl.addEventListener('click', (e)=>{ e.preventDefault(); downloadViaFetch(rel, name, e.currentTarget) })
+    dl.addEventListener('click', (e)=>{
+      e.preventDefault()
+      triggerNativeDownload(fileDownloadUrlFor(rel))
+    })
     const del=document.createElement('button')
     del.textContent='Xóa'
     del.className='btn-del-file'
@@ -366,7 +420,26 @@ function openPlayer(rel, name, type){
 
   dl.href = fileDownloadUrlFor(rel)
   dl.download = name
-  dl.onclick = (e)=>{ e.preventDefault(); downloadViaFetch(rel, name, e.currentTarget) }
+  dl.addEventListener('click', (e)=>{
+    e.preventDefault()
+    triggerNativeDownload(dl.href)
+  })
+  // Add "Save to Photos" button for video on iOS (uses Web Share API or fallback)
+  try{
+    const existingSaveBtn = qs('#modalSaveToPhotos')
+    if(existingSaveBtn) existingSaveBtn.remove()
+  }catch(e){}
+  if(type === 'video'){
+    const saveBtn = document.createElement('button')
+    saveBtn.id = 'modalSaveToPhotos'
+    saveBtn.className = 'btn-save-photos'
+    saveBtn.textContent = 'Lưu vào Photos'
+    saveBtn.onclick = async (ev)=>{
+      ev.stopPropagation(); saveBtn.disabled = true; const ok = await saveToPhotos(rel, name); saveBtn.disabled = false; if(ok) {/* optional success UI */}
+    }
+    // place button next to download anchor if present
+    try{ dl.parentNode && dl.parentNode.insertBefore(saveBtn, dl.nextSibling) }catch(e){ media.appendChild(saveBtn) }
+  }
   modal.setAttribute('aria-hidden','false')
 }
 

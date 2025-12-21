@@ -70,7 +70,11 @@
     <div id="playerModal" class="modal" aria-hidden="true">
       <div class="modal-content">
         <button id="modalClose" class="modal-close" aria-label="Close">×</button>
-        <div id="modalMedia" class="modal-media"></div>
+        <div id="modalMedia" class="modal-media">
+          <video id="modalVideo" controls playsinline preload="metadata" style="max-width:100%; display:none"></video>
+          <img id="modalImage" style="max-width:100%; display:none" />
+          <audio id="modalAudio" controls style="width:100%; display:none"></audio>
+        </div>
         <div class="modal-actions">
           <a id="modalDownload" class="btn" href="#" download>Download</a>
         </div>

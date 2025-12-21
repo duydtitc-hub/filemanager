@@ -446,6 +446,17 @@ function openPlayer(rel, name, type){
     }
     // place button next to download anchor if present
     try{ dl.parentNode && dl.parentNode.insertBefore(saveBtn, dl.nextSibling) }catch(e){ media.appendChild(saveBtn) }
+    // Add "Open in Safari" button to open inline preview in a new tab (helpful on iOS)
+    const openBtn = document.createElement('button')
+    openBtn.id = 'modalOpenInSafari'
+    openBtn.className = 'btn-open-safari'
+    openBtn.textContent = 'Mở trong Safari'
+    openBtn.onclick = (ev)=>{
+      ev.stopPropagation()
+      const url = filePreviewUrlFor(rel)
+      window.open(url, '_blank')
+    }
+    try{ dl.parentNode && dl.parentNode.insertBefore(openBtn, saveBtn.nextSibling) }catch(e){ media.appendChild(openBtn) }
   }
   modal.setAttribute('aria-hidden','false')
 }

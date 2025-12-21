@@ -216,14 +216,25 @@ async function listPath(path=''){
     } else if(['mp4','webm','ogg'].includes(ext)){
       const vid = document.createElement('video')
       vid.className = 'thumb-video'
-      vid.src = filePreviewUrlFor(rel)
+      // lazy-load: store preview URL in data-src and do not preload to avoid many initial requests
+      vid.dataset.src = filePreviewUrlFor(rel)
       vid.muted = true
       vid.playsInline = true
-      vid.preload = 'metadata'
+      vid.preload = 'none'
       vid.loop = true
       vid.onclick = ()=> openPlayer(rel, name, 'video')
-      vid.addEventListener('mouseenter', ()=>{ try{ vid.play() }catch(e){} })
-      vid.addEventListener('mouseleave', ()=>{ try{ vid.pause(); vid.currentTime=0 }catch(e){} })
+      // load on hover for quick preview
+      vid.addEventListener('mouseenter', ()=>{
+        try{
+          if(!vid.src) vid.src = vid.dataset.src
+          vid.play().catch(()=>{})
+        }catch(e){}
+      })
+      vid.addEventListener('mouseleave', ()=>{
+        try{ vid.pause(); vid.currentTime=0 }catch(e){}
+        // optionally remove src to free bandwidth/memory for long lists
+        try{ setTimeout(()=>{ if(vid && !vid.matches(':hover')){ vid.removeAttribute('src'); vid.load() } }, 1500) }catch(e){}
+      })
       wrap.appendChild(vid)
       const overlay = document.createElement('div')
       overlay.className = 'play-overlay'
@@ -350,7 +361,7 @@ async function performSearch(q, path=''){
     if(['png','jpg','jpeg','gif','bmp','webp'].includes(ext)){
       const img=document.createElement('img'); img.src=fileUrlFor(rel); img.alt=name; img.onclick=()=>openPlayer(rel,name,'image'); wrap.appendChild(img)
     } else if(['mp4','webm','ogg'].includes(ext)){
-      const vid=document.createElement('video'); vid.className='thumb-video'; vid.src=fileUrlFor(rel); vid.muted=true; vid.playsInline=true; vid.preload='metadata'; vid.loop=true; vid.onclick=()=>openPlayer(rel,name,'video'); vid.addEventListener('mouseenter',()=>{ try{ vid.play() }catch(e){} }); vid.addEventListener('mouseleave',()=>{ try{ vid.pause(); vid.currentTime=0 }catch(e){} }); wrap.appendChild(vid); const overlay=document.createElement('div'); overlay.className='play-overlay'; overlay.textContent='▶'; overlay.onclick=()=>openPlayer(rel,name,'video'); wrap.appendChild(overlay)
+      const vid=document.createElement('video'); vid.className='thumb-video'; vid.dataset.src=filePreviewUrlFor(rel); vid.muted=true; vid.playsInline=true; vid.preload='none'; vid.loop=true; vid.onclick=()=>openPlayer(rel,name,'video'); vid.addEventListener('mouseenter',()=>{ try{ if(!vid.src) vid.src = vid.dataset.src; vid.play().catch(()=>{}) }catch(e){} }); vid.addEventListener('mouseleave',()=>{ try{ vid.pause(); vid.currentTime=0 }catch(e){}; try{ setTimeout(()=>{ if(vid && !vid.matches(':hover')){ vid.removeAttribute('src'); vid.load() } },1500) }catch(e){} }); wrap.appendChild(vid); const overlay=document.createElement('div'); overlay.className='play-overlay'; overlay.textContent='▶'; overlay.onclick=()=>openPlayer(rel,name,'video'); wrap.appendChild(overlay)
     } else if(['mp3','wav','m4a','aac','flac','oga'].includes(ext)){
       const ico=document.createElement('div'); ico.className='fileicon audioicon'; ico.textContent='♪'; ico.onclick=()=>openPlayer(rel,name,'audio'); wrap.appendChild(ico); const overlay=document.createElement('div'); overlay.className='play-overlay'; overlay.textContent='▶'; overlay.onclick=()=>openPlayer(rel,name,'audio'); wrap.appendChild(overlay)
     } else { const ico=document.createElement('div'); ico.className='fileicon'; ico.textContent=ext; wrap.appendChild(ico) }

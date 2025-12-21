@@ -390,51 +390,36 @@ async function performSearch(q, path=''){
 function openPlayer(rel, name, type){
   const modal = qs('#playerModal')
   const media = qs('#modalMedia')
+  const modalVideo = qs('#modalVideo')
+  const modalImage = qs('#modalImage')
+  const modalAudio = qs('#modalAudio')
   const dl = qs('#modalDownload')
   if(!modal || !media) return
-  media.innerHTML = ''
+  // hide all media controls first
+  try{ modalVideo.style.display = 'none'; modalVideo.pause(); modalVideo.removeAttribute('src'); modalVideo.load() }catch(e){}
+  try{ modalImage.style.display = 'none'; modalImage.removeAttribute('src') }catch(e){}
+  try{ modalAudio.style.display = 'none'; modalAudio.pause(); modalAudio.removeAttribute('src'); modalAudio.load() }catch(e){}
   // remove any previous play-fallback button
   const removeFallback = ()=>{ const btn = qs('#modalPlayFallback'); if(btn) btn.remove() }
 
   if(type === 'image'){
-    const img = document.createElement('img')
-    img.src = fileUrlFor(rel)
-    img.alt = name
-    media.appendChild(img)
+    modalImage.src = fileUrlFor(rel)
+    modalImage.alt = name
+    modalImage.style.display = ''
   } else if(type === 'video'){
-    const vid = document.createElement('video')
-    vid.src = filePreviewUrlFor(rel)
-    vid.controls = true
-    // Do not autoplay in modal — user should tap to play / enter fullscreen
-    vid.autoplay = false
-    vid.playsInline = true
-    vid.preload = 'metadata'
-    vid.style.maxWidth = '100%'
-    media.appendChild(vid)
+    modalVideo.src = filePreviewUrlFor(rel)
+    modalVideo.style.display = ''
+    // ensure native controls visible
+    modalVideo.controls = true
+    modalVideo.playsInline = true
+    modalVideo.preload = 'metadata'
   } else if(type === 'audio'){
-    const aud = document.createElement('audio')
-    aud.src = fileUrlFor(rel)
-    aud.controls = true
-    aud.autoplay = true
-    aud.style.width = '100%'
-    media.appendChild(aud)
-    // try autoplay; if blocked show fallback button
-    setTimeout(async ()=>{
-      try{
-        await aud.play()
-        removeFallback()
-      }catch(err){
-        // autoplay blocked — add a prominent play button
-        const btn = document.createElement('button')
-        btn.id = 'modalPlayFallback'
-        btn.className = 'modal-play-btn'
-        btn.textContent = 'Play'
-        btn.onclick = async ()=>{ try{ await aud.play(); btn.remove() }catch(e){ alert('Không thể phát âm thanh') } }
-        // place button after media
-        media.appendChild(btn)
-      }
-    }, 150)
+    modalAudio.src = fileUrlFor(rel)
+    modalAudio.style.display = ''
+    modalAudio.controls = true
+    try{ modalAudio.play().catch(()=>{}) }catch(e){}
   }
+
 
   dl.href = fileDownloadUrlFor(rel)
   dl.download = name
@@ -472,7 +457,17 @@ function openPlayer(rel, name, type){
   modal.setAttribute('aria-hidden','false')
 }
 
-function closePlayer(){ const modal=qs('#playerModal'); const media=qs('#modalMedia'); if(!modal||!media) return; const v=media.querySelector('video'); if(v){ try{ v.pause() }catch(e){} } media.innerHTML=''; modal.setAttribute('aria-hidden','true') }
+function closePlayer(){
+  const modal = qs('#playerModal')
+  const modalVideo = qs('#modalVideo')
+  const modalImage = qs('#modalImage')
+  const modalAudio = qs('#modalAudio')
+  if(!modal) return
+  try{ if(modalVideo){ modalVideo.pause(); modalVideo.removeAttribute('src'); modalVideo.load(); modalVideo.style.display='none' } }catch(e){}
+  try{ if(modalAudio){ modalAudio.pause(); modalAudio.removeAttribute('src'); modalAudio.load(); modalAudio.style.display='none' } }catch(e){}
+  try{ if(modalImage){ modalImage.removeAttribute('src'); modalImage.style.display='none' } }catch(e){}
+  modal.setAttribute('aria-hidden','true')
+}
 
 qs('#modalClose')?.addEventListener('click', closePlayer)
 qs('#playerModal')?.addEventListener('click', (e)=>{ if(e.target.id === 'playerModal') closePlayer() })

@@ -423,14 +423,18 @@ function openPlayer(rel, name, type){
 
   dl.href = fileDownloadUrlFor(rel)
   dl.download = name
-  dl.addEventListener('click', (e)=>{
+  // Use onclick assignment so repeated opens of the modal do not add
+  // multiple event listeners (which caused multiple download triggers).
+  dl.onclick = (e)=>{
     e.preventDefault()
     triggerNativeDownload(dl.href)
-  })
+  }
   // Add "Save to Photos" button for video on iOS (uses Web Share API or fallback)
   try{
     const existingSaveBtn = qs('#modalSaveToPhotos')
     if(existingSaveBtn) existingSaveBtn.remove()
+    const existingOpenBtn = qs('#modalOpenInSafari')
+    if(existingOpenBtn) existingOpenBtn.remove()
   }catch(e){}
   if(type === 'video'){
     const saveBtn = document.createElement('button')

@@ -356,6 +356,16 @@ async function listPath(path=''){
     del.onclick = async (ev)=>{ ev.stopPropagation(); if(!confirm('Xóa file "' + name + '"?')) return; const r = await fetch(apiUrl('/api/delete'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:rel})}); const j=await r.json(); if(j.ok) listPath(path); else alert(j.error||'error') }
     caption.appendChild(dl)
     caption.appendChild(del)
+    // Add TikTok upload button for video files in the normal files list
+    if(['mp4','webm','ogg'].includes(ext)){
+      try{
+        const up = document.createElement('button')
+        up.textContent = 'Upload TikTok'
+        up.className = 'btn-upload-tiktok'
+        up.onclick = (ev)=>{ ev.stopPropagation(); showTikTokUploadModal(rel, name) }
+        caption.appendChild(up)
+      }catch(e){/* ignore */}
+    }
     card.appendChild(caption)
 
     if(filesEl) filesEl.appendChild(card)

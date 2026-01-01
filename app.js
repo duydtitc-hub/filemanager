@@ -687,7 +687,15 @@ document.getElementById('toggleFormsBtn')?.addEventListener('click', ()=>{
   el.style.display = show ? 'block' : 'none'
   if(show) loadBgAudioSelects()
 })
-document.getElementById('openFormsPage')?.addEventListener('click', ()=>{ window.open(apiUrl('/forms.html').replace(/\/$/,'') || 'forms.html','_blank') })
+document.getElementById('openFormsPage')?.addEventListener('click', ()=>{
+  // Open the local forms.html in the same folder as this index.html (avoid sandbox APP_HOST)
+  try{
+    window.open('forms.html', '_blank')
+  }catch(e){
+    // fallback to apiUrl if needed
+    window.open(apiUrl('/forms.html').replace(/\/$/,'') || 'forms.html','_blank')
+  }
+})
 
 // populate bg audio selects on initial load
 loadBgAudioSelects()

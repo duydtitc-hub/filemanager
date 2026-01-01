@@ -142,8 +142,19 @@ function showTikTokUploadModal(rel, name){
     qs('#tt_confirm').disabled = true
     status.textContent = 'Uploading...'
     try{
-      const res = await fetch(apiUrl('/api/tiktok_upload'), {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({path: rel, title: title, tags: tags})})
-      const j = await res.json()
+      const params = new URLSearchParams()
+      params.set('video_path', rel)
+      params.set('title', title)
+      if(tags.length) params.set('tags', tags.join(','))
+
+      const controller = new AbortController()
+      const timeoutMs = 10 * 60 * 1000 // 10 minutes
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+
+      const res = await fetch(apiUrl('/api/tiktok_upload') + '?' + params.toString(), { method: 'GET', signal: controller.signal })
+      clearTimeout(timeoutId)
+      let j = null
+      try{ j = await res.json() }catch(e){ j = null }
       if(res.ok && j && j.ok){
         status.textContent = 'Upload started successfully.'
         setTimeout(()=>{ try{ modal.remove() }catch(e){} }, 800)
@@ -152,7 +163,11 @@ function showTikTokUploadModal(rel, name){
         qs('#tt_confirm').disabled = false
       }
     }catch(err){
-      status.textContent = 'Network error: ' + (err.message||err)
+      if(err && err.name === 'AbortError'){
+        status.textContent = 'Upload timed out after 10 minutes.'
+      } else {
+        status.textContent = 'Network error: ' + (err.message||err)
+      }
       qs('#tt_confirm').disabled = false
     }
   }

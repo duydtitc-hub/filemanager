@@ -112,6 +112,69 @@ let currentPath = ''
 
 function qs(sel){ return document.querySelector(sel) }
 
+// --- TikTok upload modal helper ---
+function showTikTokUploadModal(rel, name){
+  // create modal if missing
+  let modal = qs('#tiktokUploadModal')
+  if(!modal){
+    modal = document.createElement('div')
+    modal.id = 'tiktokUploadModal'
+    modal.style = 'position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999'
+    modal.innerHTML = `
+      <div style="background:#fff;padding:18px;border-radius:8px;max-width:560px;width:100%;box-shadow:0 6px 30px rgba(0,0,0,0.4)">
+        <h3 style="margin:0 0 8px">Upload to TikTok</h3>
+        <div style="margin-bottom:8px"><label>Title</label><input id="tt_title" style="width:100%;padding:8px;margin-top:4px;"/></div>
+        <div style="margin-bottom:8px"><label>Tags (comma separated)</label><input id="tt_tags" style="width:100%;padding:8px;margin-top:4px;"/></div>
+        <div style="text-align:right"><button id="tt_cancel" style="margin-right:8px">Cancel</button><button id="tt_confirm">Upload</button></div>
+        <div id="tt_status" style="margin-top:8px;font-size:0.9em;color:#444"></div>
+      </div>`
+    document.body.appendChild(modal)
+    qs('#tt_cancel').addEventListener('click', ()=>{ try{ modal.remove() }catch(e){} })
+  }
+  // prefill
+  qs('#tt_title').value = name.replace(/\.[^.]+$/, '')
+  qs('#tt_tags').value = ''
+  const status = qs('#tt_status')
+  status.textContent = ''
+  qs('#tt_confirm').onclick = async () => {
+    const title = qs('#tt_title').value.trim()
+    const tags = qs('#tt_tags').value.split(',').map(t=>t.trim()).filter(Boolean)
+    qs('#tt_confirm').disabled = true
+    status.textContent = 'Uploading...'
+    try{
+      const res = await fetch(apiUrl('/api/tiktok_upload'), {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({path: rel, title: title, tags: tags})})
+      const j = await res.json()
+      if(res.ok && j && j.ok){
+        status.textContent = 'Upload started successfully.'
+        setTimeout(()=>{ try{ modal.remove() }catch(e){} }, 800)
+      } else {
+        status.textContent = 'Upload failed: ' + (j && j.error ? j.error : res.statusText || 'error')
+        qs('#tt_confirm').disabled = false
+      }
+    }catch(err){
+      status.textContent = 'Network error: ' + (err.message||err)
+      qs('#tt_confirm').disabled = false
+    }
+  }
+}
+
+// Wait for selector to exist in DOM (polling). Returns the element or null after timeout.
+function waitForSelector(sel, timeout = 5000, interval = 100){
+  return new Promise((resolve) => {
+    const start = Date.now()
+    const iv = setInterval(() => {
+      const el = document.querySelector(sel)
+      if (el) {
+        clearInterval(iv)
+        resolve(el)
+      } else if (Date.now() - start > timeout) {
+        clearInterval(iv)
+        resolve(null)
+      }
+    }, interval)
+  })
+}
+
 let lastSearch = ''
 let selectedFiles = new Set()
 
@@ -303,8 +366,21 @@ qs('#createAlbumForm')?.addEventListener('submit', async (e)=>{
   e.preventDefault(); const form = e.target; const name = form.name.value.trim(); if(!name) return; const fd = new FormData(); fd.append('path', currentPath); fd.append('name', name); const res = await fetch(apiUrl('/api/create_album'),{method:'POST',body:fd}); const j = await res.json(); if(j.ok){ form.name.value=''; listPath(currentPath) } else alert(j.error||'error')
 })
 
-qs('#uploadForm')?.addEventListener('submit', async (e)=>{
-  e.preventDefault(); const files = qs('#uploadFiles').files; if(!files.length) return; const fd = new FormData(); fd.append('path', currentPath); for(const f of files) fd.append('files', f); const res = await fetch(apiUrl('/api/upload'),{method:'POST',body:fd}); const j = await res.json(); if(j.saved){ qs('#uploadFiles').value=''; listPath(currentPath) } else alert(j.error||'upload error')
+// Attach upload handler when the form/input is available to avoid race conditions
+waitForSelector('#uploadForm', 7000).then((form) => {
+  if (!form) return
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    const filesEl = document.querySelector('#uploadFiles')
+    const files = filesEl ? filesEl.files : null
+    if (!files || !files.length) return
+    const fd = new FormData()
+    fd.append('path', currentPath)
+    for (const f of files) fd.append('files', f)
+    const res = await fetch(apiUrl('/api/upload'), { method: 'POST', body: fd })
+    const j = await res.json()
+    if (j.saved) { if (filesEl) filesEl.value = ''; listPath(currentPath) } else alert(j.error || 'upload error')
+  })
 })
 
 qs('#searchForm')?.addEventListener('submit', async (e)=>{ e.preventDefault(); const q = qs('#searchInput').value.trim(); lastSearch = q; if(!q) return listPath(currentPath); await performSearch(q, currentPath) })
@@ -382,8 +458,29 @@ async function performSearch(q, path=''){
     del.textContent='Xóa'
     del.className='btn-del-file'
     del.onclick = async (ev)=>{ ev.stopPropagation(); if(!confirm('Xóa file "'+name+'"?')) return; const r = await fetch(apiUrl('/api/delete'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:rel})}); const j = await r.json(); if(j.ok) performSearch(lastSearch,currentPath); else alert(j.error||'error') }
-    caption.appendChild(dl); caption.appendChild(del); card.appendChild(caption)
-    if(filesEl) filesEl.appendChild(card)
+    caption.appendChild(dl); caption.appendChild(del);
+    // Add TikTok upload button for video files
+    if(['mp4','webm','ogg'].includes(ext)){
+      try{
+        const up = document.createElement('button')
+        up.textContent = 'Upload TikTok'
+        up.className = 'btn-upload-tiktok'
+        up.onclick = (ev)=>{ ev.stopPropagation(); showTikTokUploadModal(rel, name) }
+        caption.appendChild(up)
+      }catch(e){}
+    }
+    card.appendChild(caption)
+    caption.appendChild(del)
+    // Add TikTok upload button for video files
+    if(['mp4','webm','ogg'].includes(ext)){
+      try{
+        const up = document.createElement('button')
+        up.textContent = 'Upload TikTok'
+        up.className = 'btn-upload-tiktok'
+        up.onclick = (ev)=>{ ev.stopPropagation(); showTikTokUploadModal(rel, name) }
+        caption.appendChild(up)
+      }catch(e){/* ignore */}
+    }
   })
 }
 
@@ -478,4 +575,218 @@ qs('#playerModal')?.addEventListener('click', (e)=>{ if(e.target.id === 'playerM
 
 // initial
 listPath('')
+
+// --- Handlers for Discord-like forms ---
+async function postJson(path, body){
+  try{
+    const res = await fetch(apiUrl(path),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+    const text = await res.text()
+    try{ const j = JSON.parse(text); alert('Response:\n' + JSON.stringify(j, null, 2).slice(0,2000)) }
+    catch(e){ alert('Response:\n' + text.slice(0,2000)) }
+  }catch(err){ alert('Network error: ' + (err.message||err)) }
+}
+
+// POST using query string parameters (unified endpoint expects Query params)
+async function postQuery(path, params){
+  const qs = Object.keys(params).map(k=> params[k]===undefined || params[k]===null ? '' : encodeURIComponent(k) + '=' + encodeURIComponent(String(params[k]))).filter(s=>s && !s.endsWith('=')).join('&')
+  const url = path + (qs ? ('?' + qs) : '')
+  try{
+    const res = await fetch(apiUrl(url), { method: 'POST' })
+    const text = await res.text()
+    try{ const j = JSON.parse(text); alert('Response:\n' + JSON.stringify(j, null, 2).slice(0,2000)) }
+    catch(e){ alert('Response:\n' + text.slice(0,2000)) }
+  }catch(err){ alert('Network error: ' + (err.message||err)) }
+}
+
+// Load background audio list from backend and populate all bg_choice selects
+async function loadBgAudioSelects(){
+  try{
+    const res = await fetch(apiUrl('/api/bgaudio_list'))
+    if(!res.ok) return
+    const j = await res.json()
+    const files = (j && j.files) || []
+    const selects = document.querySelectorAll('select[name="bg_choice"]')
+    selects.forEach(sel => {
+      // clear existing options except the first placeholder
+      const cur = sel.querySelectorAll('option')
+      const placeholder = cur.length ? cur[0].value : ''
+      sel.innerHTML = ''
+      const opt0 = document.createElement('option')
+      opt0.value = ''
+      opt0.textContent = '-- None --'
+      sel.appendChild(opt0)
+      files.forEach(f=>{
+        const o = document.createElement('option')
+        o.value = f.rel_path || f.name
+        const kb = f.size ? Math.round(f.size/1024) + 'KB' : ''
+        o.textContent = f.name + (kb ? (' — ' + kb) : '')
+        sel.appendChild(o)
+      })
+    })
+  }catch(e){ /* ignore */ }
+}
+
+qs('#videoTaskForm')?.addEventListener('submit', async (e)=>{
+  e.preventDefault(); const f = e.target; const btn = f.querySelector('button[type="submit"]'); if(!f.story_url.value.trim()){ alert('Story URL is required'); return }
+  try{ btn.disabled = true; const payload = { video_url: (f.video_urls.value||'').replace(/\n/g,',').trim(), story_url: f.story_url.value.trim(), Title: f.story_name.value.trim(), bg_choice: f.bg_choice.value.trim(), include_summary: f.include_summary.checked? 'true':'false', force_refresh: f.force_refresh.checked? 'true':'false' }
+    // include voice if present
+    if(f.voice && f.voice.value) payload.voice = f.voice.value
+    // map names to unified endpoint params
+    const params = {
+      video_url: payload.video_url,
+      story_url: payload.story_url,
+      title: payload.Title || '',
+      voice: payload.voice || '',
+      bg_choice: payload.bg_choice || '',
+      part_duration: f.part_duration && f.part_duration.value ? Number(f.part_duration.value) : undefined,
+      start_from_part: f.start_from_part && f.start_from_part.value ? Number(f.start_from_part.value) : undefined,
+      refresh_audio: f.refresh_audio ? (f.refresh_audio.checked? 'true' : 'false') : 'false',
+      include_summary: payload.include_summary,
+      parts: f.parts && f.parts.value ? f.parts.value.trim() : undefined,
+    }
+    await postQuery('/render_tiktok_large_video_unified', params)
+  }finally{ btn.disabled = false }
+})
+
+qs('#clearCacheForm')?.addEventListener('submit', async (e)=>{
+  e.preventDefault(); const f = e.target; const btn = f.querySelector('button[type="submit"]'); if(!f.story_url.value.trim()){ alert('Story URL is required'); return }
+  try{ btn.disabled = true; const payload = { story_url: f.story_url.value.trim(), preserve_video_cache: (f.preserve_video_cache ? f.preserve_video_cache.value : 'true') }
+    await postJson('/clear_story_cache', payload)
+  }finally{ btn.disabled = false }
+})
+
+qs('#processSeriesForm')?.addEventListener('submit', async (e)=>{
+  e.preventDefault(); const f = e.target; const btn = f.querySelector('button[type="submit"]'); if(!f.start_url.value.trim()){ alert('Start URL is required'); return }
+  try{ btn.disabled = true; const payload = { start_url: f.start_url.value.trim(), titles: f.titles.value.trim(), max_episodes: f.max_episodes.value ? Number(f.max_episodes.value) : undefined, render_mode: f.render_mode.value.trim() }
+    await postJson('/process_series', payload)
+  }finally{ btn.disabled = false }
+})
+
+// new handlers for additional forms on standalone (check task / rename / delete)
+qs('#checkTaskForm')?.addEventListener('submit', async (e)=>{
+  e.preventDefault(); const f = e.target; const id = f.task_id.value.trim(); if(!id){ alert('Task ID required'); return }
+  const r = await postJson('/task_status', { task_id: id })
+  qs('#formsResponse').textContent = JSON.stringify(r, null, 2)
+})
+
+qs('#renameForm')?.addEventListener('submit', async (e)=>{
+  e.preventDefault(); const f = e.target; const oldp = f.old.value.trim(); const newp = f.new.value.trim(); if(!oldp||!newp){ alert('Old and New required'); return }
+  const r = await postJson('/api/rename', { old: oldp, new: newp })
+  qs('#formsResponse').textContent = JSON.stringify(r, null, 2)
+})
+
+qs('#deletePathForm')?.addEventListener('submit', async (e)=>{
+  e.preventDefault(); const f = e.target; const path = f.path.value.trim(); if(!path){ alert('Path required'); return }
+  const r = await postJson('/api/delete', { path: path })
+  qs('#formsResponse').textContent = JSON.stringify(r, null, 2)
+})
+
+// toggle forms panel visibility and open forms page
+document.getElementById('toggleFormsBtn')?.addEventListener('click', ()=>{
+  const el = document.getElementById('formsPanel'); if(!el) return; const show = (el.style.display === 'none' || !el.style.display)
+  el.style.display = show ? 'block' : 'none'
+  if(show) loadBgAudioSelects()
+})
+document.getElementById('openFormsPage')?.addEventListener('click', ()=>{ window.open(apiUrl('/forms.html').replace(/\/$/,'') || 'forms.html','_blank') })
+
+// populate bg audio selects on initial load
+loadBgAudioSelects()
+
+// --- WebSocket for live task updates ---
+let taskSocket = null
+function wsUrl(path){
+  if(window.APP_HOST && window.APP_HOST.startsWith('http')){
+    return window.APP_HOST.replace(/^http/, 'ws') + path
+  }
+  const proto = location.protocol === 'https:' ? 'wss://' : 'ws://'
+  return proto + location.host + path
+}
+
+function connectTaskWS(){
+  try{
+    const url = wsUrl('/ws/tasks')
+    taskSocket = new WebSocket(url)
+    taskSocket.onopen = ()=>{ console.log('ws connected') }
+    taskSocket.onmessage = (ev)=>{
+      try{
+        const j = JSON.parse(ev.data)
+        if(j && j.type === 'tasks') renderTasks(j.tasks || {})
+      }catch(e){ console.warn('ws parse', e) }
+    }
+    taskSocket.onclose = ()=>{ console.log('ws closed, reconnecting in 2s'); setTimeout(connectTaskWS, 2000) }
+    taskSocket.onerror = (e)=>{ console.warn('ws error', e); taskSocket.close() }
+  }catch(e){ console.warn('ws connect failed', e); setTimeout(connectTaskWS, 2000) }
+}
+
+function renderTasks(tasks){
+  const container = qs('#taskPanel') || qs('#liveTasks') || qs('#formsResponse')
+  const dashboard = qs('#taskDashboard')
+  if(!container && !dashboard) return
+  try{
+    const entries = Object.entries(tasks || {})
+    if(entries.length === 0){
+      if(container) container.innerHTML = '<div class="text-muted">No tasks</div>'
+      if(dashboard) dashboard.innerHTML = '<div class="text-muted">No tasks</div>'
+      return
+    }
+    const rows = entries.map(([id,t])=>{
+      const title = t.title || t.Title || ''
+      const status = t.status || ''
+      const progress = t.progress || 0
+      const pct = typeof progress === 'number' ? progress : 0
+      const btnLabel = (status === 'cancelled' || status === 'completed') ? 'Resume' : 'Stop'
+      const action = (btnLabel === 'Stop') ? 'stop' : 'resume'
+      return `<div class="d-flex align-items-center justify-content-between mb-2 p-2 border rounded">
+        <div style="flex:1">
+          <div style="font-weight:700">${id} ${title?(' — '+escapeHtml(title)) : ''}</div>
+          <div style="font-size:12px;color:#666">Status: ${escapeHtml(status)} — Progress: ${pct}%</div>
+          <div class="progress mt-1" style="height:8px"><div class="progress-bar" role="progressbar" style="width:${pct}%"></div></div>
+        </div>
+        <div style="margin-left:8px">
+          <button class="btn btn-sm btn-outline-danger" data-task="${escapeHtml(id)}" data-action="${action}">${btnLabel}</button>
+        </div>
+      </div>`
+    }).join('\n')
+    if(container) container.innerHTML = rows
+    if(dashboard) dashboard.innerHTML = rows
+    const applyHandlers = (el)=>{
+      if(!el) return
+      el.querySelectorAll('button[data-task]').forEach(b=> b.addEventListener('click', async (ev)=>{
+        const taskId = b.dataset.task; const action = b.dataset.action
+        try{ b.disabled = true; await fetch(apiUrl('/api/task_stop'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({task_id:taskId, action:action})}) }catch(e){ console.warn(e) }
+        b.disabled = false
+      }))
+    }
+    applyHandlers(container)
+    applyHandlers(dashboard)
+  }catch(e){ console.warn('renderTasks error', e) }
+}
+
+function escapeHtml(str){ return String(str||'').replace(/[&"'<>]/g, (c)=>({'&':'&amp;','"':'&quot;',"'":'&#39;','<':'&lt;','>':'&gt;'}[c])) }
+
+setTimeout(connectTaskWS, 500)
+
+// Dashboard panel toggle handlers (FAB)
+document.getElementById('openDashboardFab')?.addEventListener('click', ()=>{
+  const panel = document.getElementById('taskDashboardPanel')
+  if(!panel) return
+  panel.classList.toggle('open')
+  panel.setAttribute('aria-hidden', panel.classList.contains('open') ? 'false' : 'true')
+})
+document.getElementById('closeDashboard')?.addEventListener('click', ()=>{
+  const panel = document.getElementById('taskDashboardPanel')
+  if(!panel) return
+  panel.classList.remove('open')
+  panel.setAttribute('aria-hidden','true')
+})
+
+// click outside to close dashboard
+document.addEventListener('click', (e)=>{
+  const panel = document.getElementById('taskDashboardPanel')
+  const fab = document.getElementById('openDashboardFab')
+  if(!panel || !panel.classList.contains('open')) return
+  if(e.target === panel || panel.contains(e.target) || e.target === fab) return
+  panel.classList.remove('open')
+  panel.setAttribute('aria-hidden','true')
+})
   

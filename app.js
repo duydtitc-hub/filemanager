@@ -1,8 +1,7 @@
 // Clean, single-file frontend script for album manager
 // `APP_HOST` can be set by the embedding page (e.g. window.APP_HOST = 'https://appy.example.com')
 // Leave empty for same-origin (default).
-const APP_HOST = (window.APP_HOST || '').replace(/\/$/, '')
-function apiUrl(path){ return (APP_HOST || '') + path }
+function apiUrl(path){ return (window.APP_HOST? window.APP_HOST.replace(/\/$/, '') : '') + path }
 
 // Encode each path segment but preserve '/' separators so nested paths work
 function fileUrlFor(rel){
@@ -125,6 +124,13 @@ function showTikTokUploadModal(rel, name){
         <h3 style="margin:0 0 8px">Upload to TikTok</h3>
         <div style="margin-bottom:8px"><label>Title</label><input id="tt_title" style="width:100%;padding:8px;margin-top:4px;"/></div>
         <div style="margin-bottom:8px"><label>Tags (comma separated)</label><input id="tt_tags" style="width:100%;padding:8px;margin-top:4px;"/></div>
+        <div style="margin-bottom:8px"><label>Cookies</label>
+          <select id="tt_cookies" style="width:100%;padding:8px;margin-top:4px;">
+            <option value="PhimTrung.json">PhimTrung.json</option>
+            <option value="DemNgheChuyen.json">DemNgheChuyen.json</option>
+            <option value="BungBu.json">BungBu.json</option>
+          </select>
+        </div>
         <div style="text-align:right"><button id="tt_cancel" style="margin-right:8px">Cancel</button><button id="tt_confirm">Upload</button></div>
         <div id="tt_status" style="margin-top:8px;font-size:0.9em;color:#444"></div>
       </div>`
@@ -134,6 +140,7 @@ function showTikTokUploadModal(rel, name){
   // prefill
   qs('#tt_title').value = name.replace(/\.[^.]+$/, '')
   qs('#tt_tags').value = ''
+  qs('#tt_cookies').value = 'DemNgheChuyen.json'
   const status = qs('#tt_status')
   status.textContent = ''
   qs('#tt_confirm').onclick = async () => {
@@ -146,6 +153,8 @@ function showTikTokUploadModal(rel, name){
       params.set('video_path', rel)
       params.set('title', title)
       if(tags.length) params.set('tags', tags.join(','))
+      const cookies = qs('#tt_cookies') ? qs('#tt_cookies').value : ''
+      if(cookies) params.set('cookies', cookies)
 
       const controller = new AbortController()
       const timeoutMs = 10 * 60 * 1000 // 10 minutes
@@ -376,7 +385,7 @@ async function listPath(path=''){
       try{
         const up = document.createElement('button')
         up.textContent = 'Upload TikTok'
-        up.className = 'btn-upload-tiktok'
+        up.className = 'btn btn-upload-tiktok'
         up.onclick = (ev)=>{ ev.stopPropagation(); showTikTokUploadModal(rel, name) }
         caption.appendChild(up)
       }catch(e){/* ignore */}
@@ -489,7 +498,7 @@ async function performSearch(q, path=''){
       try{
         const up = document.createElement('button')
         up.textContent = 'Upload TikTok'
-        up.className = 'btn-upload-tiktok'
+        up.className = 'btn btn-upload-tiktok'
         up.onclick = (ev)=>{ ev.stopPropagation(); showTikTokUploadModal(rel, name) }
         caption.appendChild(up)
       }catch(e){}
@@ -501,7 +510,7 @@ async function performSearch(q, path=''){
       try{
         const up = document.createElement('button')
         up.textContent = 'Upload TikTok'
-        up.className = 'btn-upload-tiktok'
+        up.className = 'btn btn-upload-tiktok'
         up.onclick = (ev)=>{ ev.stopPropagation(); showTikTokUploadModal(rel, name) }
         caption.appendChild(up)
       }catch(e){/* ignore */}

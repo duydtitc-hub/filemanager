@@ -292,26 +292,29 @@
           include_summary: f.include_summary && f.include_summary.checked ? 'true':'false',
           parts: f.parts && f.parts.value ? f.parts.value.trim() : undefined,
         }
-        const btn = f.querySelector('button[type=submit]'); btn.disabled = true;
+        let btn = f.querySelector('button[type=submit]') || document.getElementById('videoTaskSubmitBtn');
+        if(btn) btn.disabled = true;
         const url = '/render_tiktok_large_video_unified'
         const r = await postJson(url, params) // keep postJson for full response handling
-        btn.disabled = false;
+        if(btn) btn.disabled = false;
         showResp(r);
       });
 
       document.getElementById('clearCacheForm')?.addEventListener('submit', async (e)=>{
         e.preventDefault(); const f = e.target; const b = { story_url: f.story_url.value.trim(), preserve_video_cache: f.preserve_video_cache.value }
-        const btn = f.querySelector('button[type=submit]'); btn.disabled = true
+        let btn = f.querySelector('button[type=submit]') || document.getElementById('clearCacheSubmitBtn');
+        if(btn) btn.disabled = true
         const r = await postJson('/clear_story_cache', b)
-        btn.disabled = false
+        if(btn) btn.disabled = false
         showResp(r)
       })
 
       document.getElementById('processSeriesForm')?.addEventListener('submit', async (e)=>{
         e.preventDefault(); const f = e.target; const b = { start_url: f.start_url.value.trim(), titles: f.titles.value.trim(), max_episodes: f.max_episodes.value ? Number(f.max_episodes.value) : undefined, render_mode: f.render_mode.value.trim(), voice: (f.voice ? f.voice.value : '') };
-        const btn = f.querySelector('button[type=submit]'); btn.disabled = true;
+        let btn = f.querySelector('button[type=submit]') || document.getElementById('processSeriesSubmitBtn');
+        if(btn) btn.disabled = true;
         const r = await postJson('/process_series', b);
-        btn.disabled = false;
+        if(btn) btn.disabled = false;
         showResp(r);
       });
 
@@ -328,14 +331,15 @@
         // build querystring
         const qs = Object.keys(params).filter(k=>params[k]!=null && params[k]!=="").map(k=>encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join('&')
         const url = apiUrl('/delete_episode_assets') + (qs?('?'+qs):'')
-        const btn = f.querySelector('button[type=submit]'); btn.disabled = true;
+        let btn = f.querySelector('button[type=submit]') || document.getElementById('deleteEpisodeSubmitBtn');
+        if(btn) btn.disabled = true;
         try{
           const res = await fetch(url, { method: 'DELETE' })
           const text = await res.text()
           try{ const j = JSON.parse(text); showResp({ok: res.ok, data: j}) }
           catch(e){ showResp({ok: res.ok, data: text}) }
         }catch(err){ showResp({ok:false, data: String(err)}) }
-        btn.disabled = false;
+        if(btn) btn.disabled = false;
       });
 
       // Download BGAudio form handler

@@ -294,10 +294,27 @@
         }
         let btn = f.querySelector('button[type=submit]') || document.getElementById('videoTaskSubmitBtn');
         if(btn) btn.disabled = true;
-        const url = '/render_tiktok_large_video_unified'
-        const r = await postJson(url, params) // keep postJson for full response handling
-        if(btn) btn.disabled = false;
-        showResp(r);
+
+        // Build querystring
+        const qs = Object.keys(params).filter(k=>params[k]!==undefined && params[k]!=="").map(k=>encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join('&')
+        const getUrl = apiUrl('/render_tiktok_large_video_unified') + (qs?('?'+qs):'')
+
+        try{
+          // Try GET first (query params). If server doesn't accept GET, fall back to POST JSON.
+          let res = await fetch(getUrl, { method: 'GET' })
+          let text = await res.text()
+          try{ const j = JSON.parse(text); if(res.ok){ showResp({ok: res.ok, data: j}); if(btn) btn.disabled = false; return } }
+          catch(e){ /* non-json or error */ }
+
+          // If GET failed or returned non-OK, fallback to POST
+          const postResp = await postJson('/render_tiktok_large_video_unified', params)
+          showResp(postResp)
+        }catch(err){
+          // network or other error: fallback to POST
+          try{ const postResp = await postJson('/render_tiktok_large_video_unified', params); showResp(postResp) }catch(e){ showResp({ok:false, data: String(e)}) }
+        } finally {
+          if(btn) btn.disabled = false;
+        }
       });
 
       document.getElementById('clearCacheForm')?.addEventListener('submit', async (e)=>{
@@ -313,9 +330,20 @@
         e.preventDefault(); const f = e.target; const b = { start_url: f.start_url.value.trim(), titles: f.titles.value.trim(), max_episodes: f.max_episodes.value ? Number(f.max_episodes.value) : undefined, render_mode: f.render_mode.value.trim(), voice: (f.voice ? f.voice.value : '') };
         let btn = f.querySelector('button[type=submit]') || document.getElementById('processSeriesSubmitBtn');
         if(btn) btn.disabled = true;
-        const r = await postJson('/process_series', b);
-        if(btn) btn.disabled = false;
-        showResp(r);
+
+        const qs = Object.keys(b).filter(k=>b[k]!==undefined && b[k]!=='').map(k=>encodeURIComponent(k)+"="+encodeURIComponent(b[k])).join('&')
+        const getUrl = apiUrl('/process_series') + (qs?('?'+qs):'')
+        try{
+          let res = await fetch(getUrl, { method: 'GET' })
+          let text = await res.text()
+          try{ const j = JSON.parse(text); if(res.ok){ showResp({ok: res.ok, data: j}); if(btn) btn.disabled = false; return } }
+          catch(e){ /* continue to fallback */ }
+
+          const postResp = await postJson('/process_series', b)
+          showResp(postResp)
+        }catch(err){
+          try{ const postResp = await postJson('/process_series', b); showResp(postResp) }catch(e){ showResp({ok:false, data: String(e)}) }
+        } finally { if(btn) btn.disabled = false }
       });
 
       // Delete episode assets form -> calls DELETE /delete_episode_assets with query params

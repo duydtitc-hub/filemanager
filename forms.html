@@ -63,6 +63,12 @@
               <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalDeleteEpisode">Mở form Xóa assets</button>
             </div>
           </div>
+          <div class="col-12 col-md-6">
+            <div class="card p-3 text-center">
+              <h3 class="mb-3">Tải BGAudio</h3>
+              <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalDownloadBgaudio">Tải audio vào bgaudio</button>
+            </div>
+          </div>
         </section>
       </div>
     </main>
@@ -199,7 +205,33 @@
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+      <div class="modal fade" id="modalDownloadBgaudio" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Tải BGAudio vào discord-bot/bgaudio</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form id="downloadBgaudioForm" class="tool-form">
+                <label>Media URL (yt-dlp)</label>
+                <input type="text" name="media_url" placeholder="https://youtu.be/..." required>
+                <label>Filename (không bao gồm .wav)</label>
+                <input type="text" name="filename" placeholder="my_bg_music (optional)">
+                <div style="margin-top:8px">
+                  <label><input type="checkbox" name="keep_source"> Giữ file nguồn sau chuyển đổi</label>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+              <button id="downloadBgaudioSubmitBtn" type="button" class="btn btn-success">Tải xuống</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script>  
     window.APP_HOST = 'https://sandbox.travel.com.vn/file'
       function apiUrl(path){ return (window.APP_HOST? window.APP_HOST.replace(/\/$/, '') : '') + path }
@@ -306,12 +338,31 @@
         btn.disabled = false;
       });
 
+      // Download BGAudio form handler
+      document.getElementById('downloadBgaudioForm')?.addEventListener('submit', async (e)=>{
+        e.preventDefault(); const f = e.target;
+        const media = (f.media_url && f.media_url.value) ? f.media_url.value.trim() : '';
+        const fname = (f.filename && f.filename.value) ? f.filename.value.trim() : undefined;
+        const keep = f.keep_source && f.keep_source.checked ? 'true' : 'false';
+        const btn = document.getElementById('downloadBgaudioSubmitBtn'); if(btn) btn.disabled = true;
+        try{
+          if(!media){ showResp({ok:false, error: 'Media URL required'}); return }
+          const qs = '?media_url='+encodeURIComponent(media) + (fname?('&filename='+encodeURIComponent(fname)):'') + '&keep_source='+encodeURIComponent(keep)
+          const res = await fetch(apiUrl('/api/download-bgaudio') + qs, { method: 'POST' })
+          const text = await res.text()
+          try{ const j = JSON.parse(text); showResp({ok: res.ok, data: j}); if(res.ok){ loadBgAudio(); } }
+          catch(e){ showResp({ok: res.ok, data: text}) }
+        }catch(err){ showResp({ok:false, data: String(err)}) }
+        if(btn) btn.disabled = false;
+      });
+
       // Modal footer buttons: trigger the inner form submit
       const modalButtons = [
         ['videoTaskSubmitBtn','videoTaskForm','modalVideoTask'],
         ['clearCacheSubmitBtn','clearCacheForm','modalClearCache'],
         ['processSeriesSubmitBtn','processSeriesForm','modalProcessSeries'],
-        ['deleteEpisodeSubmitBtn','deleteEpisodeForm','modalDeleteEpisode']
+        ['deleteEpisodeSubmitBtn','deleteEpisodeForm','modalDeleteEpisode'],
+        ['downloadBgaudioSubmitBtn','downloadBgaudioForm','modalDownloadBgaudio']
       ];
       modalButtons.forEach(([btnId, formId, modalId])=>{
         const btn = document.getElementById(btnId);

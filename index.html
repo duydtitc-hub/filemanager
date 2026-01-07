@@ -8,7 +8,7 @@
       // Set this to your running Flask server (including protocol and port).
       // Example: 'http://127.0.0.1:5000' or 'http://localhost:5000'
       // Leave empty to use same-origin when served from the Flask app.
-      window.APP_HOST = 'https://sandbox.travel.com.vn/file'
+      window.APP_HOST = 'http://localhost:8000';
     </script>
     <style>
       .breadcrumb-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
@@ -79,6 +79,7 @@
                 <div class="mb-2"><input class="form-control" type="text" name="video_urls" placeholder="Video URL(s) - cách nhau bằng dấu phẩy hoặc xuống dòng"></div>
                 <div class="mb-2"><input class="form-control" type="text" name="story_url" placeholder="Story URL (bắt buộc)" required></div>
                 <div class="mb-2"><input class="form-control" type="text" name="story_name" placeholder="Tiêu đề (sẽ gửi dưới tên 'title') (tùy chọn)"></div>
+                <div class="mb-2"><input class="form-control tag-input" type="text" name="tiktok_tags" placeholder="Tags (phân tách bằng dấu phẩy)"></div>
                 <div class="mb-2">
                   <label class="form-label">Background (bgaudio)</label>
                   <select class="form-select" name="bg_choice">
@@ -186,7 +187,22 @@
       </div>
     </div>
 
+    <!-- Tagify (suggestions + create) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
+    <style>
+      /* Make Tagify inputs visually match Bootstrap 5 form controls */
+      .tagify{ display:block; width:100%; }
+      .tagify__input { min-height: calc(1.5em + 0.75rem); padding: .375rem .75rem; margin: 0; }
+      .tagify__tag { border-radius: .375rem; background-color: rgba(0,0,0,0.05); padding: .25rem .5rem; margin-right: .25rem; }
+      .tagify__input:focus{ outline: none; box-shadow: none }
+      /* Ensure Tagify dropdown aligns with inputs */
+      .tagify__dropdown{ z-index: 2000 }
+      .recent-tags{ margin-top:6px; display:flex; flex-wrap:wrap; gap:6px }
+      .recent-tags .recent-tag-btn{ padding: .25rem .5rem; font-size: .825rem }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.min.js"></script>
     <script src="app.js"></script>
+    <!-- Tagify initialization moved to app.js to avoid duplication -->
     <!-- Floating dashboard panel -->
     <button id="openDashboardFab" class="fab btn btn-primary" title="Tasks">⚡</button>
     <div id="taskDashboardPanel" aria-hidden="true">

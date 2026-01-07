@@ -105,6 +105,22 @@
               <div class="mb-2"><label>Part duration (seconds)</label><input type="number" name="part_duration" value="3600" min="1"></div>
               <div class="mb-2"><label>Start from part</label><input type="number" name="start_from_part" value="1" min="1"></div>
               <div class="mb-2"><label>Parts (optional)</label><input type="text" name="parts" placeholder="1,3,5"></div>
+              <div class="mb-2"><label>Upload to TikTok</label>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <label style="margin:0"><input type="checkbox" name="is_upload_tiktok"> Upload</label>
+                  <label style="margin:0">Tags</label>
+                  <input type="text" name="tiktok_tags" placeholder="tag1, tag2" style="flex:1" />
+                </div>
+              </div>
+              <div class="mb-2"><label>Cookies</label>
+                <select name="cookies" class="form-select">
+                  <option value="">-- None --</option>
+                  <option value="PhimTrung.json">PhimTrung.json</option>
+                  <option value="DemNgheChuyen.json">DemNgheChuyen.json</option>
+                  <option value="BungBu.json">BungBu.json</option>
+                </select>
+              </div>
+              <div class="mb-2"><label>Upload window (hours)</label><input type="number" name="upload_duration_hours" value="24" min="1"></div>
               <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
                 <label><input type="checkbox" name="include_summary" checked> Gồm tóm tắt</label>
                 <label><input type="checkbox" name="refresh_audio"> Refresh audio (tạo lại audio)</label>
@@ -166,6 +182,22 @@
               <input type="number" name="max_episodes" placeholder="Số tập tối đa" min="1">
               <label>Render mode (0/1/2)</label>
               <input type="text" name="render_mode" placeholder="0">
+              <div class="mb-2"><label>Upload to TikTok</label>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <label style="margin:0"><input type="checkbox" name="is_upload_tiktok"> Upload</label>
+                  <label style="margin:0">Tags</label>
+                  <input type="text" name="tiktok_tags" placeholder="tag1, tag2" style="flex:1" />
+                </div>
+              </div>
+              <div class="mb-2"><label>Cookies</label>
+                <select name="cookies" class="form-select">
+                  <option value="">-- None --</option>
+                  <option value="PhimTrung.json">PhimTrung.json</option>
+                  <option value="DemNgheChuyen.json">DemNgheChuyen.json</option>
+                  <option value="BungBu.json">BungBu.json</option>
+                </select>
+              </div>
+              <div class="mb-2"><label>Upload window (hours)</label><input type="number" name="upload_duration_hours" value="24" min="1"></div>
             </form>
           </div>
           <div class="modal-footer">
@@ -278,8 +310,72 @@
 
       window.addEventListener('DOMContentLoaded', loadBgAudio)
 
+      // Initialize Tagify for TikTok tags input and load suggestions from server
+      async function initTiktokTagify(){
+        try{
+          const inputs = Array.from(document.querySelectorAll('input[name="tiktok_tags"]'))
+          if(!inputs.length) return
+          // load whitelist once
+          let whitelist = []
+          try{ const r = await fetch(apiUrl('/api/tiktok_tags')); if(r && r.ok){ const j = await r.json(); whitelist = Array.isArray(j.tags)? j.tags : [] } }catch(e){}
+          if(typeof window.Tagify === 'undefined'){
+            await new Promise((resolve)=>{
+              const s = document.createElement('script')
+              s.src = 'https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.min.js'
+              s.onload = resolve
+              s.onerror = resolve
+              document.head.appendChild(s)
+            })
+          }
+          inputs.forEach(input=>{
+            try{
+              if(input._tagify){ try{ input._tagify.removeAllTags(); input._tagify.destroy(); }catch(e){} }
+              if(typeof window.Tagify !== 'undefined'){
+                try{ input.classList.add('form-control') }catch(e){}
+                const tagify = new Tagify(input, { enforceWhitelist: false, whitelist: (whitelist||[]).slice(0,50), dropdown:{enabled:1, maxItems:30, position:'text', highlightFirst:true}, delimiters:',' })
+                input._tagify = tagify
+                tagify.on('add', async (e)=>{
+                  const val = e && e.detail && e.detail.data && e.detail.data.value ? e.detail.data.value.trim() : ''
+                  if(!val) return
+                  try{ if(whitelist.indexOf(val) === -1){ whitelist.unshift(val); await fetch(apiUrl('/api/tiktok_tags'), {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({tag: val})}) } }catch(err){ console.warn('persist tag failed', err) }
+                })
+                tagify.on('input', function(e){
+                  tagify.loading(true)
+                  setTimeout(async ()=>{
+                    try{
+                      const r = await fetch(apiUrl('/api/tiktok_tags'))
+                      let list = []
+                      if(r && r.ok){ const j = await r.json(); list = Array.isArray(j.tags)? j.tags : [] }
+                      const existing = (tagify.value||[]).map(v=>v.value)
+                      tagify.settings.whitelist = list.concat(existing)
+                      tagify.loading(false)
+                      try{ tagify.dropdown.show(e.detail.value) }catch(e){}
+                    }catch(err){ tagify.loading(false) }
+                  }, 200)
+                })
+              }
+            }catch(err){ console.warn('init Tagify on input error', err) }
+          })
+        }catch(err){ console.warn('initTiktokTagify error', err) }
+      }
+      window.addEventListener('DOMContentLoaded', initTiktokTagify)
+
       document.getElementById('videoTaskForm')?.addEventListener('submit', async (e)=>{
         e.preventDefault(); const f = e.target;
+        // collect tags from Tagify if present
+        let _tiktok_tags = undefined
+        try{
+          const tt = f.querySelector('input[name="tiktok_tags"]')
+          if(tt){
+            if(tt._tagify && Array.isArray(tt._tagify.value)){
+              const arr = tt._tagify.value.map(v=>v.value).filter(Boolean)
+              if(arr.length) _tiktok_tags = arr.join(',')
+            } else if(tt.value && tt.value.trim()){
+              _tiktok_tags = tt.value.trim()
+            }
+          }
+        }catch(e){ /* ignore */ }
+
         const params = {
           video_url: (f.video_urls.value||'').replace(/\n/g,',').trim(),
           story_url: f.story_url.value.trim(),
@@ -288,6 +384,10 @@
           bg_choice: f.bg_choice.value.trim(),
           part_duration: f.part_duration && f.part_duration.value ? Number(f.part_duration.value) : undefined,
           start_from_part: f.start_from_part && f.start_from_part.value ? Number(f.start_from_part.value) : undefined,
+          is_upload_tiktok: f.is_upload_tiktok && f.is_upload_tiktok.checked ? 'true' : 'false',
+          tiktok_tags: _tiktok_tags,
+          cookies: f.cookies && f.cookies.value ? f.cookies.value.trim() : undefined,
+          upload_duration_hours: f.upload_duration_hours && f.upload_duration_hours.value ? Number(f.upload_duration_hours.value) : undefined,
           refresh_audio: f.refresh_audio && f.refresh_audio.checked ? 'true' : 'false',
           include_summary: f.include_summary && f.include_summary.checked ? 'true':'false',
           parts: f.parts && f.parts.value ? f.parts.value.trim() : undefined,
@@ -327,7 +427,22 @@
       })
 
       document.getElementById('processSeriesForm')?.addEventListener('submit', async (e)=>{
-        e.preventDefault(); const f = e.target; const b = { start_url: f.start_url.value.trim(), titles: f.titles.value.trim(), max_episodes: f.max_episodes.value ? Number(f.max_episodes.value) : undefined, render_mode: f.render_mode.value.trim(), voice: (f.voice ? f.voice.value : '') };
+        e.preventDefault(); const f = e.target;
+        // collect tags from Tagify if present
+        let _tiktok_tags = undefined
+        try{
+          const tt = f.querySelector('input[name="tiktok_tags"]')
+          if(tt){
+            if(tt._tagify && Array.isArray(tt._tagify.value)){
+              const arr = tt._tagify.value.map(v=>v.value).filter(Boolean)
+              if(arr.length) _tiktok_tags = arr.join(',')
+            } else if(tt.value && tt.value.trim()){
+              _tiktok_tags = tt.value.trim()
+            }
+          }
+        }catch(e){ }
+
+        const b = { start_url: f.start_url.value.trim(), titles: f.titles.value.trim(), max_episodes: f.max_episodes.value ? Number(f.max_episodes.value) : undefined, render_mode: f.render_mode.value.trim(), voice: (f.voice ? f.voice.value : ''), is_upload_tiktok: f.is_upload_tiktok && f.is_upload_tiktok.checked ? 'true' : 'false', tiktok_tags: _tiktok_tags, cookies: f.cookies && f.cookies.value ? f.cookies.value.trim() : undefined, upload_duration_hours: f.upload_duration_hours && f.upload_duration_hours.value ? Number(f.upload_duration_hours.value) : undefined };
         let btn = f.querySelector('button[type=submit]') || document.getElementById('processSeriesSubmitBtn');
         if(btn) btn.disabled = true;
 

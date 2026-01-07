@@ -23,98 +23,50 @@ function filePreviewUrlFor(rel){
   return apiUrl('/api/download-video?inline=1&video_name=' + encodeURIComponent(serverPath))
 }
 
-// Fetch file as blob and trigger download via object URL. This avoids
-// relying on the `download` attribute which is ignored for cross-origin
-// links in many browsers.
-async function downloadViaFetch(rel, filename, el){
-  if(el && el.dataset && el.dataset.downloading) return
-  let prevText = null
-  if(el){
-    el.dataset.downloading = '1'
-    prevText = el.textContent
-    try{ el.textContent = 'Đang tải...' }catch(e){}
-    try{ el.style.pointerEvents = 'none' }catch(e){}
-    el.classList.add && el.classList.add('loading')
-  }
-  try{
-    const res = await fetch(fileDownloadUrlFor(rel))
-    if(!res.ok) throw new Error('Network error: ' + res.status)
-    const blob = await res.blob()
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.style.display = 'none'
-    a.href = url
-    a.download = filename || ''
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
-    setTimeout(()=> URL.revokeObjectURL(url), 5000)
-  }catch(err){
-    alert('Không thể tải file: ' + (err.message||err))
-  }finally{
-    if(el){
-      try{ delete el.dataset.downloading }catch(e){ el.dataset.downloading = '' }
-      try{ el.textContent = prevText }catch(e){}
-      try{ el.style.pointerEvents = '' }catch(e){}
-      el.classList.remove && el.classList.remove('loading')
-    }
-  }
-}
-
-// Trigger native browser download without fetching the whole file into memory.
-// Uses a hidden iframe so the page is not navigated away and the browser
-// will show the Save As dialog immediately when the server responds
-// with Content-Disposition: attachment.
-function triggerNativeDownload(url){
-  try{
-    const iframe = document.createElement('iframe')
-    iframe.style.display = 'none'
-    // add a cache-busting param to avoid reusing an existing iframe src
-    iframe.src = url + (url.includes('?') ? '&' : '?') + '_dl=' + Date.now()
-    document.body.appendChild(iframe)
-    // remove after a minute to be safe
-    setTimeout(()=>{ try{ iframe.remove() }catch(e){} }, 60 * 1000)
-    return true
-  }catch(e){
-    // fallback: open in new tab/window
-    try{ window.open(url, '_blank') }catch(e){}
-    return false
-  }
-}
-
-// Try to save a file to iOS Photos via Web Share API (if supported).
-// Falls back to opening the video so user can long-press -> "Save Video".
-async function saveToPhotos(rel, name){
-  try{
-    const url = fileDownloadUrlFor(rel).replace(/download=1(&|$)/, '')
-    const res = await fetch(url)
-    if(!res.ok) throw new Error('Network: ' + res.status)
-    const blob = await res.blob()
-    const file = new File([blob], name, { type: blob.type || 'video/mp4' })
-    if(navigator.canShare && navigator.canShare({ files: [file] })){
-      await navigator.share({ files: [file], title: name })
-      return true
-    }
-    // Fallback: open in new tab/window so user can long-press and Save Video
-    const objUrl = URL.createObjectURL(blob)
-    const w = window.open(objUrl, '_blank')
-    setTimeout(()=> URL.revokeObjectURL(objUrl), 60000)
-    if(!w) alert('Mở video thất bại — cho phép popup hoặc dùng Long-press trên liên kết Download')
-    return false
-  }catch(err){
-    alert('Không thể lưu vào Photos: ' + (err.message || err))
-    return false
-  }
-}
-
-let currentPath = ''
-
+// Short helper for document.querySelector (used widely in this file)
 function qs(sel){ return document.querySelector(sel) }
 
-// --- TikTok upload modal helper ---
+// Render recent tags as clickable buttons below a Tagify input.
+function renderRecentTags(input, tags, tagify){
+  try{
+    if(!input) return
+    // find or create container
+    let container = input.parentNode && input.parentNode.querySelector('.recent-tags')
+    if(!container){
+      container = document.createElement('div')
+      container.className = 'recent-tags'
+      container.style = 'margin-top:6px;display:flex;flex-wrap:wrap;gap:6px'
+      if(input.parentNode) input.parentNode.appendChild(container)
+      else input.insertAdjacentElement('afterend', container)
+    }
+    container.innerHTML = ''
+    if(!tags || !tags.length) return
+    tags.forEach(t=>{
+      const btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'btn btn-sm btn-outline-secondary recent-tag-btn'
+      btn.style.margin = '0'
+      btn.textContent = t
+      btn.onclick = (ev)=>{
+        ev.preventDefault()
+        try{
+          if(tagify && typeof tagify.addTags === 'function'){
+            tagify.addTags([t])
+          } else {
+            // fallback: append into input value if not Tagify
+            if(input.value && input.value.trim()) input.value = input.value.trim() + ', ' + t
+            else input.value = t
+          }
+        }catch(e){ console.warn('add recent tag failed', e) }
+      }
+      container.appendChild(btn)
+    })
+  }catch(e){ console.warn('renderRecentTags error', e) }
+}
+
+// Global TikTok upload modal (safe, standalone)
 function showTikTokUploadModal(rel, name){
-  // create modal if missing
-  let modal = qs('#tiktokUploadModal')
+  let modal = document.getElementById('tiktokUploadModal')
   if(!modal){
     modal = document.createElement('div')
     modal.id = 'tiktokUploadModal'
@@ -123,7 +75,7 @@ function showTikTokUploadModal(rel, name){
       <div style="background:#fff;padding:18px;border-radius:8px;max-width:560px;width:100%;box-shadow:0 6px 30px rgba(0,0,0,0.4)">
         <h3 style="margin:0 0 8px">Upload to TikTok</h3>
         <div style="margin-bottom:8px"><label>Title</label><input id="tt_title" style="width:100%;padding:8px;margin-top:4px;"/></div>
-        <div style="margin-bottom:8px"><label>Tags (comma separated)</label><input id="tt_tags" style="width:100%;padding:8px;margin-top:4px;"/></div>
+        <div style="margin-bottom:8px"><label>Tags</label><input id="tt_tags" style="width:100%;padding:8px;margin-top:4px;" placeholder="type to get suggestions"/></div>
         <div style="margin-bottom:8px"><label>Cookies</label>
           <select id="tt_cookies" style="width:100%;padding:8px;margin-top:4px;">
             <option value="PhimTrung.json">PhimTrung.json</option>
@@ -135,17 +87,276 @@ function showTikTokUploadModal(rel, name){
         <div id="tt_status" style="margin-top:8px;font-size:0.9em;color:#444"></div>
       </div>`
     document.body.appendChild(modal)
-    qs('#tt_cancel').addEventListener('click', ()=>{ try{ modal.remove() }catch(e){} })
   }
-  // prefill
-  qs('#tt_title').value = name.replace(/\.[^.]+$/, '')
+
+  const titleInput = document.querySelector('#tt_title')
+  const tagsInput = document.querySelector('#tt_tags')
+  const cookiesSelect = document.querySelector('#tt_cookies')
+  const status = document.querySelector('#tt_status')
+  if(titleInput) titleInput.value = (name || '').replace(/\.[^.]+$/, '')
+  if(tagsInput) tagsInput.value = ''
+  if(cookiesSelect) cookiesSelect.value = 'DemNgheChuyen.json'
+  if(status) status.textContent = ''
+
+  const resolveApi = (path)=>{ try{ if(typeof safeApiUrl === 'function') return safeApiUrl(path); return (window.APP_HOST? window.APP_HOST.replace(/\/$/, '') : '') + path }catch(e){ return path } }
+  const apiFetch = (path, opts)=> fetch(typeof path === 'string' && path.startsWith('/') ? resolveApi(path) : path, opts)
+
+  ;(async ()=>{
+    try{
+      const input = tagsInput
+      if(!input) return
+      if(input._tagify){ try{ input._tagify.removeAllTags(); input._tagify.destroy(); }catch(e){} }
+      let whitelist = []
+      try{ const r = await apiFetch('/api/tiktok_tags'); if(r && r.ok){ const j = await r.json(); whitelist = Array.isArray(j.tags)? j.tags : [] } }catch(e){}
+      if(typeof window.Tagify === 'undefined'){
+        await new Promise((resolve)=>{
+          const s = document.createElement('script')
+          s.src = 'https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.min.js'
+          s.onload = resolve
+          s.onerror = resolve
+          document.head.appendChild(s)
+        })
+      }
+      if(typeof window.Tagify !== 'undefined'){
+        try{ input.classList.add('form-control') }catch(e){}
+        const tagify = new Tagify(input, { enforceWhitelist: false, whitelist: (whitelist||[]).slice(0,10), dropdown:{enabled:1, maxItems:30, position:'text', highlightFirst:true}, delimiters:',' })
+        input._tagify = tagify
+        // render recent tags buttons (top 10 recent)
+        try{ renderRecentTags(input, (whitelist||[]).slice(0,10), tagify) }catch(e){}
+        let ajaxTimer = null
+        tagify.on('add', async (e)=>{
+          const val = e && e.detail && e.detail.data && e.detail.data.value ? e.detail.data.value.trim() : ''
+          if(!val) return
+          try{ if(whitelist.indexOf(val) === -1){ whitelist.push(val); await apiFetch('/api/tiktok_tags', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({tag: val})}) } }catch(err){ console.warn('persist tag failed', err) }
+        })
+        tagify.on('input', function(e){ tagify.whitelist = null; tagify.loading(true); if(ajaxTimer) clearTimeout(ajaxTimer); ajaxTimer = setTimeout(async ()=>{ try{ const r = await apiFetch('/api/tiktok_tags'); let list=[]; if(r&&r.ok){ const j=await r.json(); list=Array.isArray(j.tags)? j.tags:[] } const existing=(tagify.value||[]).map(v=>v.value); tagify.settings.whitelist = list.concat(existing); tagify.loading(false).dropdown.show(e.detail.value) }catch(err){ tagify.loading(false).dropdown.hide() } }, 250) })
+      }
+    }catch(err){ console.error('Tagify init error', err) }
+  })()
+
+  const cancelBtn = document.querySelector('#tt_cancel')
+  if(cancelBtn) cancelBtn.onclick = ()=>{ try{ modal.remove() }catch(e){} }
+
+  const confirmBtn = document.querySelector('#tt_confirm')
+  if(confirmBtn) confirmBtn.onclick = async ()=>{
+    const title = (document.querySelector('#tt_title') ? document.querySelector('#tt_title').value.trim() : '')
+    let tags = []
+    try{ const input = document.querySelector('#tt_tags'); if(input && input._tagify && Array.isArray(input._tagify.value)) tags = input._tagify.value.map(t=>t.value).filter(Boolean); else if(input) tags = input.value.split(',').map(t=>t.trim()).filter(Boolean) }catch(e){ tags=[] }
+    try{ confirmBtn.disabled = true }catch(e){}
+    if(status) status.textContent = 'Uploading...'
+    try{
+      try{ if(tags && tags.length){ await apiFetch('/api/tiktok_tags', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ tags: tags }) }) } }catch(err){ console.warn('Failed to persist tags before upload', err) }
+      const params = new URLSearchParams(); params.set('video_path', rel); params.set('title', title); if(tags.length) params.set('tags', tags.join(',')); const cookies = document.querySelector('#tt_cookies') ? document.querySelector('#tt_cookies').value : ''; if(cookies) params.set('cookies', cookies)
+      const controller = new AbortController(); const timeoutMs = 10 * 60 * 1000; const timeoutId = setTimeout(()=> controller.abort(), timeoutMs)
+      const res = await apiFetch('/api/tiktok_upload?' + params.toString(), { method: 'GET', signal: controller.signal })
+      clearTimeout(timeoutId)
+      const j = await res.json().catch(()=>null)
+      if(res.ok && j && j.ok){ if(status) status.textContent = 'Upload started successfully.'; setTimeout(()=>{ try{ modal.remove() }catch(e){} }, 800) }
+      else { if(status) status.textContent = 'Upload failed: ' + (j && j.error ? j.error : res.statusText || 'error'); try{ confirmBtn.disabled = false }catch(e){} }
+    }catch(err){ if(err && err.name === 'AbortError'){ if(status) status.textContent = 'Upload timed out after 10 minutes.' } else { if(status) status.textContent = 'Network error: ' + (err.message||err) } try{ confirmBtn.disabled = false }catch(e){} }
+  }
+}
+
+// Fetch file as blob and trigger download via object URL. This avoids
+// relying on the `download` attribute which is ignored for cross-origin
+// links in many browsers.
+async function downloadViaFetch(rel, filename, el){
+  if(el && el.dataset && el.dataset.downloading) return
+  function showTikTokUploadModal(rel, name){
+    // Simple, robust modal for TikTok upload with Tagify suggestions.
+    let modal = document.getElementById('tiktokUploadModal')
+    if(!modal){
+      modal = document.createElement('div')
+      modal.id = 'tiktokUploadModal'
+      modal.style = 'position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999'
+      modal.innerHTML = `
+        <div style="background:#fff;padding:18px;border-radius:8px;max-width:560px;width:100%;box-shadow:0 6px 30px rgba(0,0,0,0.4)">
+          <h3 style="margin:0 0 8px">Upload to TikTok</h3>
+          <div style="margin-bottom:8px"><label>Title</label><input id="tt_title" style="width:100%;padding:8px;margin-top:4px;"/></div>
+          <div style="margin-bottom:8px"><label>Tags</label><input id="tt_tags" style="width:100%;padding:8px;margin-top:4px;" placeholder="type to get suggestions"/></div>
+          <div style="margin-bottom:8px"><label>Cookies</label>
+            <select id="tt_cookies" style="width:100%;padding:8px;margin-top:4px;">
+              <option value="PhimTrung.json">PhimTrung.json</option>
+              <option value="DemNgheChuyen.json">DemNgheChuyen.json</option>
+              <option value="BungBu.json">BungBu.json</option>
+            </select>
+          </div>
+          <div style="text-align:right"><button id="tt_cancel" style="margin-right:8px">Cancel</button><button id="tt_confirm">Upload</button></div>
+          <div id="tt_status" style="margin-top:8px;font-size:0.9em;color:#444"></div>
+        </div>`
+      document.body.appendChild(modal)
+    }
+
+    // Prefill values
+    const titleInput = document.querySelector('#tt_title')
+    const tagsInput = document.querySelector('#tt_tags')
+    const cookiesSelect = document.querySelector('#tt_cookies')
+    const status = document.querySelector('#tt_status')
+    if(titleInput) titleInput.value = (name || '').replace(/\.[^.]+$/, '')
+    if(tagsInput) tagsInput.value = ''
+    if(cookiesSelect) cookiesSelect.value = 'DemNgheChuyen.json'
+    if(status) status.textContent = ''
+
+    // helpers to resolve API URL safely
+    const resolveApi = (path)=>{ try{ if(typeof safeApiUrl === 'function') return safeApiUrl(path); return (window.APP_HOST? window.APP_HOST.replace(/\/$/, '') : '') + path }catch(e){ return path } }
+    const apiFetch = (path, opts)=> fetch(typeof path === 'string' && path.startsWith('/') ? resolveApi(path) : path, opts)
+
+    // initialize Tagify with server whitelist
+    (async ()=>{
+      try{
+        const input = tagsInput
+        if(!input) return
+        if(input._tagify){ try{ input._tagify.removeAllTags(); input._tagify.destroy(); }catch(e){} }
+        let whitelist = []
+        try{ const r = await apiFetch('/api/tiktok_tags'); if(r && r.ok){ const j = await r.json(); whitelist = Array.isArray(j.tags)? j.tags : [] } }catch(e){}
+        if(typeof window.Tagify === 'undefined'){
+          await new Promise((resolve)=>{
+            const s = document.createElement('script')
+            s.src = 'https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.min.js'
+            s.onload = resolve
+            s.onerror = resolve
+            document.head.appendChild(s)
+          })
+        }
+        if(typeof window.Tagify !== 'undefined'){
+        try{ input.classList.add('form-control') }catch(e){}
+        const tagify = new Tagify(input, {
+            enforceWhitelist: false,
+            whitelist: whitelist,
+            dropdown:{enabled:1, maxItems:30, position:'text', highlightFirst:true},
+            delimiters:','
+          })
+          input._tagify = tagify
+
+          // debounce timer for async suggestions
+          let ajaxTimer = null
+
+          tagify.on('add', async (e)=>{
+            const val = e && e.detail && e.detail.data && e.detail.data.value ? e.detail.data.value.trim() : ''
+            if(!val) return
+            // persist new tag if it's not in the known whitelist
+            try{
+              const known = whitelist.indexOf(val) !== -1
+              if(!known){ whitelist.push(val); await apiFetch('/api/tiktok_tags', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({tag: val})}) }
+            }catch(err){ console.warn('Failed to persist tag', err) }
+          })
+
+          // suggestions: fetch server list on input and show dropdown
+          tagify.on('input', function(e){
+            tagify.whitelist = null
+            tagify.loading(true)
+            if(ajaxTimer) clearTimeout(ajaxTimer)
+            ajaxTimer = setTimeout(async ()=>{
+              try{
+                const r = await apiFetch('/api/tiktok_tags')
+                let list = []
+                if(r && r.ok){ const j = await r.json(); list = Array.isArray(j.tags)? j.tags : [] }
+                // server returns most-recent-first; show top 10 recent plus existing selected
+                const recent = (list||[]).slice(0,10)
+                const existing = (tagify.value||[]).map(v=>v.value)
+                tagify.settings.whitelist = recent.concat(existing)
+                try{ renderRecentTags(input, recent, tagify) }catch(e){}
+                tagify.loading(false).dropdown.show(e.detail.value)
+              }catch(err){
+                tagify.loading(false).dropdown.hide()
+              }
+            }, 250)
+          })
+
+          // other useful listeners for debugging/UX
+          tagify.on('remove', (e)=>{ console.log('tag removed', e.detail) })
+          tagify.on('invalid', (e)=>{ console.log('invalid tag', e.detail) })
+          tagify.on('dropdown:select', (e)=>{ console.log('dropdown select', e.detail) })
+        }
+      }catch(err){ console.error('Tagify init error', err) }
+    })()
+
+    // cancel handler
+    const cancelBtn = document.querySelector('#tt_cancel')
+    if(cancelBtn) cancelBtn.onclick = ()=>{ try{ modal.remove() }catch(e){} }
+
+    // confirm/upload handler
+    const confirmBtn = document.querySelector('#tt_confirm')
+    if(confirmBtn) confirmBtn.onclick = async ()=>{
+      const title = (document.querySelector('#tt_title') ? document.querySelector('#tt_title').value.trim() : '')
+      // collect tags
+      let tags = []
+      try{
+        const input = document.querySelector('#tt_tags')
+        if(input && input._tagify && Array.isArray(input._tagify.value)) tags = input._tagify.value.map(t=>t.value).filter(Boolean)
+        else if(input) tags = input.value.split(',').map(t=>t.trim()).filter(Boolean)
+      }catch(e){ tags = [] }
+      try{ confirmBtn.disabled = true }catch(e){}
+      if(status) status.textContent = 'Uploading...'
+      try{
+        // Persist any new/edited tags before starting the upload
+        try{
+          if(tags && tags.length){
+            await apiFetch('/api/tiktok_tags', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ tags: tags }) })
+          }
+        }catch(err){ console.warn('Failed to persist tags before upload', err) }
+
+        const params = new URLSearchParams()
+        params.set('video_path', rel)
+        params.set('title', title)
+        if(tags.length) params.set('tags', tags.join(','))
+        const cookies = document.querySelector('#tt_cookies') ? document.querySelector('#tt_cookies').value : ''
+        if(cookies) params.set('cookies', cookies)
+
+        const controller = new AbortController()
+        const timeoutMs = 10 * 60 * 1000
+        const timeoutId = setTimeout(()=> controller.abort(), timeoutMs)
+        const res = await apiFetch('/api/tiktok_upload?' + params.toString(), { method: 'GET', signal: controller.signal })
+        clearTimeout(timeoutId)
+        const j = await res.json().catch(()=>null)
+        if(res.ok && j && j.ok){ if(status) status.textContent = 'Upload started successfully.'; setTimeout(()=>{ try{ modal.remove() }catch(e){} }, 800) }
+        else { if(status) status.textContent = 'Upload failed: ' + (j && j.error ? j.error : res.statusText || 'error'); try{ confirmBtn.disabled = false }catch(e){} }
+      }catch(err){
+        if(err && err.name === 'AbortError'){ if(status) status.textContent = 'Upload timed out after 10 minutes.' }
+        else { if(status) status.textContent = 'Network error: ' + (err.message||err) }
+        try{ confirmBtn.disabled = false }catch(e){}
+      }
+    }
+   }
   qs('#tt_tags').value = ''
   qs('#tt_cookies').value = 'DemNgheChuyen.json'
   const status = qs('#tt_status')
   status.textContent = ''
+  // initialize Tagify for tags input and fetch latest whitelist each time
+  (async function initTagify(){
+    try{
+      const input = qs('#tt_tags')
+      if(!input) return
+      // destroy previous instance if present
+      if(input._tagify){ try{ input._tagify.removeAllTags(); input._tagify.destroy(); }catch(e){} }
+      let whitelist = []
+      try{ const r = await fetch(apiUrl('/api/tiktok_tags')); if(r.ok){ const j = await r.json(); whitelist = Array.isArray(j.tags)? j.tags : [] } }catch(e){ whitelist = [] }
+      if(window.Tagify){
+        try{ input.classList.add('form-control') }catch(e){}
+        const tagify = new Tagify(input, { whitelist: whitelist, dropdown:{enabled:1, classname:'tags-look', maxItems:30, position:'text', highlightFirst:true}, delimiters:',' })
+        input._tagify = tagify
+        try{ renderRecentTags(input, (whitelist||[]).slice(0,10), tagify) }catch(e){}
+        tagify.on('add', function(e){
+          const val = e.detail && e.detail.data && e.detail.data.value ? e.detail.data.value.trim() : ''
+          if(!val) return
+          if(whitelist.indexOf(val) === -1){ whitelist.push(val); fetch(apiUrl('/api/tiktok_tags'), {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({tag: val})}).catch(()=>{}) }
+        })
+      }
+    }catch(e){ /* ignore */ }
+  })();
+
   qs('#tt_confirm').onclick = async () => {
     const title = qs('#tt_title').value.trim()
-    const tags = qs('#tt_tags').value.split(',').map(t=>t.trim()).filter(Boolean)
+    // read tags from Tagify if present, otherwise from raw input
+    let tags = []
+    try{
+      const input = qs('#tt_tags')
+      if(input && input._tagify && Array.isArray(input._tagify.value)){
+        tags = input._tagify.value.map(t=> t.value ).filter(Boolean)
+      } else if(qs('#tt_tags')){
+        tags = qs('#tt_tags').value.split(',').map(t=>t.trim()).filter(Boolean)
+      }
+    }catch(e){ tags = [] }
     qs('#tt_confirm').disabled = true
     status.textContent = 'Uploading...'
     try{

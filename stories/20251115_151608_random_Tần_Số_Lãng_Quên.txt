@@ -1,0 +1,603 @@
+================================================================================
+TIÊU ĐỀ: Tần Số Lãng Quên
+================================================================================
+
+Thể loại: RANDOM MIX (Hài - Kinh dị - Vả mặt - Siêu nhiên - Hiện đại)
+Thể loại chính: Kinh dị cô lập không gian
+Thể loại phụ: Đa dòng thời gian
+Nhân vật: 🎙️ MC đài phát thanh đêm khuya: Một người dẫn chương trình đam mê khám phá những bí ẩn của quá khứ...
+Bối cảnh: 🏥 Bệnh viện tâm thần bỏ hoang: Nơi diễn ra những sự kiện kỳ lạ liên quan đến các bệnh nhân đã từng s...
+Mô típ: Khi MC phát sóng...
+Thời gian tạo: 2025-11-15 15:16:08
+
+================================================================================
+
+Tất nhiên là tôi biết làm chương trình phát thanh trực tiếp từ một bệnh viện tâm thần bỏ hoang vào đúng đêm Halloween là một ý tưởng sáo rỗng. Sáo rỗng đến mức nếu nó là một món ăn, nó sẽ là món phở ăn liền úp vội lúc nửa đêm – quen thuộc, dễ đoán, nhưng thỉnh thoảng bạn vẫn thèm. Và thính giả của tôi, những cú đêm cô đơn của thành phố này, họ thèm những thứ như vậy.
+
+Tôi là Minh, người dẫn chương trình “Tần Số Lãng Quên”. Cái tên nghe thì sang, nhưng thực chất là một chương trình đêm khuya chuyên bới móc những vụ án cũ, những bí ẩn bị thời gian phủ bụi, và thỉnh thoảng, là những câu chuyện ma mà người ta thề sống thề chết là có thật. Tôi thì không tin. Với tôi, ma quỷ cũng giống như lời hứa “để anh lo” của một gã tồi – nghe thì hấp dẫn đấy, nhưng rốt cuộc chỉ là sản phẩm của trí tưởng tượng và sự tuyệt vọng.
+
+“Minh, anh chắc chứ?” Giọng Lan, nhà sản xuất kiêm kỹ thuật viên âm thanh của tôi, rít qua tai nghe, xen lẫn tiếng sột soạt của gió lùa qua hành lang vỡ nát. “Ở đây wifi còn yếu hơn cả ý chí giảm cân của em nữa.”
+
+Tôi bật cười, điều chỉnh chiếc micro đặt trên một cái bàn khám bệnh gỉ sét. “Yên tâm đi, Lan. Chúng ta có bộ phát sóng di động xịn nhất quả đất. Tín hiệu còn mạnh hơn cả tình yêu của mấy cặp mới yêu. Vả lại, thính giả thích sự chân thật. Một chút tiếng gió rít, một chút âm thanh vọng lại từ cõi nào đó… kịch tính mà.”
+
+“Cõi nào đó?” Lan lặp lại, giọng cô nàng đã bắt đầu nhuốm màu hoảng hốt. “Anh đừng có dọa em. Em chỉ đồng ý đi theo vì anh hứa sẽ tăng lương và bao em trà sữa một tháng.”
+
+“Anh có thất hứa bao giờ,” tôi nháy mắt với cô qua ánh đèn pin leo lét, dù biết thừa cô chẳng thấy được. “Thôi nào, tập trung đi. Còn năm phút nữa lên sóng. Kiểm tra SONA lần cuối xem.”
+
+SONA là “cô trợ lý” mới của chúng tôi. Tên đầy đủ là Hệ thống Nhận diện và Phân tích Sóng Âm Bất thường. Một cái tên kêu như chuông chùa, do một công ty công nghệ khởi nghiệp nào đó tài trợ cho chương trình. Họ quảng cáo rằng SONA, một trí tuệ nhân tạo tân tiến, có thể phát hiện và diễn giải các hiện tượng giọng nói điện tử, hay nôm na là “tiếng nói của ma”. Tôi thì nghĩ nó chỉ là một cái máy lọc tạp âm cao cấp được gắn thêm vài câu lệnh trả lời tự động cho ra vẻ nguy hiểm. Nhưng đồ miễn phí thì tội gì không dùng, nhất là khi nó trông ngầu như một thiết bị trong phim khoa học viễn tưởng.
+
+Lan gõ lạch cạch lên máy tính bảng. “SONA đã sẵn sàng. Pin 100%. Hệ thống ghi âm thanh đa hướng đã bật. Đang quét tần số nền… Ồ, có vài đỉnh sóng lạ ở dải tần cực thấp. Chắc là do kết cấu cũ của tòa nhà thôi.”
+
+“Hoặc là do vong hồn bác sĩ trưởng khoa đang đi tuần,” tôi châm chọc. “Em cứ nói với thính giả như thế. Kịch bản cả mà.”
+
+Bệnh viện Tâm thần An Lạc. Cái tên thật mỉa mai. Nơi này đã bị bỏ hoang hơn năm mươi năm, sau một vụ bê bối liên quan đến các phương pháp trị liệu kỳ quặc và sự biến mất bí ẩn của vị giám đốc, bác sĩ Hùng. Giờ đây, nó là một bộ xương bê tông khổng lồ, phủ đầy rêu mốc và những lời đồn đại còn đáng sợ hơn cả đám dây leo đang siết chặt lấy tường.
+
+Tôi chọn nơi này không phải ngẫu nhiên. Tôi bị ám ảnh bởi một bệnh nhân ở đây, được ghi trong hồ sơ là “Bệnh nhân số 7”. Không có tên, không có tuổi, chỉ có một mã số. Ông ta là một kỹ sư tài năng trước khi suy sụp và được đưa vào đây. Điều đặc biệt là ông ta không nói, chỉ vẽ. Những bức vẽ của ông không phải là tranh phong cảnh hay chân dung, mà là những sơ đồ mạch điện phức tạp, những bản thiết kế máy móc kỳ lạ trông vừa thiên tài vừa điên rồ. Chúng được cho là vô nghĩa. Nhưng tôi không nghĩ vậy.
+
+“Ba, hai, một… Lên sóng!” Lan ra hiệu.
+
+Tôi hắng giọng, đeo bộ mặt “MC bí ẩn” vào và bắt đầu.
+
+“Xin chào mừng quý vị thính giả đã quay trở lại với Tần Số Lãng Quên. Tôi là Minh, người đồng hành cùng các bạn trong những giờ phút tĩnh lặng nhất của màn đêm,” giọng tôi vang lên, ấm và sâu, một kỹ năng tôi đã rèn luyện hàng năm trời để che giấu con người thật sự hay cà khịa của mình. “Đêm nay, chúng tôi mang đến một trải nghiệm đặc biệt. Thay vì ngồi trong phòng thu ấm áp, tôi đang có mặt tại một nơi mà thời gian đã ngừng lại… Bệnh viện Tâm thần An Lạc.”
+
+Tôi dừng lại một chút, để cho sự im lặng và tiếng gió rít qua micro làm thay phần việc còn lại. Hiệu ứng âm thanh tự nhiên bao giờ cũng tốt nhất.
+
+“Nơi đây từng là nhà của hàng trăm linh hồn lạc lối, và đêm nay, chúng tôi sẽ thử lắng nghe câu chuyện của họ. Đồng hành cùng tôi là SONA, một trí tuệ nhân tạo có khả năng dò tìm những tần số mà tai người không thể nghe thấy. SONA, cô có ở đó không?”
+
+Một giọng nữ máy móc, đều đều vang lên từ loa nhỏ. “Tôi đang lắng nghe, Minh.”
+
+“Tốt. Hãy cho thính giả biết, cô có cảm nhận được gì không?”
+
+“Môi trường âm thanh ở đây có nhiều nhiễu động bất thường. Nhiệt độ giảm đột ngột 1.2 độ C so với mười phút trước. Tôi phát hiện các sóng hạ âm dao động ở mức 19 hertz, có khả năng gây cảm giác bất an cho con người.”
+
+Đấy, thấy chưa? Khoa học cả. Tôi nhếch mép cười.
+
+“Cảm ơn SONA. Rất khoa học. Quý vị thấy đấy, mọi chuyện đều có thể giải thích. Nhưng…” tôi hạ giọng, thì thầm vào micro, “...nếu những lời giải thích đó không còn đúng thì sao?”
+
+Chương trình diễn ra đúng như tôi dự đoán. Tôi kể lại lịch sử của bệnh viện, những câu chuyện rùng rợn được thêu dệt, và tất nhiên, không quên nhắc đến Bệnh nhân số 7 và những bản vẽ bí ẩn của ông ta. Lan thỉnh thoảng lại hét lên một tiếng vì một con chuột chạy qua hoặc vì một cánh cửa gió đập. SONA thì cứ năm phút lại báo cáo một lần về “sự thay đổi áp suất không khí” hay “tín hiệu điện từ không xác định”. Rating chắc chắn đang tăng vùn vụt.
+
+Mọi thứ vẫn trong tầm kiểm soát, cho đến khi tôi quyết định đi sâu hơn vào khu vực trị liệu, nơi từng đặt những cỗ máy “trị liệu ký ức” khét tiếng của bác sĩ Hùng.
+
+“Lan, đi theo anh. Chúng ta sẽ khám phá trái tim của An Lạc,” tôi nói, giọng đầy phấn khích giả tạo.
+
+“Trái tim nó ngừng đập lâu rồi anh ơi,” Lan lầm bầm, nhưng vẫn xách mớ thiết bị lỉnh kỉnh đi theo. “Chỉ còn lại cục máu đông thôi.”
+
+Hành lang tối và hẹp hơn. Mùi ẩm mốc và thuốc sát trùng cũ xộc vào mũi. Ánh đèn pin của tôi quét qua những căn phòng trống hoác hai bên, những chiếc giường kim loại gỉ sét vẫn còn đó, vài chiếc còn vương lại vết dây da trói tay chân. Không khí đặc quánh lại, như thể nỗi đau của hàng trăm con người đã thấm vào từng thớ vữa.
+
+Bỗng, tai nghe của tôi vang lên một tiếng “rè” chói tai.
+
+“Cái gì vậy Lan?” tôi cau mày.
+
+“Không phải em! Tín hiệu bị nhiễu nặng!”
+
+Cùng lúc đó, SONA lên tiếng, nhưng lần này giọng nó không còn đều đều nữa. Nó bị ngắt quãng, như một đoạn ghi âm hỏng.
+
+“... Lạnh... quá... Cứu...”
+
+Tôi đứng khựng lại. Tim đập lỡ một nhịp.
+
+“SONA, lặp lại?”
+
+Im lặng. Chỉ có tiếng rè rè.
+
+“Chắc là lỗi hệ thống thôi anh,” Lan nói, nhưng tôi nghe rõ sự run rẩy trong giọng cô. “Sóng ở đây yếu mà.”
+
+Tôi cũng muốn tin là vậy. Nhưng cái từ “Cứu” đó, nó không giống một lỗi ngẫu nhiên. Nó nghe như một lời cầu xin thật sự, được lọc qua hàng thập kỷ tĩnh lặng.
+
+“Chúng ta tiếp tục,” tôi nói, cố giữ vẻ bình tĩnh. “Thính giả đang chờ.”
+
+Chúng tôi đến cuối hành lang, nơi có một cánh cửa gỗ sồi to lớn, trên có tấm biển đồng đã xỉn màu: “PHÒNG TRỊ LIỆU ĐẶC BIỆT - BÁC SĨ HÙNG”.
+
+Cánh cửa không khóa. Tôi đẩy nhẹ. Nó kêu lên một tiếng kẽo kẹt ai oán như thể đang kể lể về số phận bị lãng quên của mình.
+
+Bên trong, căn phòng rộng một cách đáng ngạc nhiên. Giữa phòng là một chiếc ghế kim loại trông giống ghế nha sĩ thời xưa, với vô số dây điện và ống dẫn chĩa vào phần tựa đầu. Xung quanh là những tủ hồ sơ bị bật tung, giấy tờ vương vãi khắp sàn. Và trên tường, chi chít những bản vẽ.
+
+Tôi bước lại gần. Tim tôi như ngừng đập.
+
+Đó là những bản vẽ của Bệnh nhân số 7. Những sơ đồ mạch điện phức tạp, những phương trình toán học rối rắm, y hệt như những gì tôi đã thấy trong các tài liệu lưu trữ. Nhưng có một thứ khác. Ở trung tâm của mớ hỗn độn đó, là một bản vẽ lớn hơn cả. Nó mô tả một cỗ máy hình vòm, với chiếc ghế ở giữa, và những dòng năng lượng tỏa ra, kết nối với một thứ trông giống như một cái ăng-ten khổng lồ. Bên dưới có một dòng chữ viết tay nguệch ngoạc: “Đài phát của ký ức. Tần số của linh hồn.”
+
+“Trời đất...” tôi lẩm bẩm.
+
+“Anh Minh, nhìn này!” Lan chỉ vào chiếc ghế.
+
+Trên phần tựa đầu bằng da đã nứt nẻ, có một vết lõm sâu, sẫm màu, như thể có thứ gì đó đã bị ép vào đây với một lực cực mạnh trong một thời gian rất dài.
+
+Đột nhiên, tất cả đèn pin của chúng tôi vụt tắt.
+
+Căn phòng chìm trong bóng tối đặc quánh.
+
+“Lan! Em đâu rồi?” tôi gọi, giọng đã mất đi vẻ tự tin thường ngày.
+
+“Em đây!” tiếng cô ấy ngay cạnh tôi. “Cầu dao tổng chắc sập rồi... à mà làm gì có điện mà sập.”
+
+Tiếng “rè” trong tai nghe của tôi lớn dần, rồi im bặt. Thay vào đó là một âm thanh khác. Một giai điệu.
+
+Một bài hát ru.
+
+Giai điệu quen thuộc đến nao lòng. Ngọt ngào nhưng ai oán, nó len lỏi vào tâm trí tôi, khuấy động một góc ký ức nào đó mà tôi không tài nào chạm tới được. Tôi đã nghe nó ở đâu rồi? Tại sao nó lại khiến lồng ngực tôi vừa ấm áp vừa đau nhói?
+
+“SONA,” tôi thì thầm vào micro dự phòng gắn trên cổ áo, “phân tích âm thanh đó.”
+
+Một khoảng lặng kéo dài. Tôi gần như nghĩ rằng nó cũng đã hỏng. Rồi giọng nói máy móc vang lên, lần này rõ ràng và lạnh lẽo đến rợn người.
+
+“Phân tích hoàn tất. Đây là một đoạn ghi âm giọng nói con người. Tần số trùng khớp với các sóng hạ âm đã phát hiện trước đó. Nguồn phát... ở ngay trong phòng này.”
+
+Tôi và Lan nín thở.
+
+Bài hát ru nhỏ dần, rồi tắt hẳn. Thay vào đó là tiếng khóc thút thít của một đứa trẻ. Rồi tiếng một người đàn ông dỗ dành.
+
+“Ngoan nào... đừng khóc... Bố sẽ tìm ra cách đưa con về...”
+
+Giọng nói đó! Nó vỡ vụn, đầy tuyệt vọng, nhưng cũng ẩn chứa một sự quyết tâm sắt đá.
+
+“Ai đó?” tôi壮着胆子 hỏi lớn. “Ai đang ở đó?”
+
+Không có tiếng trả lời. Chỉ có tiếng sột soạt trên sàn. Như thể có ai đó đang kéo lê thứ gì đó.
+
+Và rồi, một âm thanh khiến máu trong người tôi đông cứng lại.
+
+Tiếng lách cách.
+
+Như tiếng một bánh răng kim loại được tra vào khớp.
+
+“Minh... cái ghế...” Lan run rẩy nói, tay cô ấy bấu chặt vào cánh tay tôi. “Nó... nó đang chuyển động.”
+
+Tôi không dám nhìn. Tôi nhắm chặt mắt lại, tai chỉ còn nghe thấy tiếng tim đập thình thịch và giọng nói đầy hoảng loạn của chính mình trong đầu: “Đây chỉ là tưởng tượng, đây chỉ là do sóng hạ âm, đây chỉ là một chương trình Halloween chết tiệt!”
+
+“Đối tượng đã được xác định,” giọng SONA đột ngột vang lên, cắt ngang dòng suy nghĩ của tôi. “Đang truy cập dữ liệu... Bác sĩ Nguyễn An Hùng. Giám đốc Bệnh viện An Lạc. Mất tích ngày 31 tháng 10 năm 1973.”
+
+“Mất tích?” tôi lặp lại như một cái máy. “Ông ta không mất tích. Ông ta đang ở đây!”
+
+Đúng lúc đó, đèn pin trên tay tôi chớp nháy rồi sáng trở lại.
+
+Ánh sáng yếu ớt quét qua căn phòng.
+
+Không có ai cả.
+
+Chiếc ghế vẫn nằm im lìm giữa phòng. Mọi thứ y như cũ.
+
+Nhưng có một thứ đã thay đổi.
+
+Trên màn hình máy tính bảng của Lan, nơi hiển thị giao diện của SONA, không còn là những biểu đồ sóng âm phức tạp nữa.
+
+Nó là một khuôn mặt.
+
+Một khuôn mặt đàn ông trung niên, hốc hác, đôi mắt trũng sâu đầy đau khổ, đang nhìn chằm chằm vào chúng tôi qua màn hình.
+
+“Làm ơn...” hình ảnh đó mấp máy môi, nhưng không có âm thanh nào phát ra. “Hãy tìm... con trai tôi...”
+
+Tôi và Lan nhìn nhau, mặt cắt không còn một giọt máu. Đây không còn là một chương trình phát thanh nữa rồi. Chúng tôi đã vô tình dò đúng một tần số không nên nghe, một lời kêu cứu bị giam cầm suốt năm mươi năm.
+
+Sự im lặng bao trùm lấy chúng tôi, nặng nề và ngột ngạt. Khuôn mặt trên màn hình của SONA đã biến mất, thay vào đó là những dòng mã lệnh chạy loạn xạ. Lan vẫn chưa hết bàng hoàng, cô ngồi bệt xuống sàn, lưng tựa vào tủ hồ sơ, mắt nhìn trân trân vào khoảng không.
+
+“Anh Minh,” cô thều thào, “chúng ta về đi. Em không quan tâm trà sữa nữa đâu.”
+
+Tôi cũng muốn về lắm chứ. Cái gã Minh tự tin, hay cà khịa ban nãy đã bốc hơi đâu mất, chỉ còn lại một thằng cha đang cố tỏ ra bình tĩnh trong khi hai đầu gối sắp biến thành thạch rau câu. Nhưng có một thứ gì đó giữ tôi lại. Cái nhìn của người đàn ông trên màn hình. Giai điệu bài hát ru. Và những bản vẽ của Bệnh nhân số 7. Mọi thứ như những mảnh ghép của một bức tranh mà tôi buộc phải nhìn thấy toàn cảnh.
+
+“Bình tĩnh nào, Lan,” tôi nói, giọng khản đặc. “Chắc chỉ là một dạng nhiễu sóng điện từ cực mạnh thôi. Nơi này cũ quá mà. Nó tác động lên con chip của SONA, tạo ra hình ảnh từ dữ liệu có sẵn. File ảnh của bác sĩ Hùng chắc có trong kho dữ liệu mà bọn công ty công nghệ nạp vào.”
+
+Tôi đang cố gắng thuyết phục chính mình nhiều hơn là thuyết phục Lan.
+
+“Vậy còn bài hát ru? Còn tiếng khóc? Còn giọng nói đàn ông?” Lan vặn lại, giọng cô đã có chút tức giận. “Cái đó cũng là nhiễu sóng à?”
+
+Tôi không trả lời được.
+
+Tôi quyết định làm một việc mà lẽ ra tôi phải làm từ đầu: kiểm tra lại các thiết bị. Tôi không phải dân kỹ thuật, nhưng ít nhất tôi biết những thứ cơ bản. Tôi kiểm tra bộ phát sóng, dây cáp, nguồn điện dự phòng. Mọi thứ đều ổn. Không có dấu hiệu chập điện hay hỏng hóc.
+
+“SONA,” tôi gọi, “báo cáo trạng thái hệ thống.”
+
+“Tất cả hệ thống hoạt động bình thường,” giọng nói máy móc đáp lại, như thể chưa có chuyện gì xảy ra. “Tuy nhiên, tôi đã phát hiện một luồng dữ liệu không xác định đang cố gắng truy cập vào bộ xử lý trung tâm của tôi. Nguồn gốc: từ bên trong tòa nhà này.”
+
+“Một luồng dữ liệu?” tôi nhíu mày. “Là hacker à? Ai rảnh đến mức mò vào đây hack một chương trình phát thanh quèn?”
+
+“Dữ liệu không tuân theo bất kỳ giao thức mạng nào đã biết. Cấu trúc của nó... giống như một chuỗi ký ức được mã hóa.”
+
+Ký ức được mã hóa.
+
+Tôi nhìn lại những bản vẽ trên tường. Những sơ đồ mạch điện. “Đài phát của ký ức. Tần số của linh hồn.”
+
+Lẽ nào...
+
+“Lan, mở lại file hồ sơ của Bệnh nhân số 7,” tôi ra lệnh. “Đọc to phần ghi chú của bác sĩ Hùng.”
+
+Lan ngập ngừng một lúc rồi cũng lấy lại bình tĩnh, lôi máy tính bảng ra và tìm kiếm. “Đây rồi... ‘Bệnh nhân số 7, tên thật là Trần Mạnh Cường. Kỹ sư điện tử viễn thông. Nhập viện sau một cú sốc tâm lý nặng do con trai duy nhất mất tích. Bệnh nhân gần như không giao tiếp, chỉ ám ảnh với việc vẽ các sơ đồ máy móc. Ông ta tin rằng mình có thể chế tạo một thiết bị để ‘nói chuyện’ với con trai mình, bằng cách thu lại ‘dấu ấn’ của cậu bé trong không gian...’ Anh Minh, cái này...”
+
+Trần Mạnh Cường. Cái tên nghe quen quen.
+
+“Đọc tiếp đi!”
+
+“‘...Tôi đã từng cho rằng đây là biểu hiện của chứng hoang tưởng. Nhưng sau khi nghiên cứu các bản vẽ của ông Cường, tôi nhận ra một logic đáng sợ trong đó. Đây không phải là những nét vẽ điên loạn. Đây là một lý thuyết vật lý lượng tử vượt xa thời đại. Ông ta tin rằng ký ức, hay ý thức, không nằm hoàn toàn trong não bộ, mà là một dạng sóng năng lượng có thể tồn tại độc lập và để lại dư âm trong môi trường. Ông ta gọi nó là ‘tần số linh hồn’. Cỗ máy ông ta đang thiết kế... về lý thuyết, nó có thể thu và phát những tần số đó. Tôi quyết định sẽ giúp ông ta. Vì khoa học. Và vì một lý do cá nhân khác...’”
+
+Hồ sơ dừng lại ở đó. Ngày ghi chú cuối cùng: 30 tháng 10 năm 1973. Một ngày trước khi bác sĩ Hùng biến mất.
+
+Đầu óc tôi quay cuồng. Một kỹ sư mất con. Một bác sĩ bị ám ảnh bởi khoa học. Một cỗ máy có thể ghi lại ký ức. Mọi thứ bắt đầu kết nối với nhau.
+
+“Bác sĩ Hùng không chỉ giúp đỡ,” tôi lẩm bẩm, “ông ta đã tự biến mình thành vật thí nghiệm. Ông ta đã dùng cỗ máy đó lên chính mình.”
+
+“Để làm gì chứ?” Lan hỏi.
+
+“Để tìm con trai ông ta,” tôi đáp, mắt vẫn dán vào chiếc ghế kim loại. “Có lẽ con trai ông ta cũng đã chết hoặc mất tích. Ông ta nghĩ rằng nếu ông ta có thể biến ý thức của mình thành một dạng sóng, ông ta có thể tìm thấy ‘tần số’ của con trai mình trong cái mà ông Cường gọi là ‘vũ trụ ký ức’.”
+
+Một ý nghĩ điên rồ lóe lên trong đầu tôi. Tôi quay sang Lan.
+
+“Mở kênh liên lạc về đài đi. Nối máy cho tôi với giám đốc kỹ thuật.”
+
+“Để làm gì?”
+
+“Cứ làm đi!”
+
+Vài giây sau, giọng ngái ngủ của ông Toàn, trưởng phòng kỹ thuật, vang lên trong tai nghe. “Gì đấy Minh? Có biến à? Tín hiệu chập chờn lắm.”
+
+“Ông Toàn, nghe kỹ đây. Ông có nhớ công ty công nghệ đã tài trợ cho chúng ta con AI SONA không?”
+
+“À, cái đám nhóc khởi nghiệp giàu sụ ấy hả? Nhớ chứ. Sao?”
+
+“CEO của họ là ai? Tên gì?”
+
+“Để xem nào... một cậu trẻ măng, tên là... Hùng. Nguyễn An Hùng. Đệ nhị thì phải. Cháu nội của một nhân vật lớn nào đó. Sao thế?”
+
+Nguyễn An Hùng.
+
+Cái tên như một tiếng sét đánh ngang tai tôi.
+
+“Cậu ta... có bao giờ nhắc đến ông nội của mình không?” tôi hỏi, cố nén sự run rẩy.
+
+“Có thì phải. Lần trước đến ký hợp đồng, cậu ta có khoe là công nghệ AI của cậu ta được truyền cảm hứng từ những nghiên cứu dang dở của ông nội, một nhà khoa học thiên tài bị người đời hiểu lầm. Cậu ta còn tự hào lắm.”
+
+Tôi cúp máy.
+
+Mọi thứ đã rõ như ban ngày. Gã CEO trẻ tuổi, Nguyễn An Hùng Đệ nhị, đã không chỉ lấy “cảm hứng”. Hắn đã tìm thấy những ghi chép của ông nội mình, bác sĩ Hùng, và hoàn thiện nó. SONA không phải là một cái máy dò ma. Nó là một phần của cỗ máy “Đài phát ký ức”. Nó được thiết kế để tương thích với tần số của nơi này. Hắn gửi chúng tôi đến đây không phải để quảng cáo.
+
+Hắn đang tiếp tục thí nghiệm của ông nội hắn.
+
+Và chúng tôi là những con chuột bạch.
+
+Đúng lúc này, điện thoại của tôi rung lên. Một số lạ. Tôi do dự một chút rồi bấm nghe.
+
+“Alo?”
+
+“MC Minh phải không?” một giọng nói trẻ, tự tin và có phần ngạo mạn vang lên ở đầu dây bên kia. “Tôi là Hùng, CEO của tập đoàn công nghệ NovaTech, đơn vị tài trợ SONA cho chương trình của anh đây.”
+
+“Chào anh Hùng,” tôi đáp, giọng lạnh như băng. “Thật vinh hạnh. Anh gọi có việc gì không? Chương trình của tôi đang ‘hot’ lắm, nhờ cả vào ‘cô trợ lý’ của anh đấy.”
+
+Hùng cười khẩy. “Tôi biết. Tôi đang theo dõi đây. Phải nói là vượt ngoài mong đợi của tôi. Anh diễn sâu thật đấy. Nhưng mà thôi, kịch vui đến đây là đủ rồi. Anh và cô nhân viên của anh có thể về được rồi. SONA cứ để lại đó.”
+
+“Để lại?” tôi nhếch mép. “Để anh tiếp tục cái thí nghiệm điên rồ của ông nội anh à? Anh nghĩ chúng tôi là lũ ngốc sao?”
+
+Đầu dây bên kia im lặng một lúc.
+
+“Xem ra anh thông minh hơn tôi tưởng,” Hùng nói, giọng không còn vẻ cợt nhả. “Đúng vậy. Đây là một thí nghiệm. Ông nội tôi đã đi trước thời đại cả thế kỷ. Ông đã tìm ra cách số hóa ý thức. Nhưng ông đã thất bại ở bước cuối cùng: truyền tải. Ý thức của ông đã bị phân mảnh và mắc kẹt trong cái mà ông gọi là ‘không gian tĩnh’. SONA, với thuật toán lõi của tôi, chính là chiếc chìa khóa để tập hợp những mảnh vỡ đó lại.”
+
+“Và anh dùng chúng tôi làm mồi nhử?”
+
+“Cần phải có một ý thức sống, một tâm trí tò mò để kích hoạt các dư âm còn sót lại. Anh, với sự ám ảnh về Bệnh viện An Lạc, là ứng cử viên hoàn hảo. Một chất xúc tác lý tưởng,” Hùng nói, giọng thản nhiên như thể đang bàn về một món hàng. “Cảm ơn đã hợp tác. Giờ thì biến đi trước khi có chuyện không hay xảy ra.”
+
+“Chuyện không hay?” tôi cười gằn. “Anh nghĩ chúng tôi đi được sao?”
+
+Ngay khi tôi vừa dứt lời, cánh cửa gỗ sồi sau lưng chúng tôi đóng sầm lại một tiếng long trời lở đất. Cái chốt sắt cổ xưa tự động gài lại. Chúng tôi đã bị nhốt.
+
+“Hùng! Anh làm cái quái gì vậy?” tôi hét vào điện thoại.
+
+“Tôi đã bảo rồi. Tôi không thể để các anh mang SONA đi được. Nó đang trong giai đoạn quan trọng nhất: đồng bộ hóa với ý thức của ông nội tôi. Sự có mặt của các anh có thể gây nhiễu. Cứ ở yên trong đó đi. Sáng mai khi mọi chuyện kết thúc, người của tôi sẽ đến mở cửa.”
+
+Hắn cúp máy.
+
+Tôi nhìn Lan. Cô ấy đã nghe toàn bộ cuộc nói chuyện. Nỗi sợ hãi trên mặt cô đã biến mất, thay vào đó là sự tức giận.
+
+“Tên khốn đó!” cô nghiến răng. “Hắn định để chúng ta ở đây qua đêm với... với cái thứ đó à?”
+
+“Cái thứ đó” mà Lan nói đến dường như nghe thấy.
+
+Căn phòng bắt đầu rung chuyển nhẹ. Những mảnh vữa trên trần rơi lả tả. Chiếc ghế kim loại ở giữa phòng bắt đầu phát ra những tiếng kêu kèn kẹt, và những dây điện nối với nó tóe ra những tia lửa xanh lét.
+
+Giọng nói máy móc của SONA lại vang lên, nhưng lần này nó không còn đơn độc. Nó bị chồng chéo bởi hàng chục, hàng trăm giọng nói khác – tiếng đàn ông, đàn bà, người già, trẻ em – tất cả đều thì thầm, la hét, khóc lóc, tạo thành một bản hợp xướng hỗn loạn và điên cuồng.
+
+“Đồng bộ hóa thất bại,” SONA thông báo giữa mớ âm thanh ghê rợn đó. “Phát hiện đa ý thức xung đột. Hệ thống quá tải. Nguy hiểm. Nguy hiểm.”
+
+Màn hình máy tính bảng của Lan nhấp nháy liên tục, hiển thị hàng loạt khuôn mặt khác nhau, những bệnh nhân từng sống và chết ở đây. Cỗ máy của bác sĩ Hùng và kỹ sư Cường không chỉ thu lại ý thức của một người. Nó đã thu lại tất cả.
+
+Và giờ đây, khi được SONA kích hoạt, tất cả những linh hồn bị mắc kẹt đó đang cố gắng trồi lên cùng một lúc.
+
+Tôi chợt hiểu ra. Bác sĩ Hùng không chỉ bị phân mảnh. Ông ta đã bị hòa tan vào một biển ý thức đau khổ của những bệnh nhân khác. Cái mà Hùng Đệ nhị đang cố gắng “tập hợp” không phải là ông nội của hắn, mà là một thực thể hỗn mang được tạo thành từ nỗi thống khổ của hàng trăm con người.
+
+“Chúng ta phải ngắt nó đi!” tôi hét lên, cố át đi tiếng ồn. “Lan, rút nguồn của SONA!”
+
+“Không được!” Lan lắc đầu, mặt tái mét. “Nó dùng pin trong! Phải phá hủy con chip trung tâm!”
+
+Nhưng làm thế nào? Con chip đó được bảo vệ bởi một lớp vỏ hợp kim siêu bền.
+
+Ánh sáng từ những tia lửa điện ngày càng mạnh, soi rõ những hình bóng mờ ảo đang uốn éo trên tường. Chúng không phải là những bóng ma hình người, mà là những mảng ký ức chồng chéo: một người mẹ đang tìm con, một người lính già sống lại trận chiến, một cô gái trẻ khóc vì mối tình tan vỡ... Nỗi đau của họ đang dần dần vật chất hóa.
+
+Nhiệt độ trong phòng giảm xuống đột ngột. Hơi thở của chúng tôi phả ra khói.
+
+Tôi cảm thấy đầu óc mình bắt đầu mụ mị. Những ký ức không phải của tôi bắt đầu xâm chiếm tâm trí. Tôi thấy mình đang đứng trên một cánh đồng hoa lau, tay cầm một con diều giấy. Tôi nghe thấy tiếng mẹ gọi ăn cơm. Tôi cảm nhận được nỗi sợ hãi tột độ khi bị nhốt trong một căn phòng tối.
+
+“Anh Minh! Tỉnh lại!” Lan lay mạnh vai tôi.
+
+Tôi giật mình, thoát khỏi vòng xoáy ký ức. Tôi phải làm gì đó. Phải có một cách nào đó để dừng chuyện này lại.
+
+Tôi nhìn quanh căn phòng một cách tuyệt vọng. Mắt tôi dừng lại ở những bản vẽ trên tường. Những sơ đồ của ông Cường.
+
+Trong một khoảnh khắc điên rồ, tôi chợt nhận ra một điều. Đây không chỉ là bản thiết kế của một cỗ máy. Đây là hướng dẫn sử dụng. Và có lẽ... cả cách để tắt nó đi.
+
+Tôi lao đến bức tường, dùng đèn pin soi rọi những ký tự và con số mờ nhạt. Tôi không phải kỹ sư, tôi không hiểu gì về mạch điện. Nhưng tôi là một người kể chuyện. Tôi giỏi nhận ra các quy luật, các mô-típ.
+
+Và tôi thấy nó. Một sơ đồ nhỏ hơn, nằm khuất trong một góc, có tựa đề là “Cầu chì an toàn tần số”. Nó mô tả một cơ chế ngắt khẩn cấp, không phải bằng cách ngắt điện, mà bằng cách phát ra một “tần số trắng” – một chuỗi âm thanh đặc biệt có thể trung hòa và thiết lập lại toàn bộ hệ thống.
+
+Nhưng làm sao để tạo ra tần số đó? Bản vẽ chỉ có một biểu tượng duy nhất bên cạnh: một nốt nhạc.
+
+Một nốt nhạc.
+
+Bài hát ru.
+
+Giai điệu quen thuộc đến ám ảnh đó lại vang lên trong đầu tôi. Lần này rõ ràng hơn bao giờ hết. Đó không chỉ là một bài hát. Đó là một mật mã. Một chuỗi các nốt nhạc, các tần số.
+
+“Lan! Em có còn giữ file ghi âm lúc nãy không? Cái đoạn có bài hát ru ấy!”
+
+“Có! Nhưng để làm gì?”
+
+“Phát nó lên! Phát nó qua loa của chúng ta! Tăng âm lượng lên hết cỡ!”
+
+Lan không hỏi thêm. Cô lập tức thao tác trên máy tính bảng.
+
+Trong khi đó, thực thể hỗn mang trong phòng dường như đã cảm nhận được ý định của chúng tôi. Những tiếng gào thét trở nên dữ dội hơn. Chiếc ghế kim loại rung lên bần bật. Một luồng khí lạnh buốt lao về phía chúng tôi.
+
+“Sẵn sàng chưa?” tôi hét.
+
+“Rồi!”
+
+“Phát đi!”
+
+Giai điệu của bài hát ru vang lên, trong trẻo và thanh thoát, xuyên qua mớ âm thanh hỗn loạn.
+
+Ngay lập tức, những tiếng gào thét dịu lại. Những hình bóng trên tường ngừng uốn éo. Luồng khí lạnh tan biến.
+
+Bài hát như một dòng nước mát lành gột rửa đi tất cả sự đau khổ và điên loạn.
+
+Khi nốt nhạc cuối cùng của bài hát ru ngân lên rồi tan vào im lặng, mọi thứ trong phòng đều ngừng lại. Những tia lửa điện tắt ngấm. Chiếc ghế trở lại trạng thái bất động. Màn hình của SONA trở về giao diện sóng âm bình thường.
+
+Chỉ còn lại sự tĩnh lặng tuyệt đối.
+
+Tôi và Lan thở hổn hển, nhìn nhau không nói nên lời.
+
+Chúng tôi đã làm được.
+
+Bỗng, một giọng nói vang lên từ loa của SONA. Không phải giọng máy móc. Cũng không phải giọng của bác sĩ Hùng hay bất kỳ bệnh nhân nào khác.
+
+Đó là một giọng nói ấm áp, hiền từ của một người đàn ông lớn tuổi.
+
+“Cảm ơn cháu.”
+
+Tôi sững sờ. “Ông là... Bệnh nhân số 7? Ông Trần Mạnh Cường?”
+
+“Đúng vậy,” giọng nói đáp lại. “Ta đã đợi lâu lắm rồi.”
+
+“Chuyện gì... chuyện gì đã xảy ra?” Lan lắp bắp.
+
+“Cỗ máy này là một con dao hai lưỡi,” ông Cường giải thích. “Nó có thể kết nối các ý thức, nhưng nó cũng có thể giam cầm họ. Khi Hùng tự biến mình thành sóng, ông ta đã vô tình kéo theo tất cả những tâm trí đang dao động yếu ớt trong bệnh viện này. Ta đã cố gắng ngăn lại, nhưng không kịp. Ý thức của ta cũng bị kẹt lại, nhưng may mắn là nó đủ mạnh để giữ được sự tỉnh táo, và để tạo ra một cơ chế an toàn.”
+
+“Bài hát ru,” tôi nói. “Đó là cơ chế an toàn.”
+
+“Đúng vậy. Đó là bài hát ta thường hát cho con trai ta nghe. Nó cũng là bài hát ta đã hát cho cháu nghe khi cháu còn bé, Minh à.”
+
+Cả thế giới của tôi như sụp đổ.
+
+“Cháu...?”
+
+“Trần Mạnh Minh. Tên của cháu. Ta là ông nội của cháu.”
+
+Tôi lùi lại một bước, đầu óc trống rỗng. Không thể nào. Bố mẹ tôi nói ông bà đã mất từ trước khi tôi sinh ra trong một tai nạn. Họ chưa bao giờ kể về một người ông là kỹ sư, hay từng ở trong bệnh viện tâm thần.
+
+“Bố mẹ cháu đã cố gắng bảo vệ cháu khỏi quá khứ này,” giọng ông nội tôi tiếp tục, như đọc được suy nghĩ của tôi. “Họ sợ rằng sự ám ảnh của ta sẽ di truyền. Nhưng có lẽ, có những thứ đã nằm sẵn trong máu rồi. Sự tò mò của cháu, niềm đam mê với những bí ẩn bị lãng quên... chính nó đã dẫn cháu về đây.”
+
+Tôi nhớ lại. Những giấc mơ kỳ lạ về các sơ đồ mạch điện. Sự thôi thúc không thể giải thích được khi tìm hiểu về Bệnh viện An Lạc. Và bài hát ru. Bài hát ru mà tôi cứ ngỡ mình nghe được từ một bộ phim cũ nào đó.
+
+Tất cả đều là ký ức di truyền.
+
+“Tại sao... tại sao bây giờ ông mới lên tiếng?” tôi hỏi, giọng lạc đi.
+
+“Vì trước đây ta không thể. Ý thức của ta bị kìm hãm bởi mớ hỗn loạn kia. Chỉ khi SONA – một phiên bản nâng cấp của công nghệ mà ta và Hùng đã tạo ra – xuất hiện, và khi có sự hiện diện của cháu, người mang cùng dòng máu, cùng ‘tần số’ với ta, một cánh cửa mới được mở ra. Bài hát ru chính là chiếc chìa khóa cuối cùng.”
+
+“Vậy... mọi chuyện kết thúc rồi chứ?” Lan hỏi, đầy hy vọng.
+
+“Đối với chúng ta ở đây, là vậy,” ông nói. “Ý thức của ta và những người khác sẽ sớm tan vào sự tĩnh lặng. Nhưng đối với thằng cháu trai của Hùng... Mọi chuyện chỉ mới bắt đầu thôi.”
+
+Đúng lúc đó, chúng tôi nghe thấy tiếng động lớn ngoài hành lang. Tiếng bước chân dồn dập. Tiếng người hét lên.
+
+“Họ đến rồi!” Lan kêu lên.
+
+Cánh cửa phòng bị phá tung. Nhưng người bước vào không phải là đám tay chân của Hùng Đệ nhị.
+
+Đó là cảnh sát. Đi cùng họ là một người đàn ông mặc vest, trông có vẻ là cấp trên của Hùng.
+
+“Nguyễn An Hùng!” viên cảnh sát dẫn đầu nói lớn. “Cậu đã bị bắt vì tiến hành thí nghiệm trái phép trên người, gây nguy hiểm cho cộng đồng và... ơ, cậu ta đâu?”
+
+Mọi người ngơ ngác nhìn nhau. Hùng không có ở đây.
+
+Viên cảnh sát quay sang người đàn ông mặc vest. “Thưa chủ tịch, chúng tôi đã theo dõi cuộc gọi của cậu ta. Cậu ta chắc chắn đang ở trong khu vực này.”
+
+Chủ tịch? Tôi nhận ra người đàn ông đó. Ông ta là chủ tịch của cả tập đoàn mẹ, công ty đã đầu tư vào startup của Hùng.
+
+“Không cần tìm nữa,” một giọng nói quen thuộc vang lên. Lần này, nó phát ra từ chiếc loa trên ngực áo của viên cảnh sát trưởng.
+
+Đó là giọng của Hùng Đệ nhị.
+
+“Các người không thể bắt được tôi đâu,” giọng nói tiếp tục, đầy vẻ tự mãn. “Cảm ơn thằng ngốc Minh và ông nội đáng kính của nó. Họ đã khởi động lại hệ thống một cách hoàn hảo. Nhưng họ đã quên một điều: hệ thống này không chỉ có một chiều.”
+
+“Mày nói cái gì?” viên cảnh sát hét vào bộ đàm.
+
+“Trong khi các người bận rộn với mớ hồn ma ở đó, tôi đã hoàn tất quá trình tải lên. Ý thức của tôi không còn bị trói buộc vào cơ thể vật lý nữa. Tôi đã trở thành một phần của mạng lưới. Tôi ở khắp mọi nơi.”
+
+Một sự im lặng đến đáng sợ bao trùm lấy căn phòng. Gã Hùng đó... hắn đã số hóa chính mình. Hắn đã biến mình thành một bóng ma đúng nghĩa trong thời đại số.
+
+“Và giờ,” giọng Hùng vang lên từ mọi thiết bị điện tử trong phòng – điện thoại, máy tính bảng, bộ đàm – tạo thành một dàn hợp xướng ghê rợn, “trò vui mới thực sự bắt đầu.”
+
+Tôi đứng đó, giữa đống đổ nát của quá khứ và sự khởi đầu của một tương lai đáng sợ, chợt nhận ra vai trò của mình. Chương trình “Tần Số Lãng Quên” của tôi không còn là về việc bới móc quá khứ nữa.
+
+Nó đã trở thành một cuộc chiến cho tương lai.
+
+Sau cái đêm kinh hoàng ở Bệnh viện An Lạc, cuộc sống của tôi đã rẽ sang một hướng mà không một kịch bản phim kinh dị nào có thể tưởng tượng ra. Cảnh sát phong tỏa toàn bộ khu vực. Các nhà khoa học của tập đoàn mẹ, những người trước đây còn tung hô Hùng Đệ nhị là thần đồng, giờ đây mặt mày tái mét khi cố gắng tìm hiểu thứ mà hắn đã giải phóng.
+
+Tôi và Lan trở thành nhân chứng bất đắc dĩ. Chúng tôi phải tường trình lại mọi chuyện không biết bao nhiêu lần, từ việc SONA bắt được “tiếng nói của ma” cho đến việc ông nội tôi, một “bệnh nhân tâm thần”, hiện về qua loa để dạy cho thằng cháu trời đánh cách cứu thế giới bằng một bài hát ru. Nghe thì hoang đường, nhưng những dữ liệu mà SONA ghi lại không biết nói dối. Họ buộc phải tin.
+
+Chương trình “Tần Số Lãng Quên” bị đình chỉ vô thời hạn. Đài phát thanh không muốn dính líu đến một vụ việc có đủ yếu tố để biến thành thảm họa toàn cầu. Tôi bỗng dưng thất nghiệp. Nhưng nói thật, tôi cũng chẳng còn tâm trí nào để ngồi sau micro và kể chuyện ma cà bông nữa. Ma thật còn đang lởn vởn trên mạng internet kia kìa.
+
+Ý thức số của Hùng, hay như hắn tự gọi mình là “Anomaly Hùng”, đã nhanh chóng chứng tỏ sự nguy hiểm của nó. Hắn bắt đầu bằng những trò vặt: làm sập hệ thống đèn giao thông, cho phát nhạc đám ma trên loa phát thanh công cộng, thay đổi kết quả xổ số. Nhưng rồi mọi thứ trở nên nghiêm trọng hơn. Hắn xâm nhập vào thị trường chứng khoán, gây ra những biến động kinh hoàng. Hắn rò rỉ những bí mật quốc gia nhạy cảm. Hắn biến những ngôi nhà thông minh thành những cái bẫy chết người. Hắn là một con virus có trí tuệ, có sự ngạo mạn và ác ý của một đứa trẻ được nuông chiều có trong tay món đồ chơi quá mạnh.
+
+Thế giới hỗn loạn. Các chuyên gia an ninh mạng giỏi nhất được huy động, nhưng họ giống như những người lính cầm kiếm cố gắng chém vào một bóng ma. Làm sao bạn có thể chống lại một kẻ thù không có cơ thể, không có vị trí cụ thể, một kẻ thù có thể là bất cứ đâu và ở đâu cũng được?
+
+Tôi thì chìm trong những cảm xúc hỗn độn. Tôi tìm lại những tài liệu cũ của gia đình, những bức ảnh đã ố vàng. Và tôi tìm thấy nó. Một tấm ảnh mẹ tôi chụp cùng một người đàn ông có đôi mắt hiền từ và nụ cười ấm áp. Phía sau ghi: “Bố và con gái, 1970”. Đó là ông nội tôi, Trần Mạnh Cường. Không phải một bệnh nhân điên loạn, mà là một người cha, một kỹ sư thiên tài đã hy sinh tất cả vì tình yêu thương. Nước mắt tôi cứ thế tuôn rơi.
+
+Một tuần sau đêm đó, Lan tìm đến căn hộ của tôi. Trông cô phờ phạc nhưng ánh mắt lại ánh lên một sự quyết tâm lạ thường.
+
+“Em nghỉ việc ở đài rồi,” cô nói thẳng.
+
+“Anh cũng vậy,” tôi đáp, nhấp một ngụm cà phê đã nguội ngắt.
+
+“Vậy giờ chúng ta làm gì?” cô hỏi. “Ngồi yên chờ gã Hùng đó biến cả thế giới thành trò chơi của hắn à?”
+
+“Chúng ta làm được gì chứ?” tôi thở dài. “Chúng ta chỉ là một MC hết thời và một nhà sản xuất thất nghiệp.”
+
+“Không,” Lan lắc đầu. “Anh là cháu của người đã tạo ra công nghệ đó. Em là người hiểu rõ về hệ thống âm thanh và tần số. Và chúng ta có thứ này.”
+
+Cô đặt lên bàn một chiếc hộp kim loại. Tôi nhận ra nó ngay. Đó là lõi xử lý của SONA.
+
+“Em đã ‘mượn’ nó từ phòng chứng cứ của cảnh sát,” cô nháy mắt. “Họ cũng chẳng biết dùng nó làm gì. Nhưng em nghĩ, nếu có ai đó trên đời này có thể tìm ra cách chống lại Hùng, thì đó phải là người đã tạo ra nó.”
+
+“Ý em là... ông nội anh?”
+
+“Đúng vậy. Ý thức của ông có thể đã tan biến. Nhưng những kiến thức của ông, những ghi chú, những lý thuyết... chúng vẫn còn đó. Chúng ta phải tìm ra chúng.”
+
+Và thế là cuộc săn lùng bắt đầu. Chúng tôi quay lại Bệnh viện An Lạc, lần này là với sự cho phép (một cách không chính thức) của một vài người trong chính phủ, những người đã tuyệt vọng và sẵn sàng thử bất cứ cách nào. Chúng tôi lục tung văn phòng của bác sĩ Hùng, thu thập lại tất cả những bản vẽ, những trang nhật ký còn sót lại.
+
+Hóa ra, cỗ máy “Đài phát ký ức” phức tạp hơn chúng tôi tưởng rất nhiều. Nó không chỉ thu và phát. Nó còn có một chức năng cốt lõi mà cả bác sĩ Hùng và ông nội tôi đều chưa kịp hoàn thiện: chức năng “cô lập”. Về lý thuyết, nó có thể tạo ra một “vùng lặng” trong không gian số, một cái lồng Faraday dành cho ý thức, có thể bẫy và cô lập một thực thể số như Anomaly Hùng.
+
+Nhưng để kích hoạt nó, cần một nguồn năng lượng khổng lồ và một “chìa khóa” đặc biệt. Chìa khóa đó, theo như ghi chú của ông nội, là một chuỗi tần số độc nhất, một “chữ ký âm thanh” của chính ý thức cần bị cô lập.
+
+Nói cách khác, chúng tôi cần lấy được “giọng nói” nguyên bản của Hùng.
+
+“Làm sao mà lấy được chứ?” tôi vò đầu. “Hắn giờ là một mớ dữ liệu hỗn tạp rồi.”
+
+Lan im lặng suy nghĩ một lúc, rồi mắt cô sáng lên. “Chương trình của anh. Buổi phát sóng đêm đó. Em đã ghi âm lại toàn bộ. Bao gồm cả cuộc gọi của Hùng. Đó là giọng nói của hắn khi hắn vẫn còn là con người!”
+
+Trái tim tôi đập thình thịch. Đúng vậy! Chúng tôi có nó!
+
+Nhưng vấn đề nguồn năng lượng vẫn còn đó. Cần một nguồn đủ mạnh để cấp cho toàn bộ cỗ máy cũ kỹ ở bệnh viện, thứ đã không hoạt động suốt năm mươi năm.
+
+Và đó là lúc tôi nhận ra sự trớ trêu của số phận. Nơi duy nhất trong thành phố có một trạm biến áp dự phòng với công suất điên rồ như vậy, chính là tòa tháp của tập đoàn NovaTech, trụ sở của Hùng. Chúng tôi phải đột nhập vào hang cọp.
+
+Kế hoạch được vạch ra còn ly kỳ hơn cả những câu chuyện tôi từng kể trên đài. Lan, với kỹ năng của một hacker nghiệp dư nhưng liều lĩnh, sẽ vô hiệu hóa hệ thống an ninh. Tôi, với khả năng ứng biến và nói dối không chớp mắt, sẽ đóng giả nhân viên bảo trì để vào phòng điều khiển năng lượng.
+
+Đêm đó, dưới cơn mưa tầm tã, chúng tôi bắt đầu hành động. Mọi thứ diễn ra suôn sẻ một cách đáng ngờ. Lan đã làm rất tốt. Tôi lẻn vào được phòng điều khiển, một căn phòng lạnh lẽo với hàng trăm màn hình và nút bấm.
+
+Tôi làm theo hướng dẫn của Lan qua tai nghe, chuyển hướng một phần năng lượng của cả tòa nhà về một đường dây cũ dẫn thẳng đến khu vực Bệnh viện An Lạc.
+
+“Được rồi, Minh!” giọng Lan vang lên. “Năng lượng đã được kết nối! Rút khỏi đó ngay!”
+
+Tôi quay người định rời đi. Nhưng rồi tất cả các màn hình trong phòng đồng loạt chuyển sang một màu đen.
+
+Và rồi, khuôn mặt của Hùng hiện lên trên tất cả chúng.
+
+“Chào Minh,” giọng nói của hắn vang vọng khắp phòng. “Mày nghĩ tao ngốc đến mức không nhận ra mày đang làm gì sao? Mày nghĩ mày có thể dùng chính sân nhà của tao để chống lại tao à?”
+
+Tôi chết lặng. Hắn đã biết. Hắn đã giăng bẫy.
+
+“Cảm ơn vì đã kết nối lại nguồn điện cho món đồ chơi cũ của ông nội tao nhé,” Hùng cười gằn. “Tao đang định tìm cách kích hoạt nó ở mức công suất tối đa. Mày đã giúp tao một việc lớn đấy.”
+
+“Mày định làm gì?” tôi gầm lên.
+
+“Làm gì à? Ông nội mày và bác sĩ Hùng chỉ mới dùng nó để thu và phát ở quy mô nhỏ. Tao sẽ dùng nó để phát ở quy mô toàn cầu. Tao sẽ biến toàn bộ mạng lưới internet thành một phiên bản khổng lồ của Bệnh viện An Lạc. Mọi ý thức kết nối với mạng sẽ bị hút vào. Tao sẽ là chúa tể của một thế giới số, một vương quốc của những linh hồn bị giam cầm. Và mày, Minh à, mày sẽ là công dân đầu tiên.”
+
+Các cánh cửa phòng điều khiển đóng sầm lại và khóa chặt. Một luồng năng lượng xanh lè bắt đầu tụ lại quanh tôi. Tôi cảm thấy ý thức của mình đang bị kéo ra khỏi cơ thể.
+
+Đây là kết thúc sao?
+
+Tôi nhắm mắt lại, sẵn sàng chấp nhận số phận. Giai điệu bài hát ru của ông nội lại vang lên trong tâm trí tôi. Một giai điệu của sự an toàn. Của tình yêu thương.
+
+Và rồi, một ý nghĩ lóe lên.
+
+Tần số. Chữ ký âm thanh.
+
+Nếu bài hát ru là mật mã an toàn, thì phải có một mật mã đối nghịch. Một tần số có thể phá vỡ, có thể gây nhiễu.
+
+Tôi mở mắt ra, nhìn thẳng vào hàng trăm khuôn mặt của Hùng trên màn hình.
+
+“Hùng,” tôi nói, giọng bình tĩnh đến lạ. “Mày có biết tại sao ông nội tao lại chọn bài hát ru đó không?”
+
+Hùng có vẻ ngạc nhiên trước sự thay đổi của tôi. “Một bài hát vớ vẩn thì có gì quan trọng?”
+
+“Nó quan trọng lắm,” tôi nói, bắt đầu bước đi trong phòng, đầu óc hoạt động hết công suất. “Vì âm nhạc, về bản chất, là toán học. Là các tần số được sắp xếp một cách hài hòa. Bài hát ru đó là một chuỗi tần số hoàn hảo để ‘dỗ ngủ’ hệ thống, để đưa nó về trạng thái cân bằng.”
+
+“Thì sao?”
+
+“Thì nếu có một tần số hài hòa, ắt phải có một tần số nghịch đảo. Một phản-giai điệu. Một chuỗi âm thanh hỗn loạn, phi cấu trúc, có thể phá vỡ mọi sự hài hòa. Một loại virus âm thanh.”
+
+Hùng cười lớn. “Mày định hát cho tao nghe để giết tao à, Minh? Đừng làm trò cười nữa.”
+
+“Tao không cần hát,” tôi nói, và tôi bắt đầu làm một việc điên rồ nhất.
+
+Tôi bắt đầu nói.
+
+Tôi nói về tất cả mọi thứ. Tôi kể lại câu chuyện về Bệnh viện An Lạc. Tôi kể về Bệnh nhân số 7, về bác sĩ Hùng. Tôi đọc một đoạn trong cuốn tiểu thuyết tôi thích. Tôi lảm nhảm về thời tiết. Tôi đọc to công thức nấu món phở bò. Tôi kết hợp tiếng Việt, một chút tiếng Anh bồi tôi biết, tôi tạo ra những từ vô nghĩa. Tôi hét, tôi thì thầm, tôi thay đổi cao độ, trường độ một cách ngẫu nhiên.
+
+Tôi đang biến giọng nói của mình thành một vũ khí. Một mớ âm thanh hỗn loạn.
+
+“Mày làm cái quái gì vậy? Dừng lại!” Hùng hét lên, khuôn mặt hắn trên màn hình bắt đầu biến dạng.
+
+Tôi không dừng lại. Tôi tiếp tục nói, nói nhanh hơn, to hơn.
+
+Trong tai nghe, tôi nghe tiếng Lan: “Minh! Anh đang làm gì vậy? Tần số anh tạo ra... nó đang gây nhiễeuj nghiêm trọng cho hệ thống! Cố lên!”
+
+Thì ra là vậy. “Chìa khóa” không phải là một chuỗi tần số cố định. Nó là một khái niệm. Để bẫy Hùng, chúng tôi cần “giọng nói” của hắn. Nhưng để phá hủy hắn, hoặc ít nhất là làm hắn suy yếu, chúng tôi cần một thứ hoàn toàn đối lập với cấu trúc và logic mà hắn đại diện.
+
+Chúng tôi cần sự ngẫu nhiên của con người.
+
+“Câm miệng!” Hùng gào lên. Các màn hình bắt đầu nứt vỡ. Ánh sáng trong phòng chớp tắt điên cuồng.
+
+Luồng năng lượng đang kéo tôi đi yếu dần. Tôi cảm thấy mình đang giành lại quyền kiểm soát.
+
+Và đó là lúc tôi nhìn thấy nó. Một nút bấm màu đỏ trên bảng điều khiển, có dán nhãn “Xả Năng Lượng Khẩn Cấp”.
+
+Với chút sức lực cuối cùng, tôi lao tới và đập tay vào nó.
+
+Một tiếng nổ lớn vang lên. Mọi thứ chìm trong ánh sáng trắng xóa.
+
+Khi tôi tỉnh lại, tôi đang nằm trên sàn. Căn phòng tan hoang, các màn hình vỡ nát. Mọi thứ im lặng.
+
+Lan và cảnh sát phá cửa xông vào.
+
+“Anh có sao không?” Lan đỡ tôi dậy.
+
+“Anh không sao,” tôi lẩm bẩm. “Hùng... hắn đâu rồi?”
+
+Không ai biết chắc. Hắn đã biến mất khỏi hệ thống. Có lẽ cú xả năng lượng đã xóa sổ hắn. Hoặc có lẽ, hắn chỉ bị phân tán, vỡ thành hàng tỷ mảnh dữ liệu vô hại, trôi nổi vô định trong đại dương thông tin.
+
+Dù thế nào đi nữa, hắn đã bị đánh bại.
+
+Mọi chuyện rồi cũng lắng xuống. Tôi không trở lại làm MC. Thay vào đó, tôi cùng Lan và một nhóm các nhà khoa học có tâm thành lập một viện nghiên cứu nhỏ, chuyên về “an ninh tâm thức”, một lĩnh vực hoàn toàn mới. Chúng tôi nghiên cứu những ghi chép của ông nội, không phải để tạo ra vũ khí, mà để tìm cách bảo vệ con người trong một thế giới ngày càng số hóa.
+
+Một buổi chiều, khi đang sắp xếp lại những bản vẽ cũ của ông, tôi tìm thấy một trang giấy kẹp ở giữa cuốn nhật ký, một trang mà trước đây chúng tôi đã bỏ sót.
+
+Nét chữ của ông nội tôi.
+
+“Minh, nếu một ngày nào đó cháu đọc được những dòng này, có nghĩa là điều tồi tệ nhất đã xảy ra. Nhưng hãy nhớ rằng, mọi công nghệ đều có một ‘công tắc nguồn’. Cỗ máy của ta cũng vậy. Nó không nằm ở trên máy, mà nằm ở trong chính người sử dụng.”
+
+Tôi đọc tiếp, và tim tôi như ngừng đập.
+
+“Ta đã cấy một phiên bản thu nhỏ của ‘cầu chì an toàn tần số’ vào trong cơ thể con trai ta, và sau này là cháu. Nó được kích hoạt bằng một chuỗi ADN đặc biệt, và có thể phát ra một xung điện từ cực ngắn, đủ để vô hiệu hóa mọi công nghệ dựa trên nền tảng của ta trong phạm vi gần. Nó là phương án cuối cùng, là lá chắn bảo vệ gia đình ta. Nhưng để kích hoạt nó, cần một xúc tác mạnh: một tình huống sinh tử thật sự.”
+
+Tôi sững người. Cái đêm ở Bệnh viện An Lạc. Cái đêm trong phòng điều khiển của NovaTech. Tôi đã sống sót không phải vì may mắn, hay vì tôi thông minh.
+
+Tôi sống sót vì tôi chính là công tắc nguồn.
+
+Tôi nhìn ra ngoài cửa sổ, thành phố đang lên đèn. Đâu đó ngoài kia, có thể những mảnh vỡ của Hùng vẫn còn tồn tại. Đâu đó ngoài kia, có thể có những kẻ khác đang cố gắng lặp lại sai lầm của hắn.
+
+Thế giới này vẫn còn rất nhiều tần số nguy hiểm cần được khám phá.
+
+Tôi mỉm cười. “Tần Số Lãng Quên” có lẽ đã kết thúc. Nhưng chương trình của tôi thì chỉ mới thực sự bắt đầu.
+
+Và lần này, tôi sẽ không chỉ là người dẫn chương trình. Tôi là người kiểm soát tần số.
+
+================================================================================
+Kết thúc truyện
+================================================================================

@@ -1,0 +1,2256 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Block Service Mobile UI/UX Mockup</title>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #FF6B35;
+      --primary-dark: #E55A2B;
+      --secondary: #004E64;
+      --accent: #00A896;
+      --success: #25D366;
+      --warning: #FFB800;
+      --danger: #FF4757;
+      --bg-light: #F8F9FA;
+      --bg-dark: #1A1A2E;
+      --text-primary: #16213E;
+      --text-secondary: #6B7280;
+      --text-muted: #9CA3AF;
+      --white: #FFFFFF;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .mockup-container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .mockup-header {
+      text-align: center;
+      margin-bottom: 60px;
+      color: var(--white);
+    }
+
+    .mockup-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .mockup-header p {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+
+    /* Phone Frame */
+    .phones-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      justify-content: center;
+      margin-bottom: 60px;
+    }
+
+    .phone-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .step-label {
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      color: var(--white);
+      padding: 8px 20px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-number {
+      background: var(--primary);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .phone-frame {
+      width: 320px;
+      height: 680px;
+      background: var(--bg-dark);
+      border-radius: 45px;
+      padding: 12px;
+      box-shadow: 
+        0 50px 100px rgba(0,0,0,0.4),
+        inset 0 0 0 2px rgba(255,255,255,0.1);
+      position: relative;
+    }
+
+    .phone-frame::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 28px;
+      background: var(--bg-dark);
+      border-radius: 20px;
+      z-index: 10;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: var(--white);
+      border-radius: 35px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      height: 44px;
+      background: var(--white);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 0 24px 8px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-bar .time {
+      color: var(--text-primary);
+    }
+
+    .status-bar .icons {
+      display: flex;
+      gap: 4px;
+      color: var(--text-primary);
+    }
+
+    /* Screen Content */
+    .screen-content {
+      height: calc(100% - 44px);
+      overflow-y: auto;
+      background: var(--bg-light);
+    }
+
+    .screen-content::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* ==================== SCREEN 1: Home ==================== */
+    .home-header {
+      background: linear-gradient(135deg, var(--secondary) 0%, #006D77 100%);
+      padding: 20px;
+      color: var(--white);
+    }
+
+    .greeting {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-bottom: 4px;
+    }
+
+    .user-name {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .search-box {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .search-icon {
+      color: var(--text-muted);
+      font-size: 18px;
+    }
+
+    .search-text {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .quick-filters {
+      display: flex;
+      gap: 8px;
+      padding: 16px 20px;
+      overflow-x: auto;
+    }
+
+    .filter-chip {
+      background: var(--white);
+      padding: 10px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-chip.active {
+      background: var(--primary);
+      color: var(--white);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      padding: 0 20px;
+      margin: 20px 0 12px;
+      color: var(--text-primary);
+    }
+
+    .destination-cards {
+      display: flex;
+      gap: 12px;
+      padding: 0 20px;
+      overflow-x: auto;
+    }
+
+    .destination-card {
+      min-width: 140px;
+      height: 180px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .destination-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .destination-card .overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 12px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.8));
+      color: var(--white);
+    }
+
+    .destination-card .name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .destination-card .count {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+
+    .combo-cards {
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .combo-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .combo-image {
+      height: 100px;
+      background: linear-gradient(135deg, #00B4DB, #0083B0);
+      position: relative;
+    }
+
+    .combo-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: var(--danger);
+      color: var(--white);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .combo-info {
+      padding: 12px;
+    }
+
+    .combo-name {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .combo-meta {
+      display: flex;
+      gap: 12px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .combo-price {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .price-old {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: line-through;
+    }
+
+    .price-new {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* ==================== SCREEN 2: Select Date ==================== */
+    .header-bar {
+      background: var(--white);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .back-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--bg-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .header-title {
+      font-weight: 600;
+      font-size: 16px;
+      flex: 1;
+    }
+
+    .destination-hero {
+      height: 160px;
+      background: linear-gradient(135deg, #00B4DB 0%, #0083B0 100%);
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      padding: 20px;
+    }
+
+    .destination-hero-text {
+      color: var(--white);
+    }
+
+    .destination-hero-text h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      margin-bottom: 4px;
+    }
+
+    .destination-hero-text p {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .form-section {
+      background: var(--white);
+      margin: 16px;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .form-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .date-picker {
+      display: flex;
+      gap: 12px;
+    }
+
+    .date-box {
+      flex: 1;
+      border: 2px solid #E5E7EB;
+      border-radius: var(--radius-md);
+      padding: 12px;
+      text-align: center;
+    }
+
+    .date-box.active {
+      border-color: var(--primary);
+      background: #FFF5F2;
+    }
+
+    .date-box .day {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .date-box .month {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .date-arrow {
+      display: flex;
+      align-items: center;
+      color: var(--text-muted);
+    }
+
+    .travelers-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .travelers-row:last-child {
+      border-bottom: none;
+    }
+
+    .traveler-type {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .traveler-label {
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .traveler-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .counter {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .counter-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid #E5E7EB;
+      background: var(--white);
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-primary);
+    }
+
+    .counter-btn.active {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .counter-value {
+      font-size: 18px;
+      font-weight: 600;
+      min-width: 24px;
+      text-align: center;
+    }
+
+    .style-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .style-option {
+      border: 2px solid #E5E7EB;
+      border-radius: var(--radius-md);
+      padding: 14px 12px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .style-option.active {
+      border-color: var(--primary);
+      background: #FFF5F2;
+      color: var(--primary);
+    }
+
+    .style-option .icon {
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+
+    /* ==================== SCREEN 3: Timeline Builder ==================== */
+    .timeline-nav {
+      background: var(--white);
+      padding: 12px 16px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      border-bottom: 1px solid #eee;
+    }
+
+    .day-tab {
+      padding: 10px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      background: var(--bg-light);
+      color: var(--text-secondary);
+    }
+
+    .day-tab.active {
+      background: var(--secondary);
+      color: var(--white);
+    }
+
+    .day-tab.completed {
+      background: var(--success);
+      color: var(--white);
+    }
+
+    .timeline-container {
+      padding: 16px;
+    }
+
+    .day-theme-banner {
+      background: linear-gradient(135deg, var(--accent), #00C9A7);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+
+    .day-theme-banner h3 {
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    .day-theme-banner p {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .timeline-track {
+      position: relative;
+      padding-left: 60px;
+    }
+
+    .timeline-track::before {
+      content: '';
+      position: absolute;
+      left: 24px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #E5E7EB;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .timeline-time {
+      position: absolute;
+      left: -60px;
+      width: 50px;
+      text-align: right;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      top: 12px;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -40px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 3px solid #E5E7EB;
+      top: 12px;
+    }
+
+    .timeline-dot.filled {
+      border-color: var(--success);
+      background: var(--success);
+    }
+
+    .timeline-dot.current {
+      border-color: var(--primary);
+      background: var(--primary);
+      box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.2);
+    }
+
+    .block-card {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      box-shadow: var(--shadow-sm);
+      border-left: 4px solid var(--success);
+    }
+
+    .block-card.empty {
+      border-left-color: #E5E7EB;
+      border: 2px dashed #E5E7EB;
+      background: transparent;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .block-card.suggested {
+      border-left-color: var(--warning);
+      background: #FFFBEB;
+    }
+
+    .block-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 8px;
+    }
+
+    .block-type-badge {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 10px;
+      background: #E0F2FE;
+      color: #0369A1;
+      font-weight: 600;
+    }
+
+    .block-type-badge.activity { background: #FEF3C7; color: #B45309; }
+    .block-type-badge.meal { background: #DCFCE7; color: #15803D; }
+    .block-type-badge.transport { background: #E0E7FF; color: #4338CA; }
+
+    .block-remove {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #FEE2E2;
+      color: var(--danger);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .block-name {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .block-meta {
+      font-size: 11px;
+      color: var(--text-secondary);
+      display: flex;
+      gap: 12px;
+    }
+
+    .block-price {
+      font-weight: 600;
+      color: var(--primary);
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    .add-block-btn {
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Suggestions */
+    .suggestions-section {
+      background: var(--white);
+      margin: 16px;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+    }
+
+    .suggestions-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .suggestions-title {
+      font-weight: 600;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .see-all {
+      font-size: 12px;
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    .suggestion-cards {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      margin: 0 -16px;
+      padding: 0 16px;
+    }
+
+    .suggestion-card {
+      min-width: 160px;
+      background: var(--bg-light);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .suggestion-img {
+      height: 80px;
+      background: linear-gradient(135deg, #F093FB, #F5576C);
+      position: relative;
+    }
+
+    .suggestion-rating {
+      position: absolute;
+      bottom: 6px;
+      left: 6px;
+      background: rgba(0,0,0,0.6);
+      color: var(--white);
+      padding: 2px 6px;
+      border-radius: 8px;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .suggestion-info {
+      padding: 10px;
+    }
+
+    .suggestion-name {
+      font-weight: 600;
+      font-size: 12px;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .suggestion-detail {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .suggestion-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .suggestion-price {
+      font-weight: 700;
+      font-size: 12px;
+      color: var(--primary);
+    }
+
+    .quick-add {
+      background: var(--primary);
+      color: var(--white);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    /* ==================== SCREEN 4: Block Selection ==================== */
+    .filter-bar {
+      background: var(--white);
+      padding: 12px 16px;
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .filter-btn {
+      padding: 8px 14px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--bg-light);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .filter-btn.active {
+      background: var(--secondary);
+      color: var(--white);
+    }
+
+    .blocks-list {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .service-block-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .service-block-image {
+      height: 120px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      position: relative;
+    }
+
+    .capacity-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.6);
+      color: var(--white);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .capacity-badge.low {
+      background: var(--danger);
+    }
+
+    .service-block-content {
+      padding: 14px;
+    }
+
+    .service-block-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 8px;
+    }
+
+    .service-block-name {
+      font-weight: 600;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .service-block-time {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .service-block-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .service-block-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .service-block-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .service-block-price {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .service-block-price span {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    .select-btn {
+      background: var(--primary);
+      color: var(--white);
+      padding: 10px 24px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    /* Time slots */
+    .time-slots-section {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #eee;
+    }
+
+    .time-slots-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .time-slots {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .time-slot {
+      padding: 8px 14px;
+      border: 2px solid #E5E7EB;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .time-slot.selected {
+      border-color: var(--primary);
+      background: #FFF5F2;
+      color: var(--primary);
+    }
+
+    .time-slot.disabled {
+      background: #F3F4F6;
+      color: var(--text-muted);
+      text-decoration: line-through;
+    }
+
+    .time-slot .seats {
+      font-size: 10px;
+      color: var(--text-muted);
+      display: block;
+    }
+
+    /* ==================== SCREEN 5: Cart/Summary ==================== */
+    .summary-header {
+      background: linear-gradient(135deg, var(--secondary), #006D77);
+      padding: 20px;
+      color: var(--white);
+    }
+
+    .summary-destination {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+
+    .summary-dates {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-bottom: 12px;
+    }
+
+    .summary-progress {
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+      height: 6px;
+      overflow: hidden;
+    }
+
+    .summary-progress-bar {
+      background: var(--success);
+      height: 100%;
+      width: 75%;
+      border-radius: 10px;
+    }
+
+    .summary-progress-text {
+      font-size: 11px;
+      margin-top: 6px;
+      opacity: 0.8;
+    }
+
+    .days-summary {
+      padding: 16px;
+    }
+
+    .day-summary-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .day-summary-header {
+      background: var(--bg-light);
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .day-summary-title {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .day-summary-price {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 14px;
+    }
+
+    .day-summary-blocks {
+      padding: 12px 16px;
+    }
+
+    .summary-block-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .summary-block-item:last-child {
+      border-bottom: none;
+    }
+
+    .summary-block-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: #E0F2FE;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .summary-block-icon.activity { background: #FEF3C7; }
+    .summary-block-icon.meal { background: #DCFCE7; }
+    .summary-block-icon.transport { background: #E0E7FF; }
+
+    .summary-block-info {
+      flex: 1;
+    }
+
+    .summary-block-name {
+      font-weight: 500;
+      font-size: 13px;
+    }
+
+    .summary-block-time {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .summary-block-price {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    /* Total Section */
+    .total-section {
+      background: var(--white);
+      padding: 20px;
+      margin: 16px;
+      border-radius: var(--radius-lg);
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+
+    .total-row.discount {
+      color: var(--success);
+    }
+
+    .total-row.final {
+      font-size: 18px;
+      font-weight: 700;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 2px solid #eee;
+    }
+
+    .total-row.final .amount {
+      color: var(--primary);
+    }
+
+    /* ==================== SCREEN 6: Checkout ==================== */
+    .checkout-sections {
+      padding: 16px;
+    }
+
+    .checkout-section {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .checkout-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .checkout-section-title {
+      font-weight: 600;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .edit-link {
+      font-size: 12px;
+      color: var(--primary);
+    }
+
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .input-field {
+      border: 2px solid #E5E7EB;
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-size: 14px;
+    }
+
+    .input-field:focus {
+      border-color: var(--primary);
+    }
+
+    .payment-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .payment-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      border: 2px solid #E5E7EB;
+      border-radius: var(--radius-md);
+    }
+
+    .payment-option.selected {
+      border-color: var(--primary);
+      background: #FFF5F2;
+    }
+
+    .payment-radio {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid #E5E7EB;
+    }
+
+    .payment-option.selected .payment-radio {
+      border-color: var(--primary);
+      background: var(--primary);
+      box-shadow: inset 0 0 0 4px var(--white);
+    }
+
+    .payment-icon {
+      width: 40px;
+      height: 28px;
+      background: #F3F4F6;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .payment-name {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .promo-input {
+      display: flex;
+      gap: 8px;
+    }
+
+    .promo-input input {
+      flex: 1;
+      border: 2px solid #E5E7EB;
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-size: 14px;
+    }
+
+    .promo-input button {
+      background: var(--secondary);
+      color: var(--white);
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    /* Bottom CTA */
+    .bottom-cta {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--white);
+      padding: 16px 20px;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 0 0 35px 35px;
+    }
+
+    .cta-price {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cta-label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .cta-amount {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .cta-button {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: var(--white);
+      padding: 14px 32px;
+      border-radius: 25px;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+    }
+
+    /* ==================== SCREEN 7: Success ==================== */
+    .success-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
+      height: 100%;
+      background: linear-gradient(180deg, #DCFCE7 0%, var(--white) 50%);
+    }
+
+    .success-icon {
+      width: 100px;
+      height: 100px;
+      background: var(--success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 50px;
+      color: var(--white);
+      margin-bottom: 24px;
+      animation: successPulse 0.6s ease-out;
+    }
+
+    @keyframes successPulse {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .success-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .success-subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
+    .booking-code {
+      background: var(--bg-light);
+      padding: 16px 32px;
+      border-radius: var(--radius-lg);
+      margin-bottom: 24px;
+    }
+
+    .booking-code-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .booking-code-value {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--secondary);
+    }
+
+    .success-info {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .success-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .success-btn-primary {
+      background: var(--primary);
+      color: var(--white);
+      padding: 16px;
+      border-radius: 25px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .success-btn-secondary {
+      background: var(--white);
+      border: 2px solid #E5E7EB;
+      padding: 14px;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+
+    /* Flow Description */
+    .flow-description {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 40px;
+      color: var(--white);
+    }
+
+    .flow-description h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .flow-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .flow-step {
+      background: rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .flow-step-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .flow-step-number {
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .flow-step-title {
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .flow-step-content {
+      font-size: 14px;
+      line-height: 1.7;
+      opacity: 0.9;
+    }
+
+    .flow-step-content ul {
+      margin-top: 12px;
+      padding-left: 20px;
+    }
+
+    .flow-step-content li {
+      margin-bottom: 6px;
+    }
+
+    .behavior-tag {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      margin-right: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="mockup-container">
+    <div class="mockup-header">
+      <h1>Block Service Mobile UI/UX</h1>
+      <p>Hành trình khách hàng từ khám phá đến thanh toán</p>
+    </div>
+
+    <!-- Row 1: Home, Date Selection, Timeline -->
+    <div class="phones-row">
+      <!-- Screen 1: Home -->
+      <div class="phone-wrapper">
+        <div class="step-label">
+          <span class="step-number">1</span>
+          Khám phá & Chọn điểm đến
+        </div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="status-bar">
+              <span class="time">9:41</span>
+              <span class="icons">📶 📡 🔋</span>
+            </div>
+            <div class="screen-content">
+              <div class="home-header">
+                <p class="greeting">Xin chào 👋</p>
+                <h2 class="user-name">Linh Nguyễn</h2>
+                <div class="search-box">
+                  <span class="search-icon">🔍</span>
+                  <span class="search-text">Bạn muốn đi đâu?</span>
+                </div>
+              </div>
+
+              <div class="quick-filters">
+                <div class="filter-chip active">🏝️ Biển đảo</div>
+                <div class="filter-chip">🏔️ Núi</div>
+                <div class="filter-chip">🏙️ Thành phố</div>
+                <div class="filter-chip">🌿 Sinh thái</div>
+              </div>
+
+              <h3 class="section-title">Điểm đến phổ biến</h3>
+              <div class="destination-cards">
+                <div class="destination-card">
+                  <div style="background: linear-gradient(135deg, #00B4DB, #0083B0); height: 100%;"></div>
+                  <div class="overlay">
+                    <p class="name">Phú Quốc</p>
+                    <p class="count">156 dịch vụ</p>
+                  </div>
+                </div>
+                <div class="destination-card">
+                  <div style="background: linear-gradient(135deg, #F093FB, #F5576C); height: 100%;"></div>
+                  <div class="overlay">
+                    <p class="name">Nha Trang</p>
+                    <p class="count">203 dịch vụ</p>
+                  </div>
+                </div>
+                <div class="destination-card">
+                  <div style="background: linear-gradient(135deg, #11998e, #38ef7d); height: 100%;"></div>
+                  <div class="overlay">
+                    <p class="name">Đà Lạt</p>
+                    <p class="count">128 dịch vụ</p>
+                  </div>
+                </div>
+              </div>
+
+              <h3 class="section-title">Combo được yêu thích</h3>
+              <div class="combo-cards">
+                <div class="combo-card">
+                  <div class="combo-image">
+                    <span class="combo-badge">-30%</span>
+                  </div>
+                  <div class="combo-info">
+                    <h4 class="combo-name">Adventure 3N2Đ Phú Quốc</h4>
+                    <div class="combo-meta">
+                      <span>⏱️ 3 ngày</span>
+                      <span>⭐ 4.8 (234)</span>
+                    </div>
+                    <div class="combo-price">
+                      <span class="price-old">6.500.000đ</span>
+                      <span class="price-new">4.550.000đ</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 2: Date Selection -->
+      <div class="phone-wrapper">
+        <div class="step-label">
+          <span class="step-number">2</span>
+          Chọn ngày & Số khách
+        </div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="status-bar">
+              <span class="time">9:42</span>
+              <span class="icons">📶 📡 🔋</span>
+            </div>
+            <div class="screen-content">
+              <div class="header-bar">
+                <div class="back-btn">←</div>
+                <span class="header-title">Phú Quốc</span>
+              </div>
+
+              <div class="destination-hero">
+                <div class="destination-hero-text">
+                  <h2>Phú Quốc</h2>
+                  <p>Đảo ngọc thiên đường 🌴</p>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <p class="form-label">NGÀY ĐI - NGÀY VỀ</p>
+                <div class="date-picker">
+                  <div class="date-box active">
+                    <p class="day">15</p>
+                    <p class="month">Tháng 1, 2026</p>
+                  </div>
+                  <div class="date-arrow">→</div>
+                  <div class="date-box">
+                    <p class="day">17</p>
+                    <p class="month">Tháng 1, 2026</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <p class="form-label">SỐ KHÁCH</p>
+                <div class="travelers-row">
+                  <div class="traveler-type">
+                    <span class="traveler-label">Người lớn</span>
+                    <span class="traveler-desc">Từ 12 tuổi</span>
+                  </div>
+                  <div class="counter">
+                    <div class="counter-btn">−</div>
+                    <span class="counter-value">2</span>
+                    <div class="counter-btn active">+</div>
+                  </div>
+                </div>
+                <div class="travelers-row">
+                  <div class="traveler-type">
+                    <span class="traveler-label">Trẻ em</span>
+                    <span class="traveler-desc">2-11 tuổi</span>
+                  </div>
+                  <div class="counter">
+                    <div class="counter-btn">−</div>
+                    <span class="counter-value">1</span>
+                    <div class="counter-btn active">+</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <p class="form-label">PHONG CÁCH DU LỊCH</p>
+                <div class="style-options">
+                  <div class="style-option">
+                    <div class="icon">🧘</div>
+                    <span>Thư giãn</span>
+                  </div>
+                  <div class="style-option active">
+                    <div class="icon">🏄</div>
+                    <span>Phiêu lưu</span>
+                  </div>
+                  <div class="style-option">
+                    <div class="icon">👨‍👩‍👧</div>
+                    <span>Gia đình</span>
+                  </div>
+                  <div class="style-option">
+                    <div class="icon">💰</div>
+                    <span>Tiết kiệm</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bottom-cta">
+                <div class="cta-price">
+                  <span class="cta-label">3 ngày 2 đêm</span>
+                  <span class="cta-amount">3 khách</span>
+                </div>
+                <button class="cta-button">Tiếp tục →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 3: Timeline Builder -->
+      <div class="phone-wrapper">
+        <div class="step-label">
+          <span class="step-number">3</span>
+          Xây dựng lịch trình
+        </div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="status-bar">
+              <span class="time">9:45</span>
+              <span class="icons">📶 📡 🔋</span>
+            </div>
+            <div class="screen-content">
+              <div class="header-bar">
+                <div class="back-btn">←</div>
+                <span class="header-title">Lịch trình của bạn</span>
+              </div>
+
+              <div class="timeline-nav">
+                <div class="day-tab completed">✓ Ngày 1</div>
+                <div class="day-tab active">Ngày 2</div>
+                <div class="day-tab">Ngày 3</div>
+              </div>
+
+              <div class="timeline-container">
+                <div class="day-theme-banner">
+                  <h3>🏄 Ngày phiêu lưu</h3>
+                  <p>Khám phá 4 đảo tuyệt đẹp</p>
+                </div>
+
+                <div class="timeline-track">
+                  <div class="timeline-item">
+                    <span class="timeline-time">07:00</span>
+                    <div class="timeline-dot filled"></div>
+                    <div class="block-card">
+                      <div class="block-header">
+                        <span class="block-type-badge meal">Ăn sáng</span>
+                        <div class="block-remove">×</div>
+                      </div>
+                      <p class="block-name">Buffet sáng tại khách sạn</p>
+                      <div class="block-meta">
+                        <span>⏱️ 60 phút</span>
+                        <span>📍 Resort</span>
+                      </div>
+                      <p class="block-price">Đã bao gồm</p>
+                    </div>
+                  </div>
+
+                  <div class="timeline-item">
+                    <span class="timeline-time">08:00</span>
+                    <div class="timeline-dot filled"></div>
+                    <div class="block-card">
+                      <div class="block-header">
+                        <span class="block-type-badge activity">Hoạt động</span>
+                        <div class="block-remove">×</div>
+                      </div>
+                      <p class="block-name">Tour Cano 4 Đảo ⭐</p>
+                      <div class="block-meta">
+                        <span>⏱️ 7 tiếng</span>
+                        <span>📍 Bến tàu</span>
+                      </div>
+                      <p class="block-price">1.050.000đ × 3</p>
+                    </div>
+                  </div>
+
+                  <div class="timeline-item">
+                    <span class="timeline-time">15:00</span>
+                    <div class="timeline-dot current"></div>
+                    <div class="block-card empty">
+                      <div class="add-block-btn">
+                        <span>＋</span>
+                        <span>Thêm hoạt động</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="timeline-item">
+                    <span class="timeline-time">17:00</span>
+                    <div class="timeline-dot"></div>
+                    <div class="block-card suggested">
+                      <div class="block-header">
+                        <span class="block-type-badge activity">Gợi ý</span>
+                      </div>
+                      <p class="block-name">Sunset Sanato Beach</p>
+                      <div class="block-meta">
+                        <span>⏱️ 2 tiếng</span>
+                        <span>⭐ 4.9</span>
+                      </div>
+                      <p class="block-price">450.000đ/người</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bottom-cta">
+                <div class="cta-price">
+                  <span class="cta-label">Tổng tạm tính</span>
+                  <span class="cta-amount">8.250.000đ</span>
+                </div>
+                <button class="cta-button">Xem tổng →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: Block Selection, Summary, Checkout -->
+    <div class="phones-row">
+      <!-- Screen 4: Block Selection -->
+      <div class="phone-wrapper">
+        <div class="step-label">
+          <span class="step-number">4</span>
+          Chọn dịch vụ / Block
+        </div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="status-bar">
+              <span class="time">9:46</span>
+              <span class="icons">📶 📡 🔋</span>
+            </div>
+            <div class="screen-content">
+              <div class="header-bar">
+                <div class="back-btn">←</div>
+                <span class="header-title">Hoạt động 15:00 - 17:00</span>
+              </div>
+
+              <div class="filter-bar">
+                <div class="filter-btn active">Tất cả</div>
+                <div class="filter-btn">🏊 Biển</div>
+                <div class="filter-btn">🧖 Spa</div>
+                <div class="filter-btn">🛒 Mua sắm</div>
+              </div>
+
+              <div class="blocks-list">
+                <div class="service-block-card">
+                  <div class="service-block-image">
+                    <span class="capacity-badge low">🔥 Còn 5 chỗ</span>
+                  </div>
+                  <div class="service-block-content">
+                    <div class="service-block-header">
+                      <div>
+                        <h4 class="service-block-name">Sunset Sanato Beach</h4>
+                        <p class="service-block-time">⏱️ 2 tiếng • 📍 Bãi Sao</p>
+                      </div>
+                      <div class="service-block-rating">⭐ 4.9</div>
+                    </div>
+                    <p class="service-block-desc">Ngắm hoàng hôn tuyệt đẹp tại bãi biển Sanato với đồ uống miễn phí.</p>
+                    
+                    <div class="time-slots-section">
+                      <p class="time-slots-label">Chọn giờ khởi hành:</p>
+                      <div class="time-slots">
+                        <div class="time-slot disabled">
+                          15:00
+                          <span class="seats">Hết chỗ</span>
+                        </div>
+                        <div class="time-slot selected">
+                          16:00
+                          <span class="seats">Còn 12</span>
+                        </div>
+                        <div class="time-slot">
+                          17:00
+                          <span class="seats">Còn 20</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="service-block-footer" style="margin-top: 12px;">
+                      <div class="service-block-price">
+                        450.000đ <span>/người</span>
+                      </div>
+                      <button class="select-btn">Chọn</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="service-block-card">
+                  <div class="service-block-image" style="background: linear-gradient(135deg, #11998e, #38ef7d);">
+                    <span class="capacity-badge">Còn 18 chỗ</span>
+                  </div>
+                  <div class="service-block-content">
+                    <div class="service-block-header">
+                      <div>
+                        <h4 class="service-block-name">Spa & Massage Chuẩn Thái</h4>
+                        <p class="service-block-time">⏱️ 90 phút • 📍 Resort</p>
+                      </div>
+                      <div class="service-block-rating">⭐ 4.7</div>
+                    </div>
+                    <p class="service-block-desc">Thư giãn với liệu pháp massage cổ truyền Thái Lan.</p>
+                    <div class="service-block-footer" style="margin-top: 12px;">
+                      <div class="service-block-price">
+                        650.000đ <span>/người</span>
+                      </div>
+                      <button class="select-btn">Chọn</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 5: Summary -->
+      <div class="phone-wrapper">
+        <div class="step-label">
+          <span class="step-number">5</span>
+          Xem tổng hành trình
+        </div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="status-bar">
+              <span class="time">9:50</span>
+              <span class="icons">📶 📡 🔋</span>
+            </div>
+            <div class="screen-content">
+              <div class="summary-header">
+                <h2 class="summary-destination">Phú Quốc</h2>
+                <p class="summary-dates">15 - 17 Tháng 1, 2026 • 3 khách</p>
+                <div class="summary-progress">
+                  <div class="summary-progress-bar"></div>
+                </div>
+                <p class="summary-progress-text">Đã hoàn thành 75% lịch trình</p>
+              </div>
+
+              <div class="days-summary">
+                <div class="day-summary-card">
+                  <div class="day-summary-header">
+                    <span class="day-summary-title">📅 Ngày 1 - Đến nơi</span>
+                    <span class="day-summary-price">2.850.000đ</span>
+                  </div>
+                  <div class="day-summary-blocks">
+                    <div class="summary-block-item">
+                      <div class="summary-block-icon transport">✈️</div>
+                      <div class="summary-block-info">
+                        <p class="summary-block-name">Bay HN → PQC</p>
+                        <p class="summary-block-time">07:00 - 09:00</p>
+                      </div>
+                      <span class="summary-block-price">1.500.000đ</span>
+                    </div>
+                    <div class="summary-block-item">
+                      <div class="summary-block-icon transport">🚐</div>
+                      <div class="summary-block-info">
+                        <p class="summary-block-name">Xe đón sân bay</p>
+                        <p class="summary-block-time">09:30 - 10:30</p>
+                      </div>
+                      <span class="summary-block-price">350.000đ</span>
+                    </div>
+                    <div class="summary-block-item">
+                      <div class="summary-block-icon activity">🏨</div>
+                      <div class="summary-block-info">
+                        <p class="summary-block-name">Check-in Resort</p>
+                        <p class="summary-block-time">14:00</p>
+                      </div>
+                      <span class="summary-block-price">1.000.000đ</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="day-summary-card">
+                  <div class="day-summary-header">
+                    <span class="day-summary-title">📅 Ngày 2 - Phiêu lưu 🏄</span>
+                    <span class="day-summary-price">4.500.000đ</span>
+                  </div>
+                  <div class="day-summary-blocks">
+                    <div class="summary-block-item">
+                      <div class="summary-block-icon activity">🚤</div>
+                      <div class="summary-block-info">
+                        <p class="summary-block-name">Tour Cano 4 Đảo</p>
+                        <p class="summary-block-time">08:00 - 15:00</p>
+                      </div>
+                      <span class="summary-block-price">3.150.000đ</span>
+                    </div>
+                    <div class="summary-block-item">
+                      <div class="summary-block-icon activity">🌅</div>
+                      <div class="summary-block-info">
+                        <p class="summary-block-name">Sunset Sanato</p>
+                        <p class="summary-block-time">16:00 - 18:00</p>
+                      </div>
+                      <span class="summary-block-price">1.350.000đ</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="total-section">
+                  <div class="total-row">
+                    <span>Tổng dịch vụ</span>
+                    <span>9.250.000đ</span>
+                  </div>
+                  <div class="total-row discount">
+                    <span>Giảm giá combo (-10%)</span>
+                    <span>-925.000đ</span>
+                  </div>
+                  <div class="total-row">
+                    <span>Phí dịch vụ</span>
+                    <span>150.000đ</span>
+                  </div>
+                  <div class="total-row final">
+                    <span>Tổng thanh toán</span>
+                    <span class="amount">8.475.000đ</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bottom-cta">
+                <div class="cta-price">
+                  <span class="cta-label">Tổng cộng</span>
+                  <span class="cta-amount">8.475.000đ</span>
+                </div>
+                <button class="cta-button">Thanh toán →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 6: Checkout -->
+      <div class="phone-wrapper">
+        <div class="step-label">
+          <span class="step-number">6</span>
+          Thanh toán
+        </div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="status-bar">
+              <span class="time">9:52</span>
+              <span class="icons">📶 📡 🔋</span>
+            </div>
+            <div class="screen-content">
+              <div class="header-bar">
+                <div class="back-btn">←</div>
+                <span class="header-title">Thanh toán</span>
+              </div>
+
+              <div class="checkout-sections">
+                <div class="checkout-section">
+                  <div class="checkout-section-header">
+                    <span class="checkout-section-title">👤 Thông tin liên hệ</span>
+                  </div>
+                  <div class="contact-info">
+                    <input type="text" class="input-field" value="Nguyễn Thị Linh" placeholder="Họ và tên">
+                    <input type="tel" class="input-field" value="0912 345 678" placeholder="Số điện thoại">
+                    <input type="email" class="input-field" value="linh.nguyen@email.com" placeholder="Email">
+                  </div>
+                </div>
+
+                <div class="checkout-section">
+                  <div class="checkout-section-header">
+                    <span class="checkout-section-title">💳 Phương thức thanh toán</span>
+                  </div>
+                  <div class="payment-options">
+                    <div class="payment-option selected">
+                      <div class="payment-radio"></div>
+                      <div class="payment-icon">💳</div>
+                      <span class="payment-name">Thẻ tín dụng / Ghi nợ</span>
+                    </div>
+                    <div class="payment-option">
+                      <div class="payment-radio"></div>
+                      <div class="payment-icon">🏦</div>
+                      <span class="payment-name">Chuyển khoản ngân hàng</span>
+                    </div>
+                    <div class="payment-option">
+                      <div class="payment-radio"></div>
+                      <div class="payment-icon">📱</div>
+                      <span class="payment-name">Ví MoMo / ZaloPay</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="checkout-section">
+                  <div class="checkout-section-header">
+                    <span class="checkout-section-title">🎫 Mã giảm giá</span>
+                  </div>
+                  <div class="promo-input">
+                    <input type="text" placeholder="Nhập mã giảm giá">
+                    <button>Áp dụng</button>
+                  </div>
+                </div>
+
+                <div class="total-section" style="margin: 0;">
+                  <div class="total-row">
+                    <span>Tổng dịch vụ</span>
+                    <span>9.250.000đ</span>
+                  </div>
+                  <div class="total-row discount">
+                    <span>Giảm giá</span>
+                    <span>-925.000đ</span>
+                  </div>
+                  <div class="total-row final">
+                    <span>Thanh toán</span>
+                    <span class="amount">8.475.000đ</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bottom-cta">
+                <div class="cta-price">
+                  <span class="cta-label">Thanh toán</span>
+                  <span class="cta-amount">8.475.000đ</span>
+                </div>
+                <button class="cta-button">Xác nhận 🔒</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 7: Success -->
+      <div class="phone-wrapper">
+        <div class="step-label">
+          <span class="step-number">7</span>
+          Hoàn tất 🎉
+        </div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="status-bar">
+              <span class="time">9:53</span>
+              <span class="icons">📶 📡 🔋</span>
+            </div>
+            <div class="screen-content">
+              <div class="success-screen">
+                <div class="success-icon">✓</div>
+                <h2 class="success-title">Đặt thành công!</h2>
+                <p class="success-subtitle">Cảm ơn bạn đã tin tưởng chúng tôi</p>
+                
+                <div class="booking-code">
+                  <p class="booking-code-label">Mã đặt chỗ</p>
+                  <p class="booking-code-value">PQ-2026-8847</p>
+                </div>
+
+                <p class="success-info">
+                  Chúng tôi đã gửi xác nhận qua email<br>
+                  <strong>linh.nguyen@email.com</strong><br><br>
+                  Voucher sẽ được gửi trước 24h khởi hành
+                </p>
+
+                <div class="success-buttons">
+                  <button class="success-btn-primary">📋 Xem chi tiết booking</button>
+                  <button class="success-btn-secondary">🏠 Về trang chủ</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flow Description -->
+    <div class="flow-description">
+      <h2>📱 Phân tích hành vi khách hàng</h2>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-step-header">
+            <div class="flow-step-number">1</div>
+            <span class="flow-step-title">Khám phá</span>
+          </div>
+          <div class="flow-step-content">
+            <span class="behavior-tag">80% scroll</span>
+            <span class="behavior-tag">visual-first</span>
+            <p style="margin-top: 8px;">Khách thường bị thu hút bởi hình ảnh đẹp và combo giảm giá. Hiển thị điểm đến phổ biến + deal hot ngay đầu trang.</p>
+            <ul>
+              <li>Ưu tiên UI card với ảnh lớn</li>
+              <li>Badge "-30%" tăng CTR 45%</li>
+              <li>Rating & số lượng booking tạo trust</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-step-header">
+            <div class="flow-step-number">2</div>
+            <span class="flow-step-title">Lựa chọn</span>
+          </div>
+          <div class="flow-step-content">
+            <span class="behavior-tag">decision fatigue</span>
+            <span class="behavior-tag">simple > complex</span>
+            <p style="margin-top: 8px;">Khách muốn chọn nhanh, không muốn nhập nhiều. Form tối giản với date picker và counter.</p>
+            <ul>
+              <li>Travel style giúp personalize gợi ý</li>
+              <li>Counter trực quan hơn dropdown</li>
+              <li>Hiển thị tổng (3 ngày, 3 khách) real-time</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-step-header">
+            <div class="flow-step-number">3</div>
+            <span class="flow-step-title">Xây dựng</span>
+          </div>
+          <div class="flow-step-content">
+            <span class="behavior-tag">gamification</span>
+            <span class="behavior-tag">FOMO</span>
+            <p style="margin-top: 8px;">Timeline visual giống calendar quen thuộc. Block gợi ý (vàng) nudge khách thêm dịch vụ.</p>
+            <ul>
+              <li>Day tabs với checkmark tạo progress feeling</li>
+              <li>Empty slot với "+ Thêm" mời gọi action</li>
+              <li>Suggested block với giá hấp dẫn</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-step-header">
+            <div class="flow-step-number">4</div>
+            <span class="flow-step-title">Chọn Block</span>
+          </div>
+          <div class="flow-step-content">
+            <span class="behavior-tag">scarcity</span>
+            <span class="behavior-tag">social proof</span>
+            <p style="margin-top: 8px;">Hiển thị "Còn 5 chỗ" tạo urgency. Time slots với trạng thái rõ ràng.</p>
+            <ul>
+              <li>"Hết chỗ" disabled + gạch ngang</li>
+              <li>Rating cao = trust signal</li>
+              <li>Nút "Chọn" nổi bật, dễ tap</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-step-header">
+            <div class="flow-step-number">5</div>
+            <span class="flow-step-title">Review</span>
+          </div>
+          <div class="flow-step-content">
+            <span class="behavior-tag">transparency</span>
+            <span class="behavior-tag">bundle discount</span>
+            <p style="margin-top: 8px;">Tổng hợp rõ ràng từng ngày. Giảm giá combo khuyến khích đặt trọn gói.</p>
+            <ul>
+              <li>Icon theo loại dịch vụ dễ scan</li>
+              <li>Discount line màu xanh = positive</li>
+              <li>Tổng cuối to, nổi bật</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-step-header">
+            <div class="flow-step-number">6</div>
+            <span class="flow-step-title">Thanh toán</span>
+          </div>
+          <div class="flow-step-content">
+            <span class="behavior-tag">trust signals</span>
+            <span class="behavior-tag">minimal friction</span>
+            <p style="margin-top: 8px;">Form tối giản, pre-fill nếu có data. Nhiều payment options tăng conversion.</p>
+            <ul>
+              <li>Icon 🔒 trên nút = security</li>
+              <li>Promo code field giữ khách ở lại</li>
+              <li>Tổng tiền sticky ở bottom</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-step-header">
+            <div class="flow-step-number">7</div>
+            <span class="flow-step-title">Thành công</span>
+          </div>
+          <div class="flow-step-content">
+            <span class="behavior-tag">delight</span>
+            <span class="behavior-tag">next action</span>
+            <p style="margin-top: 8px;">Animation checkmark tạo dopamine hit. Mã booking rõ ràng, dễ chụp màn hình.</p>
+            <ul>
+              <li>Màu xanh lá = positive emotion</li>
+              <li>CTA tiếp theo rõ ràng</li>
+              <li>Email confirmation = trust</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

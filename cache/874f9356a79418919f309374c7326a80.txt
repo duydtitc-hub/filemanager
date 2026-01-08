@@ -1,0 +1,857 @@
+Vừa qua 0 giờ ngày 11/11, đơn hàng cuối cùng cũng hoàn tất trên hệ thống bán hàng.
+
+Trên màn hình hiện lên tổng doanh thu: 50 triệu tệ!
+
+Ngay sau đó, tôi nhận được tin nhắn từ ngân hàng: “Tài khoản nhận được 5 tệ.”
+
+Tôi chết lặng.
+
+Hôm qua khi hệ thống chịu được lưu lượng hơn trăm triệu lượt truy cập, đồng nghiệp còn vây quanh tôi trêu đùa:
+
+“Giám đốc Trần, hệ thống chị thiết kế đỉnh quá! 10% tiền thưởng này chắc đủ mua hẳn một căn nhà ở Bắc Kinh rồi!”
+
+Người duy nhất luôn mong tôi có thể mua được một căn nhà ở Bắc Kinh chính là mẹ tôi –
+
+người đang ở giai đoạn cuối của bệnh ung thư. Đó là chấp niệm duy nhất khiến bà cố gắng sống tiếp.
+
+Vì chấp niệm đó, tôi dốc toàn bộ thời gian vào hệ thống bán hàng này.
+
+Tôi ngủ tại văn phòng suốt hơn 300 ngày, đã dùng hết 10 hộp thuốc đau dạ dày.
+
+Nhưng giờ đây, 500.000 tiền thưởng biến thành 5 tệ!
+
+Tôi đá cửa phòng tổng giám đốc, xông vào. Ông ta nhìn tôi với ánh mắt mỉa mai:
+
+“Hệ thống server, chi phí vận hành khẩn cấp đâu phải miễn phí?”
+
+“Cô là người phụ trách dự án, tổn thất đương nhiên tính vào đầu cô!”
+
+“Trừ hết rồi chỉ còn 5 tệ, nếu thấy ít thì trả lại cũng được.”
+
+Tôi nhìn chằm chằm vào báo cáo thành tích ngày 11/11 trên bàn ông ta, bỗng bật cười.
+
+Ông ta quên mất rồi, với ngày 11/11, doanh thu chỉ là khởi đầu.
+
+Thách thức thật sự nằm ở khâu thanh toán sau đó và các vấn đề hậu mãi.
+
+…
+
+Tôi quay lại văn phòng của mình, lập tức đăng nhập vào hộp thư công ty.
+
+Mở “Biên bản xác nhận trách nhiệm và quyền hạn dự án hệ thống bán hàng ngày 11/11”.
+
+Dòng đầu tiên ghi rõ: Chi phí kỹ thuật dự án được trích từ ngân sách riêng, không liên quan đến tiền thưởng của người phụ trách kỹ thuật.
+
+Dòng thứ hai: Giám đốc kỹ thuật Trần Thư Yên chủ trì phát triển hệ thống, được hưởng 10% tổng doanh thu, quyền hạn và lương thưởng tương ứng với cấp bậc.
+
+Trang cuối có chữ ký điện tử của tổng giám đốc, bên cạnh còn đóng dấu đỏ công ty.
+
+Tôi chụp màn hình email và lưu vào kho dữ liệu đám mây đã mã hóa – đây chính là bằng chứng rõ ràng nhất về phân chia trách nhiệm và quyền lợi của dự án.
+
+Vừa làm xong, hệ thống OA bật lên thông báo mới: “Thông báo điều chỉnh cơ cấu tổ chức”.
+
+“Do hệ thống do Trần Thư Yên phát triển thường xuyên xuất hiện lỗi, dữ liệu lưu trữ vượt
+
+tiêu chuẩn ngành 30%, nay miễn nhiệm chức Giám đốc kỹ thuật, điều chuyển sang làm
+
+nhân viên chăm sóc khách hàng ngành thương mại điện tử.”
+
+“Quyền hạn hệ thống sẽ được bàn giao cho Giám đốc kỹ thuật mới – Trương Minh.”
+
+Đây là sự vu khống trắng trợn!
+
+Hệ thống tôi thiết kế từ lúc vận hành đến nay: không lỗi, không sự cố, tốc độ phản hồi ở mức cao nhất, vượt chuẩn ngành tới 200%.
+
+Còn Trương Minh – một kẻ dựa hơi quan hệ, đến thông số giao tiếp với bên logistics còn không hiểu rõ – giờ lại muốn ngồi vào vị trí của tôi?
+
+Đúng lúc tôi còn đang suy nghĩ, cửa văn phòng bị đá tung.
+
+Nhân viên phòng nhân sự hống hách bước vào:
+
+“Giám đốc Trần? À không, giờ nên gọi là nhân viên chăm sóc khách hàng Trần mới đúng!”
+
+“Vị trí làm việc mới của cô nằm ngay cạnh nhà vệ sinh nữ, trong vòng nửa tiếng phải dọn dẹp xong, nếu không thì tự gánh hậu quả!”
+
+Mọi người đều chờ xem trò hề này, họ nghĩ tôi sẽ phản ứng dữ dội vì bị mất mặt.
+
+Dù sao tôi cũng là nhân viên kỳ cựu của công ty, đã cống hiến suốt mười năm thanh xuân.
+
+Với kiểu nhục mạ này, ai mà chẳng tức giận đến mức đập bàn ăn thua đủ?
+
+Nhưng tôi lại vô cùng bình tĩnh, ôm thùng đồ, từng bước đi về phía bàn làm việc cạnh nhà vệ sinh.
+
+Tổng giám đốc cứ nghĩ tôi đã hoàn toàn khuất phục.
+
+Ông ta nghênh ngang bước đến chỗ tôi, cố tình nói lớn:
+
+“À đúng rồi Trần Thư Yên, mẹ cô đang điều trị ung thư, chắc thuốc nhập khẩu đắt lắm nhỉ?”
+
+“Làm ở vị trí chăm sóc khách hàng, lương tháng 4.000, là mức thấp nhất công ty, mẹ cô sau này chắc không đủ tiền dùng thuốc nữa đâu ha?”
+
+Thấy tôi không đáp lại, ông ta càng đắc ý cười lớn.
+
+Một kẻ nịnh hót phía sau phụ họa:
+
+“Kỹ thuật của Trần Thư Yên chỉ là thứ rác rưởi, trước đây nhờ chức giám đốc mà lừa người, thật ra còn kém cả thực tập sinh!”
+
+Tôi không thèm ngẩng đầu, tiếp tục tập trung sắp xếp đồ đạc.
+
+Bởi vì, chủ nghĩa anh hùng thật sự – sẽ không lãng phí sức lực vào những cuộc tranh cãi vô ích.
+
+Mà là – tung đòn kết liễu, chỉ một phát, phải trúng đích!
+
+Buổi tối vừa về đến nhà, tôi đã nhận được tin nhắn nhắc thanh toán từ bệnh viện.
+
+“Chi phí nhập viện và thuốc nhập khẩu của mẹ cô tổng cộng là 80.000 tệ, bên tài vụ đã nhắc nhở năm lần rồi.”
+
+“Tốt nhất là thanh toán trong ngày mai, nếu không sẽ phải tạm ngừng cung cấp thuốc hóa trị.”
+
+Một tuần trước, tôi vừa dùng hết 1 triệu tệ tích lũy suốt mười năm đi làm, để đặt cọc mua một căn hộ ba phòng ngủ.
+
+Lúc đó tôi tính toán rất rõ ràng: chỉ cần tiền thưởng của ngày 11/11 về, tôi có thể trả nốt phần còn lại và thậm chí còn dư ra một ít.
+
+Nhưng giờ đây, tiền thưởng lại chỉ còn đúng 5 tệ.
+
+Mọi thứ đã hoàn toàn lệch khỏi kế hoạch ban đầu.
+
+Để ứng phó khẩn cấp, tôi lập tức vào hệ thống OA của công ty, tìm mục “Đăng ký phúc lợi đặc biệt cho nhân viên”, nộp đơn xin tạm ứng 6 tháng lương.
+
+Quy chế công ty cho phép: Nhân viên có thâm niên trên 10 năm, nếu người thân ruột thịt mắc bệnh nghiêm trọng, có thể tạm ứng tối đa 6 tháng lương làm quỹ khẩn cấp.
+
+Đơn vừa gửi đi chưa đến hai giây, hệ thống đã hiện trạng thái “Đã bị từ chối”.
+
+Mục lý do từ chối có ghi tay của tổng giám đốc: “Bộ phận chăm sóc khách hàng không thuộc nhóm nòng cốt, không đủ điều kiện nhận phúc lợi này. Từ chối!”
+
+Cùng lúc đó, chuông báo tin nhắn nhóm WeChat nội bộ vang lên. Tổng giám đốc đã @ tôi trong nhóm:
+
+“Trần Thư Yên, cô là một nhân viên chăm sóc khách hàng mà cũng dám xin tạm ứng lương à?”
+
+“Lập trình viên 35 tuổi giờ đi tiệm mát-xa bóp chân còn chẳng ai thèm nhận.”
+
+“Tôi giữ cô lại công ty là vì năm xưa cô biết bưng trà rót nước cho tôi. Đừng có được voi đòi tiên!”
+
+Dưới bài đăng lập tức có loạt bình luận hùa theo:
+
+“Giám đốc Lý nói đúng quá, đã bị chuyển qua chăm sóc khách hàng rồi mà còn bày đặt làm cao như hồi còn là giám đốc kỹ thuật, đúng là không biết thân biết phận.”
+
+“35 tuổi rồi, nên nhìn thẳng vào thực tế đi. Được giữ lại công ty làm chăm sóc khách hàng là may lắm rồi.”
+
+“Suốt ngày chỉ muốn lợi dụng công ty, cố tình gây chuyện phá rối.”
+
+Mười năm trước, khi công ty còn làm việc trong tầng hầm, Lý Kiến Quốc từng vỗ vai tôi và hứa:
+
+“Trần Thư Yên, cô lo phần kỹ thuật, tôi lo đi thị trường. Sau này công ty phát đạt, chúng ta cùng nhau hưởng quả ngọt!”
+
+So với bây giờ – vắt chanh bỏ vỏ – đúng là khác nhau một trời một vực.
+
+Trước sự mỉa mai đầy ác ý trong nhóm, phản ứng của tôi lại khiến tất cả bất ngờ.
+
+Tôi lặng lẽ chọn im lặng, không nói một lời.
+
+Tôi chụp lại toàn bộ tin nhắn nhóm và thông báo từ chối trên hệ thống OA, sau đó bình tĩnh thoát khỏi giao diện nhóm chat.
+
+Rồi tôi đăng nhập hệ thống bán hàng bằng tài khoản công việc cũ.
+
+Không ngoài dự đoán, màn hình ngay lập tức hiện thông báo: “Không đủ quyền truy cập”, tất cả module cốt lõi đã bị khóa.
+
+Tôi bình tĩnh lấy một USB mã hóa từ trong cặp tài liệu, cắm vào máy tính.
+
+Màn hình bật lên: “Quản trị viên cấp cao Trần Thư Yên, chào mừng đăng nhập.”
+
+Tôi truy cập hệ thống một cách trơn tru, mở module chi phí của ngày 11/11.
+
+Chi phí mở rộng linh hoạt, vận hành khẩn cấp cộng lại chỉ có 80.000 tệ – so với doanh thu 50 triệu thì chỉ như muối bỏ biển.
+
+Tại module kết toán doanh thu, tôi vô tình phát hiện: trong đêm 11/11 có khoản thu 6 triệu tệ lẽ ra phải chuyển vào tài khoản công ty,
+
+Nhưng trong lúc chuyển khoản, số tiền này đã được gửi vào một tài khoản cá nhân.
+
+Tôi tiếp tục lần theo dấu vết và phát hiện 2.000 đơn hàng lặp, cùng một địa chỉ đặt hàng, cùng một người nhận.
+
+Những đơn hàng đó được gắn nhãn “Giảm giá đơn đầu tiên cho người dùng mới”, “Giảm giá theo đơn hàng số lượng lớn”, “Bồi thường hàng lỗi”,… các kiểu khuyến mãi được cộng dồn liên tục.
+
+Kết quả, không trả một xu, lại lấy đi hàng hóa trị giá 10 triệu tệ!
+
+Tôi lập tức gọi một cuộc điện thoại đặc biệt: “Làm ơn giúp tôi tra một tài khoản cá nhân và một địa chỉ giao hàng.”
+
+Hai mươi phút sau, tôi nhận được một email mã hóa.
+
+Nhìn thấy cái tên được nêu trong nội dung mail, tôi mỉm cười.
+
+Giờ đây, trong tay tôi đã có đủ đạn dược chí mạng.
+
+Việc cần làm tiếp theo là tìm một khẩu súng – có thể bắn viên đạn này trúng ngay hồng tâm.
+
+Hôm sau, buổi tiệc mừng công ngày 11/11 được tổ chức ở nhà hàng sang trọng trung tâm thành phố.
+
+Đáng lẽ tôi phải ngồi ở bàn chính, nhưng lại bị xếp vào góc phòng, trước mặt chỉ có một đĩa rau xào và nửa bát cơm thừa.
+
+Tổng giám đốc đứng trên sân khấu, tay cầm ly rượu vang, micro vang khắp hội trường:
+
+“Doanh số 50 triệu lần này, công lớn thuộc về Giám đốc kỹ thuật Trương Minh! Tôi tuyên bố, thưởng cho Trương Minh 500.000 tiền mặt!”
+
+Trương Minh mặc bộ vest hàng hiệu mới mua, kiêu hãnh giơ cao tấm séc thưởng trong tay.
+
+Anh ta cầm lấy micro từ tay tổng giám đốc, nói vài câu khách sáo.
+
+Rồi ánh mắt đảo về phía tôi, đột ngột đổi giọng.
+
+Anh ta hét lớn: “Chị Trần này, chị xem 500.000 tiền thưởng của tôi đủ mua bao nhiêu hộp thuốc nhập khẩu cho mẹ chị nhỉ?”
+
+“À phải rồi, nghe nói chị chỉ nhận được 5 tệ tiền thưởng thôi hả? Phục vụ dưới lầu nhận tiền boa còn nhiều hơn ấy chứ?”
+
+Xung quanh lập tức cười ồ lên.
+
+Có người phụ họa: “Tổng giám đốc Trương hài hước thật!”
+
+Đúng lúc đó, màn hình máy chiếu bất ngờ hiện lên bản “Sổ tay vận hành hệ thống” do tôi tự tay viết.
+
+Trương Minh giật lấy bút laser, chỉ vào đoạn mã trên màn hình, hùng hồn nói:
+
+“Mọi người nhìn xem, mấy thứ Trần Thư Yên viết đúng là rác rưởi! Tôi mới tiếp quản ba ngày mà đã tối ưu được 15 lỗi lớn!”
+
+“Tôi chỉnh chức năng ‘tự động hủy đơn hàng quá hạn’ từ 24 giờ xuống còn nửa tiếng!”
+
+“Chức năng ‘duyệt hoàn tiền hậu mãi’ từ 3 cấp xuống còn 1 cấp, không cần xét duyệt lòng vòng nữa, hiệu suất tăng thẳng 30%!”
+
+“Trước kia mỗi ‘phiếu vận đơn’ muốn tạo ra phải khóa đơn hàng, xác thực thông tin, mất đến một phút mới ra được mã vận đơn!”
+
+“Trong mắt tôi, xác thực thông tin là bước thừa thãi, vô nghĩa!”
+
+“Giờ tôi xóa luôn bước đó, chỉ mất 5 giây là có vận đơn rồi!”
+
+Anh ta tự đắc nói: “Đấy mới gọi là kỹ thuật!”
+
+Tôi nhìn chằm chằm lên màn hình, cười khẩy lạnh lùng.
+
+Cái quái gì mà tối ưu – rõ ràng là tự sát thì có!
+
+Thay đổi “hủy đơn quá hạn” thành 30 phút sẽ khiến hàng loạt đơn chưa thanh toán bị hủy nhầm.
+
+Cắt quy trình duyệt hoàn tiền xuống còn 1 cấp – bất kỳ lý do nào cũng được duyệt – chẳng khác nào dỡ bỏ tường lửa rủi ro.
+
+Bỏ luôn bước xác thực vận đơn – hậu quả khó mà tưởng tượng nổi!
+
+“Trần Thư Yên!” – Tổng giám đốc bất ngờ cất tiếng.
+
+“Qua đây rót rượu cho Giám đốc Trương đi! Làm ở bộ phận chăm sóc khách hàng thì phải biết hầu hạ người khác chứ! Nhìn đẹp thế kia, không biết phục vụ tử tế thì làm gì?”
+
+Tôi không nhúc nhích.
+
+Gương mặt ông ta tối sầm lại: “Sao? Nghe không hiểu tiếng người à? Nếu không vui vẻ làm, mai nghỉ việc luôn cho tôi!”
+
+Hai đồng nghiệp nam – dưới ánh mắt ra hiệu của tổng giám đốc – liền bước tới, mỗi người giữ một bên tay tôi, ép kéo tôi đến bàn chính.
+
+Trương Minh đẩy ly rượu về phía tôi: “Rót cẩn thận vào, làm đổ một giọt thì tháng này đừng hòng nhận lương!”
+
+Đúng lúc ấy, điện thoại trong túi tôi reo lên – là cảnh báo khẩn cấp từ hệ thống.
+
+Tôi vừa định mở ra xem, Trương Minh bất ngờ giật lấy điện thoại, đập mạnh xuống đất làm vỡ tan tành.
+
+“Đã là phế vật mà còn dám phân tâm nhìn điện thoại à? Mau rót rượu!”
+
+Tôi không giận mà bật cười.
+
+Tận mắt chứng kiến hắn tự tay hủy đi cơ hội cuối cùng của chính mình.
+
+Thấy tôi vẫn không chịu rót rượu, Trương Minh mất kiên nhẫn phẩy tay ra hiệu – một nhóm đồng nghiệp lao đến đè tôi xuống sàn.
+
+Hắn đứng trên cao, đắc ý nhìn dáng vẻ nhếch nhác của tôi.
+
+“Đồ vô dụng! Dám chống đối tôi? Loại như cô cũng đòi tỏ thái độ à?”
+
+Ánh mắt hắn bỗng rơi vào miếng ngọc bội trên cổ tôi, trở nên tham lam, hắn thô bạo giật lấy.
+
+Đó là báu vật gia truyền, đồ cổ từ thời Minh của nhà tôi.
+
+Theo luật hình sự, hành vi cướp giật tài sản từ 30.000 đến 100.000 tệ trở lên, có thể bị phạt tù trên 10 năm.
+
+Tôi liếc nhìn chiếc camera gắn trên trần nhà.
+
+Sau đó cố tình vùng vẫy, thể hiện phản kháng rõ ràng.
+
+Trương Minh tưởng tôi muốn giật lại ngọc, liền đá mạnh nhiều cái vào lưng tôi: “Ông đây cướp của cô là vinh hạnh cho cô đấy! Đừng có mà không biết điều!”
+
+Đúng lúc ấy, điện thoại của tổng giám đốc reo lên.
+
+Là cuộc gọi từ chủ tịch của nền tảng livestream lớn nhất – “Tinh Diệu Ưu Tuyển”, đối tác chiến lược của công ty.
+
+Giọng bên kia vô cùng giận dữ:
+
+“Lý Kiến Quốc, bên công ty ông làm ăn kiểu gì vậy?”
+
+“Trong ‘Thỏa thuận dịch vụ’ của chúng ta đã ghi rõ, trong vòng 48 tiếng sau đợt khuyến mãi
+
+lớn phải đồng bộ dữ liệu quyết toán chia doanh thu, giờ đã quá hạn mà vẫn chưa thấy dữ liệu đâu!”
+
+“Tôi đã gửi cảnh báo chính thức! Nếu tiếp tục chậm trễ, không chỉ phải bồi thường 80 triệu
+
+tệ tiền vi phạm hợp đồng, mà toàn bộ hợp tác năm sau sẽ bị hủy bỏ hoàn toàn!”
+
+Gương mặt Lý Kiến Quốc lập tức trắng bệch, hốt hoảng quay sang thúc giục Trương Minh.
+
+“Nhanh lên! Gọi bộ phận kỹ thuật thống kê dữ liệu chia doanh thu ngay cho tôi!”
+
+Hai phút sau, Trương Minh hốt hoảng chạy trở lại.
+
+“Giám đốc Lý… hệ thống loạn hết rồi!”
+
+“Dữ liệu hủy đơn không khớp với thanh toán thực tế, vận đơn không khớp với thông tin sản phẩm.”
+
+“Không thể thống kê dữ liệu chia doanh thu được!”
+
+Vừa dứt lời, có người giơ điện thoại hét lớn: “Công ty chúng ta lên hot search rồi!”
+
+Lý Kiến Quốc giật lấy điện thoại, nhìn thấy trên màn hình những từ khóa đang leo top tìm kiếm: #HuanYuThươngMạiLoạnVậnChuyểnNgàyĐôi11#,#ĐơnĐãThanhToánBịHủyNgaySauKhiMua#.
+
+Cả người ông ta run lên không thể kiểm soát.
+
+Bất ngờ, như chợt nghĩ ra điều gì, ông ta quay phắt lại, ánh mắt trở nên u ám và giả tạo, nhìn chằm chằm vào tôi – người vẫn đang bị đè trên sàn nhà.
+
+Ông ta lao đến, nắm tóc tôi giật mạnh, kéo tôi đứng dậy.
+
+“Trần Thư Yên, tôi biết cô là người hiếu thảo, mẹ cô không phải đang cần tiền chữa bệnh sao?”
+
+“Chỉ cần cô ký vào bản tuyên bố này, thừa nhận rằng trước khi nghỉ việc, cô cố tình để lại lỗ hổng trong hệ thống khiến dữ liệu bị lỗi.”
+
+“Ngay lập tức tôi sẽ duyệt cho cô tạm ứng sáu tháng lương, còn cho vay thêm năm mươi ngàn tệ.”
+
+Trương Minh lập tức hiểu ý, lấy ra một tờ giấy A4 trắng tinh.
+
+“Chị Trần, chị cứ ký tên trước đi, sau đó bọn em sẽ bổ sung hồ sơ chính thức.”
+
+“Chị yên tâm, chỉ là giấy tạm thời để trấn an bên Tinh Diệu Ưu Tuyển thôi, tuyệt đối không ai truy cứu đâu!”
+
+Tôi nhìn tờ giấy trắng trước mặt, bật cười.
+
+“Đừng mơ nữa, loại giấy trắng không ghi nội dung thế này, ngu mới ký!”
+
+“Đồ không biết điều!” – Lý Kiến Quốc lật mặt ngay tức khắc, gào lên:
+
+Rồi ông ta quay về phía toàn thể đồng nghiệp, hét to:
+
+“Mọi người nhìn đi! Chính Trần Thư Yên cố tình phá hoại công ty chúng ta!”
+
+“Cô ta hoàn toàn có thể cứu công ty vượt qua khủng hoảng, nhưng lại đứng nhìn không giúp!”
+
+“Nếu cô ta không ký, Tinh Diệu sẽ bắt chúng ta bồi thường đến phá sản! Đến lúc đó các người mất việc, vợ con ra đường mà ăn gió uống sương đi!”
+
+Không biết ai là người đầu tiên hét lên: “Trần Thư Yên, cô ích kỷ quá!”
+
+Ngay sau đó, tiếng mắng chửi ập đến như sóng trào.
+
+Một người nhấc chân ghế ném thẳng vào lưng tôi: “Cô làm việc ở công ty mười năm rồi, chẳng lẽ không thể hy sinh một lần à?!”
+
+Một người khác tạt ly nước lạnh thẳng vào mặt tôi: “Chỉ cần ký tên thôi mà! Ký xong có chết đâu? Sao phải kéo cả chúng tôi xuống hố?!”
+
+Trương Minh lao tới, túm chặt tay tôi, ép xuống bàn.
+
+“Ký đi! Không ký hôm nay cô đừng hòng ra khỏi đây nguyên vẹn!”
+
+Tôi ra sức giãy giụa, ngón tay co chặt thành nắm đấm.
+
+Nhưng càng lúc càng nhiều người xông vào giúp hắn bẻ tay tôi ra — rồi “rắc!” một tiếng giòn vang.
+
+Bàn tay phải của tôi bị bẻ gãy. Cơn đau dữ dội khiến tôi tối sầm mắt, mồ hôi lạnh ướt đẫm cả áo.
+
+“Còn dám phản kháng à?!” Lý Kiến Quốc xông tới, đá mạnh vào đầu gối tôi.
+
+Tôi gục xuống đất trong cơn đau tê dại, Trương Minh chấm ngón cái tôi vào mực đỏ, chuẩn bị ấn xuống tờ giấy trắng.
+
+Ngay khi đầu ngón tay tôi sắp chạm vào mặt giấy — “Rầm!”
+
+Cánh cửa phòng tiệc bị đạp tung.
+
+Thư ký riêng của tổng giám đốc hốt hoảng lao vào, đôi mắt hoảng sợ nhìn về phía tôi.
+
+Tôi liếc lên chiếc đồng hồ treo tường — kim giờ vừa chạm 1 giờ 30 phút chiều.
+
+Tốt lắm. Khẩu súng của tôi, đã đến đúng giờ.
+
+Nhà đầu tư của Hoàn Vũ Thương Mại, đồng thời cũng là cổ đông lớn nhất – Chủ tịch Vương, bước vào cùng bốn vệ sĩ và giám đốc pháp lý.
+
+Toàn thân ông ta tỏa ra khí thế áp đảo.
+
+Ánh mắt quét một vòng qua căn phòng hỗn loạn, cuối cùng dừng lại ở tôi – người đang co quắp dưới đất.
+
+Chủ tịch Vương xoay người nhìn tổng giám đốc, giọng nói lạnh băng:
+
+“Lý Kiến Quốc, trong báo cáo quý tháng trước ông gửi cho tôi có ghi ‘đội ngũ gắn kết, hệ thống kỹ thuật ổn định’.”
+
+“Cái ông gọi là ổn định, là cảnh tượng trước mắt tôi sao?”
+
+Sắc mặt Lý Kiến Quốc trắng bệch như giấy, thậm chí còn tệ hơn lúc bị bên Tinh Diệu gọi mắng.
+
+Ông ta vô thức chỉnh lại tư thế đứng, cố gắng nặn ra một nụ cười nịnh nọt:
+
+“Chủ tịch Vương! Ngài đến đột ngột quá! Mau ngồi, tôi sẽ bảo phục vụ thay trà Long Tỉnh hạng nhất cho ngài…”
+
+Ông ta vừa nói vừa bước lên phía trước, nhưng lập tức bị vệ sĩ đứng đầu giơ tay chặn lại.
+
+Lý Kiến Quốc bị đẩy văng vào cạnh bàn, đập mạnh khiến ông ta đau đến mức hít sâu một hơi, nhưng không dám hé miệng.
+
+Chủ tịch Vương đi vòng qua ông ta, đích thân đỡ tôi đứng dậy.
+
+“Cô Trần Thư Yên, email mã hóa mà cô gửi cho tôi lúc 11 giờ đêm qua, tôi đã nhận được.”
+
+Trong mắt ông ta ánh lên sự thấu hiểu: “Phụ lục đính kèm gồm bảng chi tiết chi phí, dòng tiền, danh sách đơn hàng ảo – tôi đã cho phòng kiểm toán kiểm tra suốt đêm.”
+
+“Nửa tiếng trước, báo cáo sơ bộ được gửi đến: 6 triệu tệ doanh thu bị chuyển vào tài khoản cá nhân, 2000 đơn hàng ảo lấy cắp 10 triệu hàng hóa, tất cả đều là sự thật.”
+
+Con ngươi của Lý Kiến Quốc co rút lại cực độ.
+
+Ông ta trơ mắt nhìn Chủ tịch Vương đưa máy tính bảng dí thẳng vào mặt mình.
+
+Ngón tay bắt đầu run lên không kiểm soát, đến cả hơi thở cũng rối loạn.
+
+“Đây là lịch sử giao dịch của tài khoản vợ ông – 6 triệu doanh thu được chuyển vào hôm đó, ngay lập tức đem đi mua sản phẩm tài chính.”
+
+“Còn đây là địa chỉ nhà em vợ ông – số điện thoại nhận hàng của 2000 đơn đơn hàng kia, đều là số của cậu ta.”
+
+Chủ tịch Vương trượt tay trên màn hình, mỗi trang dừng đúng 2 giây, ép Lý Kiến Quốc phải nhìn từng bằng chứng rõ mồn một.
+
+“Còn nữa, hệ thống do Trương Minh chỉnh sửa đã khiến lượng khiếu nại từ người dùng vượt qua 1,8 triệu, lọt thẳng lên top 1 hot search!”
+
+“Bên Tinh Diệu Ưu Tuyển yêu cầu công ty bồi thường khoản vi phạm khổng lồ, đối tác logistics thì yêu cầu hủy hợp đồng và đòi thêm 2 triệu tiền bồi thường. Mớ hỗn độn này — ông tính xử lý kiểu gì?”
+
+“Không phải tôi!” – Lý Kiến Quốc đột nhiên gào lên điên cuồng.
+
+Ông ta chỉ thẳng vào Trương Minh, hét lớn:
+
+“Là hắn tự ý xóa kiểm tra logic, thay đổi thời gian quá hạn, biến hệ thống thành cái rổ thủng!”
+
+Trương Minh giãy giụa muốn nhào đến túm áo Lý Kiến Quốc, nhưng bị vệ sĩ giữ chặt.
+
+Hắn gào khóc trong uất ức:
+
+“Ông nói xạo! Tháng trước tôi dọn log hệ thống, chính mắt thấy ông chuyển 6 triệu vào tài khoản riêng!”
+
+“Ông bắt tôi che giấu, còn hứa thăng chức!”
+
+“Ông còn nói hệ thống của Trần Thư Yên kiểm soát quá nghiêm ngặt, nếu không bôi nhọ cô ấy, thì sớm muộn gì cô ấy cũng phát hiện việc ông tham ô!”
+
+Hắn dừng lại, giọng nghẹn lại đầy căm phẫn:
+
+“Giờ có chuyện thì ông đổ hết lên đầu tôi? Ông còn chút lương tâm nào không?!”
+
+Hai người như chó điên lao vào cắn xé nhau.
+
+Lý Kiến Quốc tức giận định giơ chân đá Trương Minh, nhưng bị vệ sĩ kéo lại, mất đà ngã nhào xuống sàn.
+
+Trương Minh tranh thủ lao tới, túm tóc ông ta vật lộn loạn xạ, cảnh tượng hỗn loạn như một trận đánh trong chợ.
+
+Chủ tịch Vương lạnh lùng đứng nhìn vở hài kịch trước mắt, đợi cả hai trầy trụa, bầm dập, mới ra hiệu cho vệ sĩ tách họ ra.
+
+Ông quay sang tôi, giọng nghiêm túc:
+
+“Trần Thư Yên, bản ‘Sổ tay vận hành hệ thống’ cô viết, tôi đọc suốt đêm. Logic chặt chẽ đến mức có thể dùng làm giáo trình ngành. Cô là một nhân tài hiếm có.”
+
+Ông đưa tôi xem thư cảnh báo mới nhất từ Tinh Diệu Ưu Tuyển:
+
+“Trong vòng 12 giờ cuối cùng, nếu không cung cấp được dữ liệu chia doanh thu chính xác, họ sẽ khởi kiện đòi 80 triệu tệ tiền vi phạm, đồng thời hủy toàn bộ hợp tác.”
+
+Ánh mắt Chủ tịch Vương dừng trên gương mặt tôi, đầy tin tưởng:
+
+“Giờ tôi cần cô dẫn dắt đội khôi phục hệ thống, thống kê dữ liệu – cô làm được không?”
+
+Tôi hít sâu một hơi, gật đầu chắc nịch:
+
+“Được.”
+
+Tôi nhận lấy chiếc laptop được đưa đến.
+
+Lấy từ túi áo ra chiếc USB mã hóa – “chìa khóa hậu môn” mà tôi để lại khi phát triển hệ thống.
+
+USB vừa cắm vào, máy phát ra tiếng “ting”.
+
+Giao diện đăng nhập nhảy lên:
+
+“Chào mừng quản trị viên cao cấp Trần Thư Yên đăng nhập.”
+
+Tôi mở module “Quản lý đơn hàng” – màn hình tràn ngập cảnh báo đỏ.
+
+Từ khi Trương Minh sửa thời gian hủy đơn tự động từ 24h thành 30 phút,
+
+Chỉ trong 1 tiếng, đã có 1286 đơn hàng chưa thanh toán bị hủy nhầm, Trong đó 932 đơn là đơn đặt trước có trả trước tiền cọc.
+
+Người dùng vừa gom đủ tiền, vừa định thanh toán phần còn lại, thì trang đã hiện: đơn hàng bị hủy.
+
+Hơn 200 đơn còn lại là đơn đặt thực phẩm tươi sống vào rạng sáng, khách đang chờ giao buổi sáng – kết quả: đơn biến mất.
+
+Tổng đài khiếu nại sắp nổ tung.
+
+Số lượng khiếu nại của người dùng đã vượt 1,8 triệu, và vẫn đang tăng với tốc độ 3.000 lượt mỗi phút.
+
+Từ khóa #HoànVũThươngMạiHủyĐơnHàngÁcÝ# đã leo lên vị trí hot search số 1.
+
+Trương Minh quỳ rạp xuống đất, cố gắng biện minh:
+
+“Tôi cứ tưởng rút ngắn thời gian sẽ tăng hiệu suất… tôi không ngờ…”
+
+Tôi chuyển sang module hoàn tiền hậu mãi, gọi dữ liệu theo thời gian thực.
+
+Kể từ khi Trương Minh sửa cơ chế duyệt hoàn tiền từ 3 cấp xuống 1 cấp, chỉ trong 1 giờ đã có 800 đơn hoàn tiền lặp, cao nhất là 10 vạn tệ một đơn.
+
+Lý do hoàn tiền thậm chí là: “Cha mày, rảnh quá, trêu mày chơi.”
+
+Tôi truy vết, phát hiện 500 trong số đó đều do một người dùng, sử dụng 10 tài khoản khác nhau gửi lên.
+
+Đây là hành vi cạnh tranh ác ý, vi phạm nghiêm trọng quy tắc ngành.
+
+Tôi mở tiếp module vận chuyển.
+
+Sau khi Trương Minh xóa kiểm tra xác nhận, 30% vận đơn bị gán sai.
+
+Người dùng A ở Thượng Hải đặt son môi – lại giao nhầm cho người dùng B ở Bắc Kinh – thức ăn cho chó.
+
+Người dùng C đặt mua tủ lạnh, vận đơn lại gắn vào đơn của người dùng D ở Quảng Châu – khăn tắm.
+
+Đối tác logistics đã gửi thư luật sư, yêu cầu bồi thường 2 triệu tệ, bao gồm phí trả hàng, bồi thường khách, và phí lưu kho, đồng thời chấm dứt hợp đồng hợp tác năm nay.
+
+Mà 90% lượng hàng của công ty hiện nay do đối tác này vận chuyển — nếu mất đi họ, toàn bộ đơn hàng tiếp theo đều không thể giao đi.
+
+Rõ ràng, những gì Trương Minh làm đã đẩy công ty đến bờ vực khủng hoảng.
+
+“Em sai rồi!” Trương Minh bỗng “bịch” một tiếng quỳ gối, đầu gối đập xuống sàn vang lên tiếng nặng nề, nước mắt nước mũi tèm lem:
+
+“Chị Trần ơi, em thực sự sai rồi! Cầu xin chị đừng kiện em!”
+
+“Mẹ em bị liệt, mỗi tháng phải chi năm nghìn tiền thuốc…”
+
+“Em còn hai đứa nhỏ đang học tiểu học, em mà đi tù, tụi nó biết sống sao?!”
+
+“Là do Lý Kiến Quốc ép em, ông ta dọa đuổi việc nếu không làm theo… em không có đường sống…”
+
+Hắn lết tới, định níu lấy ống quần tôi, hoàn toàn không còn chút kiêu ngạo nào như lúc ra tay đánh tôi khi nãy.
+
+Một đồng nghiệp khác mắt đỏ hoe bước ra, lí nhí nói:
+
+“Chị Trần… em không nên đánh chị cùng họ…”
+
+“Em chỉ sợ bị mất việc… vợ em mới sinh đứa thứ hai, nhà đang rất cần tiền…”
+
+Tôi nhìn bọn họ, nhớ lại cảnh vừa nãy họ vây quanh Trương Minh hùa theo, hả hê cười cợt. Chỉ cảm thấy ghê tởm.
+
+Tôi không đáp lại lời nào, chỉ tập trung nắm chặt con chuột máy tính.
+
+Dù cổ tay bị trật khớp đau đớn dữ dội, tôi vẫn cắn chặt răng dưới để chịu đựng.
+
+Vì đây là trận chiến của tôi, tôi phải kiên trì đến cùng.
+
+Tôi lập tức khôi phục lại logic hủy đơn ban đầu, đổi thời gian từ 30 phút về 24 tiếng.
+
+Đồng thời phục hồi hàng loạt các đơn bị hủy nhầm, gửi phiếu bồi thường đến khách hàng.
+
+Nhanh chóng sửa lại module hoàn tiền, tái kích hoạt duyệt ba cấp, chặn đứng toàn bộ yêu cầu hoàn tiền ác ý đang gửi đến.
+
+Kết nối lại với đối tác vận chuyển, kích hoạt lại hệ thống kiểm tra vận đơn, tự động gán lại chính xác các đơn bị sai.
+
+Tôi cũng gửi chính xác dữ liệu chia doanh thu của Tinh Diệu Ưu Tuyển vào hộp thư chỉ định.
+
+Thiệt hại với bên logistics cũng được giảm thiểu trong phạm vi có thể, cuối cùng nhận được sự thông cảm và chấp nhận tiếp tục hợp tác.
+
+Nửa tiếng sau, hệ thống đã trở lại trạng thái bình thường.
+
+Chủ tịch Vương gật đầu hài lòng.
+
+Ông quay sang trợ lý, nói:
+
+“Chuyển ngay 1 triệu tệ cho Bệnh viện Ung bướu Thành phố, ghi rõ dùng cho viện phí của mẹ Trần Thư Yên.”
+
+“Từ giờ, mọi chi phí điều trị của mẹ cô ấy, công ty chi trả trực tiếp, không cần phải làm thủ tục hoàn lại.”
+
+“Thả tôi ra! Các người dựa vào đâu mà ngăn tôi?!”
+
+Lý Kiến Quốc bất ngờ phát điên, vùng vẫy thoát khỏi vệ sĩ, vừa chạy ra cửa phòng tiệc vừa gọi điện thoại.
+
+“Anh họ! Là em đây, Kiến Quốc đây! Cứu em với!”
+
+“Có người ở Hoàn Vũ Thương Mại gài bẫy em! Họ dùng chứng cứ giả bắt em nhận tội, còn định tống em vào tù!”
+
+“Anh mau mang người đến! Nếu không, muộn rồi thì hết cách!”
+
+Đột nhiên, động tác của Lý Kiến Quốc khựng lại. Hắn lắp bắp không tin nổi:
+
+“Gì… gì cơ? Anh nói…”
+
+Giọng hắn tắc nghẹn, điện thoại “cạch” một tiếng rơi xuống đất.
+
+Chủ tịch Vương khoanh tay đứng bên cạnh, khóe miệng nhếch lên một nụ cười lạnh lùng.
+
+“Có vẻ ông vẫn chưa biết, người anh họ bên đội hình sự của ông – Lý Vĩ.”
+
+“Vừa mới bị ‘song quy’ vì nhận hối lộ. Trong quá trình điều tra, ủy ban kỷ luật còn phát hiện ông ta từng giúp ông che giấu hai vụ trốn thuế.”
+
+“Giờ hồ sơ vụ của ông cũng đã được chuyển giao sang đó, xử lý chung luôn.”
+
+“Không thể nào… Không thể nào!!!” Lý Kiến Quốc sụp đổ hoàn toàn.
+
+Vẻ mặt méo mó vì kích động, ông ta lao tới chỗ Trương Minh:
+
+“Tất cả là do cái đồ vô dụng như mày! Tao bảo mày sửa hệ thống để xóa chứng cứ, mà mày sửa đến mức rò rỉ tùm lum!”
+
+“Nếu không vì mày, làm sao tao bị phát hiện?! Tao phải giết mày!”
+
+Ông ta túm lấy tóc Trương Minh, đập đầu hắn vào mép bàn đá cẩm thạch.
+
+“Á! Bỏ ra!” – Trương Minh đau quá gào lên, giãy giụa đá mạnh vào bụng Lý Kiến Quốc.
+
+“Chính là ông lừa tôi! Ông nói chỉ chỉnh vài dòng code là xong, giờ chuyện vỡ lở thì định đổ hết lên đầu tôi à?!”
+
+“Tôi liều với ông luôn!”
+
+Hắn há miệng cắn mạnh vào cổ tay của Lý Kiến Quốc, răng cắm sâu vào da thịt.
+
+Lý Kiến Quốc rít lên vì đau, nhưng vẫn không chịu buông tay.
+
+Hai người vật lộn lăn lộn trên mặt đất, đồng nghiệp xung quanh hoảng sợ lùi lại.
+
+“Dừng tay ngay!” – Một vệ sĩ quát lớn, nhanh chóng lao đến tách hai người ra và ghì xuống đất.
+
+Ngay lúc đó, Lý Kiến Quốc lén rút điện thoại dự phòng giấu sau thắt lưng, bấm nhanh một dãy số.
+
+Nhưng còn chưa kịp bấm xong, giám đốc pháp lý đã nhào tới, giật lấy điện thoại.
+
+“Đến nước này rồi còn định gọi người tiếp tay tẩu tán tài sản à?”
+
+Giám đốc pháp lý lật xem lịch sử cuộc gọi, sắc mặt mỗi lúc một tối sầm.
+
+“Ông định gọi về nhà, bảo người nhà bán tống hàng hóa trong kho, tiêu hủy chứng cứ?”
+
+“Tiếc là — chúng tôi đã sớm báo cảnh sát. Toàn bộ lô hàng trị giá 10 triệu đã bị niêm phong.”
+
+Đồng tử của Lý Kiến Quốc co rút cực độ, cả người như bị rút cạn sức lực, gục hẳn xuống sàn.
+
+Ông ta trân trân nhìn trần nhà, ánh mắt trống rỗng, vẻ hung hăng khi nãy đã biến mất, chỉ còn lại tuyệt vọng.
+
+Ông ta biết – mọi đường lui đã bị chặn đứng.
+
+Trương Minh quay sang nhìn tôi, cố vớt vát lần cuối:
+
+“Chị Trần, em biết sai rồi… em không nên giúp Lý Kiến Quốc hại chị…”
+
+“Em chỉ vì muốn giành vị trí giám đốc kỹ thuật… Chị cứu em với, nhà em còn con nhỏ…”
+
+Tôi không nhìn hắn, vẫn tập trung vào màn hình máy tính.
+
+Các đơn hàng bị hủy nhầm đã khôi phục được 80%.
+
+Tốc độ khiếu nại từ 3.000 lượt/phút đã giảm còn 500 lượt/phút.
+
+Từ khóa hot search cũng bắt đầu rớt hạng. Mọi thứ… đang dần trở lại quỹ đạo.
+
+Ngay lúc đó, tiếng còi cảnh sát vang lên ngoài cửa hội trường.
+
+Hai cảnh sát mặc đồng phục bước vào, giơ lệnh triệu tập và còng tay.
+
+“Lý Kiến Quốc, Trương Minh, chúng tôi đến từ đội điều tra kinh tế. Hiện giờ hai người bị triệu tập theo pháp luật, mong các người phối hợp điều tra.”
+
+Giám đốc pháp lý đưa ra xấp tài liệu chứng cứ dày cộp:
+
+“Đây là chuỗi bằng chứng liên quan đến hành vi chiếm dụng tài sản công, gồm:  Lịch sử dòng tiền,  Danh sách đơn hàng ảo,  Nhật ký chỉnh sửa hệ thống,  Và cả bản ghi âm nhận tội vừa nãy.”
+
+Cảnh sát lật xem vài trang rồi gật đầu xác nhận.
+
+Trên đường bị áp giải đi, Lý Kiến Quốc còn quay đầu nhìn tôi, rít lên cay độc:
+
+“Trần Thư Yên, cô nhớ đấy! Cho dù tôi có phải ngồi tù, ra ngoài cũng không tha cho cô đâu!”
+
+Chủ tịch Vương bước tới cạnh tôi, nhìn màn hình đang dần ổn định.
+
+Ông vỗ nhẹ vai tôi, giọng nghiêm túc:
+
+“Cô đã vất vả rồi. Giờ tôi có một quyết định rất quan trọng muốn công bố – Liên quan đến tương lai của Hoàn Vũ Thương Mại, và cả… vị trí mới của cô.”
+
+Sau khi cảnh sát dẫn Lý Kiến Quốc và Trương Minh đi, cả hội trường lặng ngắt như tờ.
+
+Tất cả đồng nghiệp đều cúi gằm mặt, không ai dám nhúc nhích.
+
+Chủ tịch Vương đảo mắt nhìn quanh, giọng nghiêm nghị:
+
+“Những ai có tham gia đánh người, hùa theo gây rối – trong vòng 3 tiếng tới, nộp bản kiểm điểm lên phòng nhân sự.”
+
+“Phải viết rõ: ai sai khiến các người ra tay, vì sao lại hùa theo.”
+
+“Phòng pháp chế sẽ đối chiếu với camera giám sát để xác minh.”
+
+“Nếu ai dám nói dối hay viết kiểm điểm qua loa, công ty sẽ xử lý theo quy định vi phạm kỷ luật nghiêm trọng.”
+
+“Nếu tình tiết nặng, công ty sẽ chuyển giao bằng chứng cho cảnh sát.”
+
+Toàn bộ hội trường lập tức vang lên tiếng hít khí lạnh căng thẳng.
+
+Có người cố gắng thanh minh:
+
+“Chủ tịch Vương… tôi… là do bị Lý Kiến Quốc xúi giục…”
+
+“Đó không phải là lý do để anh ra tay.” Chủ tịch Vương lạnh lùng cắt lời.
+
+“Pháp luật và nội quy công ty không vì lý do ‘bị xúi giục’ mà nương tay.”
+
+Thấy không lay chuyển được Chủ tịch Vương, họ quay sang tìm kiếm sự tha thứ từ tôi:
+
+“Chị Trần… em không nên đá chị… nhưng mà chị cũng đừng vì chuyện nhỏ này mà đẩy em vào tù chứ…”
+
+Tôi thản nhiên đáp:
+
+“Đúng hay sai sẽ có pháp luật và quy định xét xử. Anh nghĩ gì, thì cứ nói với thẩm phán.”
+
+Chủ tịch Vương mời tôi vào văn phòng, rót một ly cà phê nóng đưa tới:
+
+“Cô vất vả rồi.”
+
+Ánh mắt ông chứa đầy sự tán thưởng:
+
+“Tổng giám đốc Tinh Diệu Ưu Tuyển vừa gọi điện tới, nói đã tận mắt thấy tốc độ khôi phục
+
+hệ thống và độ chính xác của dữ liệu do cô phụ trách. Họ cực kỳ khâm phục năng lực chuyên môn của cô.”
+
+“Họ không chỉ từ bỏ việc truy đòi vi phạm hợp đồng, mà còn đặt thêm đơn hàng hợp tác trị giá 50 triệu cho cả năm.”
+
+Ông mở ngăn kéo, lấy ra một chiếc thẻ ngân hàng màu đen đặt trước mặt tôi.
+
+“Vị trí Giám đốc kỹ thuật… vẫn là của cô.”
+
+“Trong thẻ này có 8 triệu tệ. 5 triệu là tiền thưởng cô xứng đáng được nhận,  1 triệu là bồi thường chi phí y tế,  2 triệu còn lại là phí tổn thất tinh thần mà công ty gửi tặng cô.”
+
+Chủ tịch Vương lại đưa cho tôi một chùm chìa khóa:
+
+“Căn hộ ba phòng mà cô mua, công ty đã thanh toán toàn bộ phần còn lại.”
+
+“Bên quản lý tòa nhà tôi cũng đã sắp xếp. Hôm qua họ đã lắp đầy đủ nội thất và thiết bị điện tử.”
+
+Đúng lúc ấy, điện thoại tôi đổ chuông. Là cuộc gọi từ Bệnh viện Ung bướu Thành phố.
+
+Tôi vội bắt máy: “Alo? Bác sĩ Trương?”
+
+“Anh Trần, tin vui đây!” – Giọng bác sĩ lộ rõ sự hân hoan.
+
+“Kết quả tái khám của mẹ anh vừa ra, thuốc điều trị đích mới cho hiệu quả rất tốt, khối u đã thu nhỏ đến 30%!”
+
+“Lúc nãy bà còn tỉnh táo hỏi ‘bao giờ con rảnh đến thăm’, tinh thần khá hơn nhiều, còn có thể tự ăn hết một bát cơm.”
+
+Mắt tôi cay xè, nước mắt rưng rưng.
+
+“Chỉ cần tiếp tục điều trị thêm ba tháng nữa, rất có thể bệnh sẽ ổn định lâm sàng.”
+
+Bác sĩ nói: “Khi đó chỉ cần tái khám định kỳ, không cần nằm viện lâu dài nữa.”
+
+Tôi tắt máy, lau nước mắt.
+
+Đây là tin vui nhất mà tôi nhận được kể từ khi mẹ phát bệnh.
+
+Chủ tịch Vương nhìn tôi dịu dàng, nhẹ nhàng nói:
+
+“Còn một việc nữa. Tôi định bổ nhiệm cô làm Phó tổng giám đốc điều hành, phụ trách mảng kỹ thuật và kiểm soát rủi ro.
+
+Tăng thêm 2 triệu tệ tiền lương hằng năm.”
+
+“Nhân sự trong đội – cô chọn tùy ý. Ngân sách – không giới hạn.”
+
+Tôi suy nghĩ một chút, rồi chủ động đề xuất:
+
+“Tôi muốn thành lập một bộ phận mới – Phòng Kỹ thuật và Tuân thủ.”
+
+“Phòng này sẽ phụ trách:  Rà soát các lỗ hổng hiện có của hệ thống, Áp dụng quy chế ‘ký
+
+“Bên cạnh đó, tôi muốn xây dựng hệ thống giám sát dòng tiền thời gian thực – mọi giao dịch trên 50.000 tệ sẽ tự động kích hoạt quy trình kiểm toán.”
+
+Chủ tịch Vương vỗ tay hài lòng:
+
+“Đúng ý tôi! Tôi sẽ điều hai người từ Phòng Kiểm toán hỗ trợ cô. Cần thiết bị gì thì cứ trực tiếp liên hệ bộ phận mua sắm.”
+
+Ông đột nhiên nhớ ra điều gì, lấy từ góc bàn ra một miếng ngọc bội, đưa về phía tôi.
+
+Chính là miếng ngọc cổ gia truyền mà Trương Minh từng cướp đi – nay đã quay về tay tôi.
+
+Một tuần sau, tôi đưa mẹ chuyển vào sống trong căn hộ ba phòng.
+
+Mẹ ngồi trên bệ cửa sổ hướng nam, tôi giúp bà đắp chiếc chăn mỏng lên chân, bên cửa sổ đặt chậu lan bà thích nhất.
+
+Ánh nắng dịu dàng chiếu lên mặt bà – khuôn mặt ấy đã hồng hào hơn trước rất nhiều.
+
+Mẹ cười nhẹ nói:
+
+“Nhìn con có được căn nhà của riêng mình, không còn phải thuê trọ, chuyển chỗ nay đây mai đó, lòng mẹ cuối cùng… cũng thấy yên tâm rồi.”
+
+Tôi ngồi xuống bên mẹ, trong lòng ngập tràn cảm giác an yên.
+
+“Mẹ ơi, đợi mẹ khỏe hơn chút, con sẽ đưa mẹ đi dạo công viên, rồi đi ăn món cá chua ngọt mẹ thích nhất.”
+
+Mẹ gật đầu thật mạnh, nắm chặt tay tôi.
+
+Tay mẹ dù gầy guộc, nhưng vẫn rất ấm áp.
+
+Trong một tháng kể từ sau khi hệ thống được khôi phục, danh tiếng của Hoàn Vũ Thương Mại dần phục hồi.
+
+Tôi đứng đầu thành lập Phòng Kỹ thuật và Tuân thủ, soạn ra tài liệu: “Sách trắng về kiểm soát rủi ro hệ thống thương mại điện tử.”
+
+Trong đó quy định chi tiết:  “Đơn hàng quá hạn phải có thời gian đệm tối thiểu 12 giờ”,  “Quy
+
+trình hoàn tiền áp dụng kiểm duyệt ba cấp + kiểm tra thủ công”,  “Thông tin vận chuyển phải
+
+khớp đồng thời địa chỉ tỉnh/thành + quận/huyện + số nhà và 4 số cuối điện thoại.”
+
+Tài liệu này được Hiệp hội ngành nghề công nhận và đề xuất làm tiêu chuẩn, nhiều công ty
+
+thương mại điện tử khác cũng tìm đến để học hỏi kinh nghiệm kiểm soát rủi ro.
+
+Những đồng nghiệp từng ra tay đánh tôi trước đó, không chỉ bị công ty sa thải mà còn bị kiện ra tòa vì tội cố ý gây thương tích.
+
+Phòng Tuân thủ do tôi quản lý đã tuyển thêm 8 nhân sự mới.
+
+Khi đào tạo, tôi luôn lấy trường hợp của Lý Kiến Quốc và Trương Minh làm bài học phản diện, và nói với họ:
+
+“Giới hạn cuối cùng của người làm kỹ thuật là: Không dùng công nghệ làm đường tắt, Không xem nhẹ quy tắc như thứ trang trí.”
+
+Ba tháng sau, tại hội nghị ngành thương mại điện tử, tôi đứng trên sân khấu, tự tin diễn thuyết.
+
+“Tôi làm kỹ thuật đã 10 năm, từng viết code trong tầng hầm tối tăm, và cũng từng thấy quá nhiều ‘lối tắt thông minh’.”
+
+Tôi cầm micro, giọng nói bình thản:
+
+“Nhưng mọi con đường tắt, cuối cùng… đều là cạm bẫy.”
+
+Tôi giơ cao cuốn ‘Sách trắng về kiểm soát rủi ro hệ thống thương mại điện tử’:
+
+“Trong này không có thuật toán cao siêu nào, chỉ toàn những phương pháp tuân thủ cứng nhắc.”
+
+“Thế nhưng, chính những ‘phương pháp cứng nhắc’ đó, mới khiến người dùng yên tâm đặt hàng, giúp doanh nghiệp đi đường dài.”
+
+Dưới sân khấu im lặng hai giây, rồi vỗ tay vang như sấm.
+
+Tôi thấy Chủ tịch Vương ngồi hàng ghế đầu, giơ ngón tay cái với ánh nhìn đầy tự hào.
+
+Sau bài diễn thuyết, một đồng nghiệp từng nghi ngờ tôi “quá nguyên tắc” bước đến, đưa danh thiếp, cười nói:
+
+“Chị Trần, trước kia tôi thấy ‘tuân thủ’ là xiềng xích, giờ mới hiểu – xiềng xích đó chính là lớp vỏ bảo vệ.”
+
+“Công ty tôi muốn mời chị làm cố vấn kỹ thuật, giúp xây dựng hệ thống kiểm soát rủi ro – tiền bạc dễ bàn.”
+
+Lại có một bạn trẻ chạy theo hỏi:
+
+“Chị Trần ơi, làm sao cân bằng giữa ‘tuân thủ’ và ‘hiệu quả’? Nhiều khi theo đúng quy trình thì khách thấy bị chậm.”
+
+Tôi mỉm cười:“Thật ra người dùng không cần ‘phản hồi trong một giây’, mà cần cảm giác ‘mua sắm an toàn’.”
+
+Về đến nhà, mẹ đang mặc chiếc tạp dề cũ của tôi, chuẩn bị bữa tối.
+
+Bà đã gần như hoàn toàn hồi phục.
+
+Bà quay đầu lại, cười rạng rỡ và tự hào:
+
+“Lúc nãy bác hàng xóm còn hỏi mẹ, có phải con gái bác là ‘nữ chuyên gia công nghệ trên tivi’ không đó!”
+
+Tôi chợt nhớ lại khoảnh khắc sau ngày đôi 11, khi chỉ nhận được 5 tệ tiền thưởng.
+
+Lúc đối mặt với khủng hoảng, tôi vẫn đủ vững vàng để khôi phục lại mọi thứ, để đòi lại công bằng cho chính mình.
+
+Vì tôi luôn tin rằng – chỉ cần ‘logic cốt lõi’ của cuộc đời là đúng, mọi “lỗi hệ thống” đều có thể vá lại kịp thời.
+
+‘Logic cốt lõi’ của tôi là:
+
+Tôn trọng công nghệ,  Kiên trì với trách nhiệm,  Và bảo vệ hơi ấm dịu dàng của mẹ.
+
+Chỉ cần không đánh mất tâm niệm ban đầu, rồi cũng sẽ đến ngày mình chạm tới ‘đỉnh cao của cuộc đời’.
+
+Như chính ánh nắng rực rỡ đang tràn ngập khắp căn phòng này vậy.

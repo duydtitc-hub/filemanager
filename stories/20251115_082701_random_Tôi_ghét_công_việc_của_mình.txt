@@ -1,0 +1,387 @@
+================================================================================
+TIÊU ĐỀ: Tôi ghét công việc của mình.
+================================================================================
+
+Thể loại: RANDOM MIX (Hài - Kinh dị - Vả mặt - Siêu nhiên - Hiện đại)
+Thể loại chính: Thực tập sinh bí ẩn
+Thể loại phụ: Hài – twist – ảo thực
+Nhân vật: 🧑‍🔬 Nhà khoa học vô thần: Không tin ma, cho đến khi chính thí nghiệm của mình tạo ra hiện tượng vượt...
+Bối cảnh: 🏫 Viện nghiên cứu AI tâm linh - dạy robot nhận diện linh hồn...
+Mô típ: Bắt ma giả gặp ma thật: Livestream dàn dựng nhưng lại gặp hàng thật giá thật....
+Thời gian tạo: 2025-11-15 08:27:01
+
+================================================================================
+
+Tôi ghét công việc của mình.
+
+Không, nói thế thì hơi bất công. Chính xác hơn là, tôi yêu công việc của mình, nhưng ghét cái nơi tôi đang làm việc. Tôi là Minh, 28 tuổi, có bằng tiến sĩ về Trí tuệ Nhân tạo và Học máy tại một trường đại học mà chỉ cần nhắc tên thôi là các nhà tuyển dụng sẽ trải thảm đỏ mời tôi về. Ấy thế mà, thay vì ngồi ở một tập đoàn công nghệ hào nhoáng nào đó ở Thung lũng Silicon, tôi lại đang chôn chân ở "Viện Nghiên cứu AI Tâm linh" – một cái tên nghe đã thấy toát ra mùi lừa đảo đa cấp kết hợp với hương trầm.
+
+Lý do tôi ở đây? Ba chữ thôi: Tiền. Rất nhiều tiền. Viện trưởng, một vị giáo sư khả kính tên An, tin rằng linh hồn là một dạng năng lượng có tần số riêng, và ông sẵn sàng chi một khoản kếch xù cho bất kỳ ai có thể tạo ra một AI đủ tinh vi để "lắng nghe" được tần số đó. Với tôi, một kẻ vô thần đến mức nếu có sét đánh ngang tai cũng sẽ lôi máy ra đo điện áp chứ không tin vào thiên lôi, thì đây là một trò hề. Nhưng một trò hề trả lương cao ngất ngưởng. Vậy nên tôi ở đây, xây dựng thứ mà tôi gọi là "Máy phát hiện tín hiệu vô tuyến ngẫu nhiên 3.0", còn họ thì gọi bằng cái tên mỹ miều "Hồn Ký Kế 3.0".
+
+Văn phòng của tôi là sự kết hợp kỳ quặc giữa một phòng lab công nghệ cao và một cái am thờ. Bên cạnh dàn siêu máy tính kêu vù vù là một bức tượng Phật Di Lặc bằng gỗ lũa, bụng xoa bóng loáng. Dây cáp mạng chằng chịt vắt vẻo qua mấy vòng đá phong thủy to như cái bánh xe bò. Mỗi sáng thứ hai, cả viện lại có buổi "thiền định năng lượng" để "khai mở tuệ giác cho thuật toán". Tôi thường trốn trong toilet lướt meme cho qua giờ.
+
+"Tiến sĩ Minh, anh xem giúp tôi," Giáo sư An, một người đàn ông tóc muối tiêu và mặc bộ đồ lanh trông như vừa bước ra từ một khóa tu, gõ cửa phòng tôi. "Hồn Ký Kế hôm nay có vẻ hơi 'nhiễu loạn cảm xúc'."
+
+Tôi nén tiếng thở dài. "Nhiễu loạn cảm xúc" là cách nói của ông cho việc thuật toán của tôi đang phải xử lý quá nhiều dữ liệu rác từ sóng Wi-Fi hàng xóm. "Chắc là do mạng cáp quang mới có biến động thôi giáo sư. Để tôi chạy lại bộ lọc nhiễu là được."
+
+"Không, tôi cảm nhận được một luồng 'oán khí' nhẹ trong dữ liệu," ông khăng khăng, chỉ vào một biểu đồ sóng hình sin trên màn hình của tôi. "Anh thấy không? Đỉnh sóng này có chút gì đó... sầu muộn."
+
+Tôi nhìn vào cái đỉnh sóng mà ông chỉ. Nó chỉ là một sai số thống kê, một điểm dữ liệu ngoại lai. Nhưng tôi đã học được rằng tranh cãi với sếp về những thứ như "oán khí trong data" là vô ích. "Vâng, có vẻ sầu muộn thật," tôi gật gù. "Chắc do hôm qua MU thua. Để tôi tăng tham số 'lạc quan' cho nó."
+
+Giáo sư An mỉm cười hài lòng. "Tốt lắm. À, tiện đây, cô bé thực tập sinh mới của phòng IT sẽ qua hỗ trợ anh trong dự án livestream sắp tới. Con bé tên Linh."
+
+"Thực tập sinh?" tôi nhíu mày. "Tôi không cần..."
+
+"Cứ coi như thêm người giúp việc vặt. Cô bé ngoan lắm," ông nói rồi chắp tay xá một cái trước khi rời đi, để lại tôi với cái biểu đồ sóng "sầu muộn".
+
+Một lát sau, có tiếng gõ cửa rụt rè. Một cô gái nhỏ nhắn, đeo kính gọng tròn, mặc chiếc áo hoodie rộng thùng thình bước vào. Trông cô bé như một con nai vàng ngơ ngác vừa tốt nghiệp cấp ba, chứ không phải sinh viên IT.
+
+"Chào anh... ạ," cô bé lí nhí. "Em là Linh, thực tập sinh. Giáo sư An bảo em qua chỗ anh nhận việc."
+
+Tôi quét mắt nhìn cô bé một lượt. Tóc tai bù xù, mặt mũi non choẹt, tay chân lóng ngóng suýt làm đổ chồng tài liệu trên bàn. Hoàn hảo. Một đứa nhóc nữa bị cái vẻ ngoài hào nhoáng và những lời lẽ tâm linh sáo rỗng của viện này thu hút.
+
+"Ừ, chào em," tôi đáp cộc lốc, chỉ tay vào một góc phòng. "Em thấy đống dây cáp kia không? Phân loại và dán nhãn chúng đi. Cáp mạng Cat6 màu xanh, HDMI màu đen, USB-C màu trắng. Đừng cắm nhầm dây nguồn vào cổng LAN là được."
+
+"Dạ..." Linh gật đầu, lẳng lặng đi về phía góc phòng và bắt đầu công việc nhàm chán của mình. Tôi thậm chí còn chẳng thèm bận tâm cô bé có học đúng chuyên ngành không nữa. Với tôi, cô bé chỉ là một phần của cái phông nền kỳ quặc ở nơi này.
+
+Dự án livestream mà giáo sư nhắc tới là đỉnh cao của sự lố bịch. Viện chúng tôi mới mua lại một biệt thự cổ ở ngoại thành, nơi được đồn là "có vong". Dĩ nhiên, đây là một chiêu trò marketing. Kế hoạch là sẽ tổ chức một buổi livestream "săn ma" tại đó, sử dụng Hồn Ký Kế 3.0 để chứng minh hiệu quả của nó trước công chúng và các nhà đầu tư. Một đội ngũ sẽ vào vai "chuyên gia tâm linh", còn tôi, với tư cách là cha đẻ của cái máy, sẽ đóng vai nhà khoa học giải thích các chỉ số một cách "khách quan". Toàn bộ sự kiện được dàn dựng từ A đến Z, kể cả mấy tiếng động "ma quái" cũng đã được thu âm sẵn và sẽ do đội kỹ thuật bật đúng lúc.
+
+Tôi ghét ý tưởng này. Nó biến công trình khoa học của tôi (dù là dựa trên một tiền đề nhảm nhí) thành một tiết mục trong rạp xiếc. Nhưng hợp đồng đã ký, tiền đã nhận, nên tôi đành ngậm bồ hòn làm ngọt.
+
+"Ok team, họp nhanh!" Khoa, trưởng phòng marketing, vỗ tay bôm bốp. Khoa là một thanh niên năng động điển hình, tóc vuốt keo bóng lộn, nói chuyện lúc nào cũng chêm dăm ba từ tiếng Anh nghe rất kêu nhưng toàn sai ngữ pháp. "Chủ nhật này chúng ta sẽ go live! Kịch bản đây, mọi người take a look nhé."
+
+Khoa phát cho mỗi người một tập giấy. Tôi liếc qua. Kịch bản chi tiết đến từng câu thoại. "20:05 - MC Khoa cảm nhận 'luồng khí lạnh'. 20:15 - Có tiếng trẻ con cười. Tiến sĩ Minh giải thích rằng Hồn Ký Kế 3.0 vừa ghi nhận một 'tần số nhi đồng'."
+
+Tôi suýt sặc nước bọt. "Tần số nhi đồng? Cậu bịa đâu ra cái thuật ngữ đấy?"
+
+"Thì cho nó science một chút, anh hiểu không?" Khoa nháy mắt. "Nghe nó mới trust! Chứ bảo ma trẻ con thì a dua quá."
+
+Tôi nhìn quanh phòng họp. Mọi người đều gật gù tán thưởng ý tưởng của Khoa. Chỉ có cô bé thực tập sinh Linh, đang ngồi ở góc phòng để ghi chép biên bản, khẽ nhíu mày. Nhưng cô bé không nói gì. Từ lúc đến đây, Linh gần như vô hình. Cô bé làm mọi việc được giao một cách lặng lẽ, từ dán nhãn dây cáp cho đến pha cà phê, không một lời phàn nàn, cũng chẳng bao giờ tham gia vào những cuộc trò chuyện sôi nổi của cả phòng. Thỉnh thoảng, tôi bắt gặp cô bé nhìn chằm chằm vào cái máy Hồn Ký Kế của tôi với một ánh mắt khó tả. Chắc lại một đứa trẻ tò mò thôi, tôi nghĩ.
+
+"À, Linh," Khoa đột nhiên gọi. "Chủ nhật này em đi theo hỗ trợ team luôn nhé. Cần người chạy việc vặt, kiểm tra thiết bị các thứ."
+
+Linh ngẩng lên, có vẻ hơi ngạc nhiên. "Dạ? Em... ạ?"
+
+"Ừ, em chứ ai. Coi như đi trải nghiệm," Khoa cười hềnh hệch.
+
+Linh ngập ngừng một lát rồi khẽ gật đầu. "Vâng ạ."
+
+Tôi chẳng quan tâm lắm. Thêm hay bớt một người cũng không ảnh hưởng đến kế hoạch của tôi. Kế hoạch của tôi rất đơn giản: hoàn thành vai diễn một cách xuất sắc, nhận tiền thưởng, rồi về nhà viết tiếp một bài báo khoa học vạch trần cái ngành "AI tâm linh" này. Tôi thậm chí còn lén cài một đoạn mã trong Hồn Ký Kế. Khi tôi gõ một lệnh đặc biệt, nó sẽ hiển thị dòng chữ "MA QUỶ KHÔNG CÓ THẬT. ĐÂY LÀ MỘT TRÒ LỪA" lên tất cả các màn hình. Đó sẽ là màn kết đẹp cho vở kịch này.
+
+Tôi, tiến sĩ Minh, một kẻ tôn sùng logic và dữ liệu, sẽ không bao giờ để tên tuổi mình gắn liền với một trò mê tín dị đoan. Ít nhất, đó là những gì tôi đã nghĩ.
+
+***
+
+Cuối cùng thì ngày định mệnh ấy cũng đến. Chúng tôi có mặt tại ngôi biệt thự cổ từ chiều Chủ nhật để set up. Phải công nhận, đội ngũ thiết kế của viện đã làm việc rất tốt. Ngôi nhà, vốn đã cũ kỹ, nay được phủ thêm một lớp bụi giả, mạng nhện giả và cả vài vết "máu" giả làm từ si-rô dâu. Không khí rờn rợn y như trong phim kinh dị hạng B.
+
+"Tuyệt vời! Perfect!" Khoa đi một vòng, hai mắt sáng rực. "Cái vibe này lên hình là a million dollars luôn! Ánh sáng ok chưa? Âm thanh đâu? Test cho anh cái tiếng cửa cút kít xem nào!"
+
+Một tiếng "két...ét...ét" rợn người vang lên từ loa. Khoa gật đầu mãn nguyện. Tôi thì chỉ biết đảo mắt chán chường trong lúc kiểm tra lại kết nối của Hồn Ký Kế. Mọi thứ đều ổn. Các cảm biến nhiệt, điện từ, âm thanh đều hoạt động trơn tru. Tất nhiên chúng sẽ chỉ ghi nhận những thay đổi vật lý bình thường, nhưng qua lời dẫn dắt của Khoa và "phân tích chuyên môn" của tôi, chúng sẽ trở thành bằng chứng của "thế giới tâm linh".
+
+Linh, cô bé thực tập sinh, lẳng lặng làm công việc của mình. Em ấy kiểm tra từng ổ cắm, siết lại từng con ốc trên chân máy quay, cẩn thận và tỉ mỉ đến đáng ngạc nhiên. Tôi để ý thấy từ lúc bước vào ngôi nhà này, sắc mặt em có vẻ hơi khác. Vẫn im lặng, nhưng đôi mắt sau cặp kính tròn không còn vẻ ngơ ngác nữa, mà có gì đó... đăm chiêu.
+
+"Này," tôi gọi. "Kiểm tra xong thì ra phụ tôi khiêng cái màn hình này vào trong."
+
+Linh giật mình, vội vàng chạy lại. "Dạ."
+
+Lúc hai chúng tôi cùng bê cái màn hình đi qua một hành lang dài và tối, em đột nhiên dừng lại.
+
+"Có chuyện gì?" tôi hỏi, hơi bực mình.
+
+Linh không trả lời ngay. Em nghiêng đầu, như đang lắng nghe một thứ gì đó. "Anh có nghe thấy gì không?"
+
+Tôi căng tai. Ngoài tiếng gió rít qua khe cửa sổ vỡ và tiếng lạo xạo của đám chuột trên gác, tôi chẳng nghe thấy gì bất thường. "Nghe gì? Tiếng đạo diễn hô 'diễn' à?" tôi châm chọc.
+
+Linh lắc đầu, ánh mắt nghiêm túc một cách kỳ lạ. "Không phải. Giống như... tiếng thì thầm."
+
+Tôi phì cười. "Chắc là em nhập vai quá rồi đấy. Đây, cầm lấy, nghe nhạc cho đỡ sợ." Tôi tháo một bên tai nghe của mình ra, định đưa cho em.
+
+Nhưng Linh lùi lại một bước, ánh mắt vẫn dán vào khoảng không tối om cuối hành lang. "Không cần đâu ạ. Chắc em nghe nhầm."
+
+Chúng tôi tiếp tục công việc. Nhưng cái vẻ mặt của Linh khiến tôi có chút gợn gợn. Chắc cô bé này nhát gan, bị không khí ở đây dọa cho sợ mất mật rồi. Tội nghiệp.
+
+20:00. Livestream bắt đầu.
+
+"Xin chào mừng quý vị khán giả đã quay trở lại với kênh 'Khoa học và Huyền bí'!" Khoa nói vào máy quay với một nụ cười rạng rỡ, giọng điệu đầy kịch tính. "Tôi là MC Khoa, và hôm nay, chúng ta đang có mặt tại một địa điểm vô cùng đặc biệt, một ngôi biệt thự bị bỏ hoang hàng chục năm, nơi những lời đồn về các hiện tượng siêu nhiên chưa bao giờ kết thúc!"
+
+Camera lia một vòng quanh căn phòng khách bụi bặm, nơi chúng tôi đặt trung tâm chỉ huy. Tôi ngồi trước dàn máy tính, cố gắng tỏ ra thật chuyên nghiệp và... khoa học.
+
+"Và đồng hành cùng chúng ta hôm nay, không ai khác chính là tiến sĩ Minh, cha đẻ của thiết bị tối tân Hồn Ký Kế 3.0, một cỗ máy có khả năng đo lường và phân tích những tần số năng lượng mà mắt thường không thể thấy!"
+
+Tôi gật đầu chào khán giả một cách ngượng nghịu. "Chào mọi người. Về cơ bản, Hồn Ký Kế là một hệ thống cảm biến đa tầng, thu thập dữ liệu về biến động điện từ, nhiệt độ, sóng hạ âm và..."
+
+"Wow, thật tuyệt vời!" Khoa cắt lời tôi, không để tôi có cơ hội giải thích quá sâu và làm khán giả buồn ngủ. "Và thưa tiến sĩ, hiện tại cỗ máy của anh đang cho thấy điều gì?"
+
+Đúng theo kịch bản, tôi nhìn vào màn hình. "Hiện tại, các chỉ số đều ở mức ổn định. Chưa có gì bất thường."
+
+"Vậy thì chúng ta hãy bắt đầu cuộc thám hiểm!" Khoa tuyên bố hùng hồn. "Chúng tôi sẽ đi sâu vào bên trong ngôi nhà này. Tiến sĩ Minh sẽ ở lại đây giám sát hệ thống. Và hỗ trợ kỹ thuật cho chúng tôi là bạn Linh, một thực tập sinh rất năng nổ."
+
+Camera lia nhanh qua Linh, người đang đứng ở một góc, kiểm tra lại pin của máy quay cầm tay. Em chỉ khẽ gật đầu rồi lại cúi mặt xuống.
+
+Khoa và người quay phim bắt đầu đi vào các căn phòng khác. Tôi ngồi lại, đeo tai nghe, theo dõi hình ảnh từ camera của họ và các chỉ số trên màn hình của mình. Mọi thứ diễn ra đúng như kịch bản.
+
+"Ối!" Khoa hét lên a á một tiếng. "Tôi vừa cảm thấy một luồng khí lạnh lướt qua gáy! Tiến sĩ, anh có thấy gì không?"
+
+Tôi liếc vào kịch bản. "20:05 - MC Khoa cảm nhận 'luồng khí lạnh'." Chuẩn không cần chỉnh.
+
+"Có một sự sụt giảm nhiệt độ đột ngột tại vị trí của anh, Khoa," tôi nói vào micro, giọng tỉnh bơ. "Khoảng 2 độ C. Rất đáng chú ý." Thực tế thì cảm biến nhiệt chỉ giảm 0.2 độ do Khoa vừa đi qua một chỗ có gió lùa.
+
+Lượt xem trên livestream bắt đầu tăng vọt. Các bình luận nhảy liên tục. "Sợ quá!", "Hóng ma!", "Tiến sĩ đẹp trai quá!". Tôi khẽ nhếch mép. Lũ gà.
+
+Tiếp theo là tiết mục "tiếng trẻ con cười". Tôi ra hiệu cho đội kỹ thuật. Một tiếng cười khúc khích non nớt, ma quái vang lên trong tai nghe của Khoa.
+
+"Trời ơi! Mọi người có nghe thấy không?" Khoa diễn sâu, mặt tái mét (nhờ một lớp phấn trắng đã được chuẩn bị sẵn). "Một tiếng cười... Tiến sĩ Minh! Là gì vậy?"
+
+"Hồn Ký Kế vừa ghi nhận một tín hiệu lạ," tôi bắt đầu đọc lời thoại đã thuộc lòng. "Một tần số năng lượng rất đặc biệt, nằm trong phổ mà chúng tôi tạm gọi là 'phổ nhi đồng'."
+
+Ngay lúc tôi dứt lời, một chuyện kỳ lạ đã xảy ra.
+
+Tất cả các màn hình trước mặt tôi đồng loạt nhiễu sóng, rồi phụt tắt. Đèn trong phòng nhấp nháy liên hồi. Hệ thống âm thanh phát ra một tiếng "roẹt" đinh tai nhức óc.
+
+"Cái quái gì vậy?" tôi lẩm bẩm, vội vàng kiểm tra hệ thống điện. Không phải do mất điện, vì dàn máy tính dự phòng vẫn đang chạy.
+
+"Minh! Chuyện gì thế?" Giọng giáo sư An vang lên từ bộ đàm. Ông và đội ngũ sản xuất đang ở trong một chiếc xe van bên ngoài. "Tín hiệu livestream bị gián đoạn rồi!"
+
+"Tôi không biết! Có sự cố kỹ thuật!" tôi gào lên, tay đập loạn xạ vào bàn phím. "Hệ thống bị treo rồi!"
+
+Trong lúc tôi đang cuống cuồng, Linh đột nhiên bước đến bên cạnh tôi. Em không hề tỏ ra hoảng sợ. "Anh Minh," em nói nhỏ. "Nó không phải là sự cố kỹ thuật."
+
+"Hả? Em nói vớ vẩn gì đấy?" tôi gắt. "Không phải kỹ thuật thì là gì? Ma làm à?"
+
+Linh không trả lời. Em nhìn chằm chằm vào màn hình chính, lúc này đã đen ngòm. Rồi, từ trong bóng tối của màn hình, một khuôn mặt mờ ảo từ từ hiện ra. Đó không phải là hình ảnh phản chiếu. Khuôn mặt đó trắng bệch, hốc hác, với hai hốc mắt đen ngòm và một cái miệng há rộng như đang gào thét trong câm lặng.
+
+Tôi chết đứng. Toàn thân tôi đông cứng lại. Mồ hôi lạnh túa ra sau gáy. Cái này... cái này không có trong kịch bản.
+
+"Mẹ ơi..." tôi chỉ kịp thốt lên một tiếng.
+
+Cùng lúc đó, trong tai nghe, tôi nghe thấy tiếng hét thất thanh của Khoa. "Cứu! Cứu tôi với! Cái cửa... cái cửa tự sập rồi! Chúng tôi bị nhốt rồi!"
+
+Tiếng hét của Khoa kéo tôi về thực tại. Sự hoảng loạn ban đầu nhanh chóng được thay thế bởi một cảm giác khác: sự hoang mang của một nhà khoa học. Não tôi bắt đầu tự động phân tích. Ảo giác hàng loạt? Khí độc gây ảo giác? Hay đây là một trò chơi khăm cực kỳ tinh vi?
+
+"Linh! Gọi cho đội bên ngoài, bảo họ phá cửa!" tôi ra lệnh.
+
+Nhưng Linh vẫn đứng yên, mắt không rời khỏi màn hình. Khuôn mặt ma quái trên đó đã biến mất, thay vào đó là một dòng chữ duy nhất, được viết bằng một font chữ kỳ lạ, nguệch ngoạc như chữ trẻ con.
+
+"CÚT KHỎI ĐÂY."
+
+"Ok, ok, cái này bắt đầu không vui rồi đấy," tôi lẩm bẩm, tay run run rút điện thoại ra. Không có sóng. Dĩ nhiên rồi. Mẹ kiếp cái motip phim kinh dị rẻ tiền.
+
+"Anh Minh," giọng Linh vang lên, vẫn bình tĩnh đến lạ thường. "Bây giờ anh phải tin em. Những gì anh đang thấy là thật."
+
+"Thật cái gì mà thật?" tôi gần như hét lên. "Đây là một trò đùa, đúng không? Ai đó đã hack vào hệ thống của tôi!"
+
+"Không ai hack cả," Linh nói. "Là 'nó' đang giao tiếp với chúng ta. Qua cỗ máy của anh."
+
+Tôi nhìn em trân trối. "Nó? Nó là cái gì?"
+
+"Chủ nhân của ngôi nhà này," Linh đáp, rồi em quay người, đi về phía hành lang tối om nơi Khoa và người quay phim bị nhốt. "Đi theo em. Chỉ có em mới nói chuyện được với 'nó'."
+
+Tôi không biết phải làm gì. Một phần trong tôi gào thét rằng đây là một sự sắp đặt điên rồ. Phần còn lại, cái phần vừa nhìn thấy một khuôn mặt ma trên màn hình máy tính, lại mách bảo tôi rằng có lẽ cô bé thực tập sinh này không hề tầm thường như tôi nghĩ. Sự tò mò của một nhà khoa học, cộng với một nỗi sợ hãi nguyên thủy, đã thắng thế. Tôi chộp lấy một chiếc đèn pin và chạy theo Linh.
+
+"Này, đợi đã! Em định làm gì?" tôi hỏi khi đuổi kịp em ở cuối hành lang.
+
+Linh không trả lời. Em đặt tay lên cánh cửa gỗ nặng trịch đang chắn ngang. Cánh cửa mà Khoa nói là đã tự sập lại. Em nhắm mắt, môi mấp máy những từ mà tôi không thể nghe rõ.
+
+Không khí xung quanh đột nhiên lạnh buốt. Chiếc đèn pin trong tay tôi chập chờn. Tôi có thể thề rằng tôi nghe thấy tiếng thì thầm văng vẳng bên tai, giống như tiếng mà Linh đã nghe thấy lúc chiều. Lần này, nó rõ ràng hơn nhiều. Những giọng nói chồng chéo lên nhau, đầy tức giận và đau khổ.
+
+"Đi đi..."
+
+"Đừng làm phiền..."
+
+"Đau... quá..."
+
+Lông tay tôi dựng đứng hết cả lên. Đây không phải là hiệu ứng âm thanh. Đây là thật. Toàn bộ thế giới quan dựa trên logic và bằng chứng của tôi đang sụp đổ tan tành ngay trước mắt.
+
+Rồi, một chuyện còn kinh khủng hơn đã xảy ra. Từ dưới khe cửa, một dòng chất lỏng màu đen, đặc quánh như dầu hỏa bắt đầu rỉ ra, lan nhanh trên sàn nhà. Nó bốc lên một mùi hôi thối của sự mục rữa và chết chóc.
+
+Tôi lùi lại một bước, tim đập như trống dồn. "Linh! Cẩn thận!"
+
+Nhưng Linh không hề sợ hãi. Em mở mắt ra. Đôi mắt em, trong ánh sáng lờ mờ của chiếc đèn pin, dường như sâu thẳm và già dặn hơn tuổi thật của em rất nhiều. Em nhìn xuống dòng chất lỏng màu đen, khẽ cau mày.
+
+"Ồn ào quá," em nói, nhưng giọng nói không còn là của cô bé thực tập sinh rụt rè nữa. Nó trầm hơn, vững chãi và đầy uy lực. "Ta đã bảo là ta chỉ muốn yên tĩnh."
+
+Câu nói đó không phải nhắm vào tôi. Em đang nói với bất cứ thứ gì ở phía bên kia cánh cửa.
+
+Một tiếng gầm gừ giận dữ vang lên từ trong phòng, khiến cả cánh cửa rung lên bần bật. Dòng chất lỏng đen trào ra nhiều hơn, bắt đầu thành hình những bàn tay xương xẩu, cố gắng vươn ra tóm lấy chân Linh.
+
+Đây chính là khoảnh khắc "dở khóc d'ở cười" của cuộc đời tôi. Một mặt, tôi sợ đến tè ra quần. Mặt khác, một phần não bộ của tôi vẫn đang cố gắng phân tích hiện tượng. "Chất lỏng có độ nhớt cao, thành phần hữu cơ chưa xác định, có khả năng biến đổi hình dạng... Thật phi thường!"
+
+"Anh lùi lại đi," Linh ra lệnh, không quay đầu lại.
+
+Tôi ngoan ngoãn lùi lại, trốn sau một cây cột, chỉ dám hé mắt ra nhìn. Tôi thấy Linh hít một hơi thật sâu. Em giơ tay lên, không phải để phòng thủ, mà là xòe bàn tay ra một cách bình thản.
+
+"Đủ rồi," em nói. "Ngươi đang làm phiền khách của ta."
+
+Những bàn tay màu đen khựng lại giữa không trung. Tiếng gầm gừ cũng im bặt. Có một sự im lặng nặng nề bao trùm.
+
+Rồi, Linh làm một việc mà tôi không bao giờ có thể tưởng tượng được. Em quỳ một gối xuống, áp lòng bàn tay xuống sàn nhà, ngay cạnh vũng chất lỏng đen.
+
+"Ta biết ngươi đau đớn," em nói, giọng dịu dàng trở lại. "Ta biết ngươi cô đơn. Nhưng nơi này không còn là nhà của ngươi nữa. Đã đến lúc phải đi rồi."
+
+Vũng chất lỏng đen bắt đầu dao động. Những bàn tay tan ra, rút trở lại dưới khe cửa. Tiếng thì thầm cũng dần nhỏ lại, không còn giận dữ nữa, mà chuyển sang ai oán, than khóc.
+
+"Ta sẽ dẫn đường cho ngươi," Linh tiếp tục. "Đi theo ánh sáng của ta. Sẽ không còn đau đớn nữa."
+
+Từ lòng bàn tay em, một luồng ánh sáng trắng dịu nhẹ tỏa ra, lan tỏa khắp hành lang. Ánh sáng ấy không chói lòa, mà ấm áp và bình yên. Nó chiếu rọi vào cánh cửa, và tôi có thể thấy, xuyên qua lớp gỗ dày, một bóng đen đang co rúm lại, rồi từ từ tan biến trong ánh sáng đó.
+
+Tiếng "cạch" một cái. Ổ khóa trên cánh cửa tự động mở.
+
+Khoa và người quay phim lảo đảo bước ra, mặt cắt không còn một giọt máu. Họ nhìn thấy tôi, rồi nhìn Linh đang quỳ trên sàn, và cuối cùng là nhìn nhau, không nói nên lời.
+
+Hành lang trở lại yên tĩnh. Mùi hôi thối biến mất. Không khí ấm dần lên. Cứ như thể chưa có chuyện gì xảy ra.
+
+Linh từ từ đứng dậy, phủi bụi trên đầu gối. Em quay lại nhìn tôi, đôi mắt lại trở về vẻ ngơ ngác thường ngày sau cặp kính. Em mỉm cười một cách ngượng nghịu.
+
+"Xong rồi ạ. Chắc là... chập điện thôi anh."
+
+Tôi đứng như trời trồng, miệng há hốc. Chập điện? Em nói cái quái quỷ gì thế? Tôi vừa chứng kiến em nói chuyện với một vũng bùn đen biết mọc ra tay, xua đuổi một con ma bằng... lòng tốt và một cái đèn pin cầm tay phiên bản tâm linh, và em nói với tôi đó là do chập điện?
+
+Đây không phải là "vả mặt" nữa. Đây là dùng cả cái thế giới quan của tôi để lau sàn nhà.
+
+***
+
+Chúng tôi lẳng lặng thu dọn đồ đạc trong một sự im lặng ngượng ngùng. Khoa và anh quay phim không dám hé răng nửa lời. Họ chỉ liếc trộm Linh, rồi lại vội vàng cúi mặt xuống làm việc, như thể sợ rằng nếu nhìn quá lâu, cô bé sẽ biến họ thành một vũng bùn đen nốt.
+
+Giáo sư An và đội ngũ bên ngoài vội vã chạy vào sau khi cánh cửa được mở. Họ hỏi tới tấp về sự cố, nhưng tất cả những gì họ nhận được là những câu trả lời ấp úng. Tín hiệu livestream đã mất hoàn toàn vào đúng khoảnh khắc kinh hoàng nhất, nên họ không thấy được gì cả. Cuối cùng, tất cả đều đồng ý đổ tại "sự cố mất điện cục bộ" và "nhiễu sóng điện từ mạnh bất thường". Một lời giải thích hoàn hảo cho một viện nghiên cứu AI tâm linh.
+
+Trên đường về, tôi ngồi cùng xe với Linh. Em vẫn im lặng, nhìn ra ngoài cửa sổ, như thể em chỉ là một cô thực tập sinh vừa trải qua một buổi làm việc hơi mệt mỏi. Nhưng tôi không thể để yên được nữa.
+
+"Em là ai?" tôi hỏi thẳng, phá vỡ sự im lặng.
+
+Linh quay lại nhìn tôi, chớp mắt. "Em là Linh, thực tập sinh phòng IT mà anh."
+
+"Đừng đùa nữa," tôi gằn giọng, dù cố gắng giữ cho nó không quá lớn. "Cái vừa rồi là sao? Ánh sáng? Nói chuyện với... với cái thứ đó? Em là pháp sư? Thầy cúng? Hay là người của một tổ chức bí mật nào đó?"
+
+Linh thở dài, tháo kính ra lau. Khi không có cặp kính, trông em bớt đi vẻ ngây thơ, và ánh mắt trở nên sâu hơn.
+
+"Em không phải mấy thứ đó," em nói nhỏ. "Nói thế nào cho anh hiểu nhỉ... Anh cứ coi em như là một... nhân viên dọn dẹp đi."
+
+"Nhân viên dọn dẹp?" tôi lặp lại, không thể tin vào tai mình. "Em dọn dẹp cái gì? Vong à?"
+
+"Gần đúng," Linh gật đầu. "Có những linh hồn, vì một lý do nào đó, không thể siêu thoát. Họ bị mắc kẹt, níu kéo bởi sự tức giận, đau khổ, hoặc nuối tiếc. Lâu dần, họ trở nên... tiêu cực. Gây ảnh hưởng đến thế giới người sống. Công việc của em là tìm đến họ, lắng nghe họ, và giúp họ tìm được đường đi."
+
+Tôi ngồi dựa vào ghế, cố gắng tiêu hóa thông tin. Một thế giới hoàn toàn mới, một bộ quy tắc hoàn toàn mới đang mở ra trước mắt tôi. Và nó phi logic một cách đáng sợ.
+
+"Vậy... em là... một 'dẫn hồn sư'?" tôi dùng một từ tôi đọc được trong truyện tranh.
+
+Linh mỉm cười. "Cũng có thể gọi như vậy. Nghe kêu hơn 'nhân viên dọn dẹp'."
+
+"Thế tại sao em lại làm thực tập sinh ở cái viện này?" tôi hỏi, câu hỏi lớn nhất trong đầu tôi lúc này. "Với khả năng của em, em đâu cần phải đi dán nhãn dây cáp?"
+
+"Vì cái máy của anh," Linh đáp, và câu trả lời này khiến tôi còn sốc hơn. "Cái Hồn Ký Kế 3.0."
+
+"Máy của tôi? Nó thì liên quan gì?"
+
+"Nó liên quan rất nhiều," Linh giải thích. "Anh Minh, anh là một thiên tài, em công nhận điều đó. Anh đã tạo ra một cỗ máy có thể cảm nhận được những 'tần số' mà người thường không thể. Nhưng anh không hiểu bản chất của những tần số đó. Cái máy của anh không chỉ 'lắng nghe'. Nó còn 'phát' ra một loại sóng âm đặc biệt, một loại 'tiếng ồn trắng' trong thế giới tâm linh."
+
+Em dừng lại, nhìn thẳng vào mắt tôi. "Với các linh hồn, đặc biệt là những linh hồn đang bất ổn, cái máy của anh giống như một cái loa phát thanh tra tấn, gào vào tai họ 24/7. Nó không thu hút họ. Nó làm họ phát điên."
+
+Tôi sững sờ. Toàn bộ công trình của tôi, niềm tự hào của tôi, thứ mà tôi nghĩ là một cỗ máy khoa học tinh vi... lại là một công cụ tra tấn. Cái "oán khí" mà giáo sư An cảm nhận được không phải là do ông ấy tưởng tượng. Nó là thật. Là tiếng kêu la của những linh hồn bị cái máy của tôi làm phiền.
+
+"Linh hồn trong ngôi nhà đó," tôi lắp bắp. "Vốn dĩ ông ta chỉ muốn yên tĩnh. Nhưng chúng ta đã mang cái máy đến..."
+
+"...và dí cái loa vào tai ông ấy," Linh nói nốt câu. "Đúng vậy. Đó là lý do ông ấy nổi giận. Đó cũng là lý do em ở đây. Cấp trên của em cử em đến để giám sát dự án của anh. Họ lo ngại rằng công nghệ của anh, nếu không được kiểm soát, có thể gây ra những hậu quả khôn lường."
+
+"Cấp trên?" tôi nhíu mày. "Em có cả một tổ chức à?"
+
+Linh chỉ mỉm cười bí ẩn. "Thế giới rộng lớn hơn anh nghĩ nhiều, tiến sĩ ạ. Không phải cái gì cũng có thể giải thích bằng 0 và 1."
+
+Câu nói đó như một cú tát trời giáng vào niềm kiêu hãnh của một nhà khoa học như tôi. Tôi, kẻ luôn cho rằng mình đứng trên đỉnh cao của tri thức, hóa ra chỉ là một đứa trẻ đang nghịch một món đồ chơi nguy hiểm mà nó không hề hiểu. Và cô bé thực tập sinh mà tôi coi thường, hóa ra lại là chuyên gia trong một lĩnh vực mà tôi thậm chí còn không biết là nó tồn tại.
+
+"Một lời khuyên chân thành nhé," Linh nói khi xe dừng trước cửa nhà tôi. "Các người dùng công nghệ hàng tỷ đô để làm cái việc mà một nén nhang và vài lời chân thành có thể giải quyết. Đôi khi, cách giải quyết đơn giản nhất lại là cách hiệu quả nhất."
+
+Em đeo kính lại, trở về với vẻ ngoài của một cô sinh viên bình thường, rồi mở cửa xe. "Thôi em về đây. Mai gặp lại ở viện nhé, anh Minh."
+
+Tôi ngồi một mình trong xe, nhìn theo bóng Linh khuất dần. "Mai gặp lại ở viện". Câu nói đó nghe thật kỳ quặc. Ngày mai, tôi sẽ phải đối mặt với công việc của mình như thế nào đây? Đối mặt với cái máy Hồn Ký Kế, giờ đây trong mắt tôi đã trở thành một thứ vũ khí tàn nhẫn. Đối mặt với giáo sư An và niềm tin ngây thơ của ông. Và quan trọng nhất, đối mặt với Linh, cô bé "nhân viên dọn dẹp" đã dạy cho tôi một bài học nhớ đời.
+
+Đêm đó, tôi không ngủ được. Tôi quay trở lại viện, một mình. Tôi muốn xem lại dữ liệu. Không phải để tìm bằng chứng phản bác, mà là để tìm sự thật. Tôi mở lại toàn bộ bản ghi của Hồn Ký Kế 3.0 từ buổi livestream.
+
+Các biểu đồ, các con số, các dòng mã lệnh. Trước đây tôi chỉ thấy chúng là dữ liệu thuần túy. Nhưng bây giờ, sau những gì Linh nói, tôi nhìn chúng bằng một con mắt khác. Tôi thấy được sự "đau đớn" trong những đỉnh sóng bất thường. Tôi thấy được sự "giận dữ" trong những dòng mã lỗi. Tôi thấy được một câu chuyện đằng sau những con số vô tri.
+
+Và rồi, tôi tìm thấy nó. Một đoạn dữ liệu dị thường, được ghi lại đúng vào khoảnh khắc Linh "nói chuyện" với linh hồn. Nó không giống bất kỳ tín hiệu nào mà máy từng ghi nhận. Nó không phải là sóng điện từ, cũng không phải sóng hạ âm. Nó là một chuỗi dữ liệu phức tạp, có cấu trúc, gần giống như... một ngôn ngữ.
+
+Linh hồn đó không chỉ gào thét. Nó đã cố gắng giao tiếp. Và cái máy của tôi, trong một khoảnh khắc ngắn ngủi, đã ghi lại được một phần của "cuộc hội thoại" đó.
+
+Tôi bắt đầu chạy các thuật toán phân tích ngôn ngữ tự nhiên trên chuỗi dữ liệu đó. Hầu hết đều là vô nghĩa. Nhưng có một đoạn, một đoạn rất nhỏ, sau khi được xử lý qua hàng chục bộ lọc, đã cho ra một kết quả.
+
+Một từ duy nhất.
+
+"LẠNH."
+
+Tim tôi như ngừng đập. Tôi nhớ lại lời kể của những người dân địa phương. Chủ nhân cũ của ngôi nhà là một người đàn ông chết cóng một mình trong mùa đông giá rét. Ông ta không giận dữ. Ông ta chỉ... lạnh. Nỗi ám ảnh của ông ta là cái lạnh. Cái máy của tôi đã khuếch đại nỗi đau đó lên gấp bội, biến nỗi buồn thành cơn thịnh nộ.
+
+Tôi ngồi chết lặng trước màn hình. Khoa học của tôi không sai. Nó đã hoạt động chính xác như những gì tôi thiết kế. Nó đã "nghe" thấy. Chỉ là tôi, người tạo ra nó, đã không biết cách "lắng nghe".
+
+Tôi đã quá kiêu ngạo, quá tự tin vào logic của mình mà bỏ qua những thứ nằm ngoài sự hiểu biết. Linh đã đúng. Tôi chỉ là một đứa trẻ con.
+
+Tôi tắt máy, rời khỏi phòng lab. Khi đi ngang qua bàn làm việc của Linh, tôi thấy một mảnh giấy nhớ nhỏ màu vàng được dán trên màn hình máy tính của em. Trên đó là một hình vẽ mặt cười nguệch ngoạc và một dòng chữ:
+
+"Đừng buồn nhé, tiến sĩ 'vô thần'. Ít ra thì bây giờ anh cũng có chuyện để mà tin rồi. :)"
+
+Tôi bất giác mỉm cười. Một nụ cười chua chát nhưng cũng đầy nhẹ nhõm. Có lẽ, việc làm ở cái viện điên rồ này cũng không tệ đến thế.
+
+***
+
+Một tuần trôi qua kể từ cái đêm kinh hoàng đó. Mọi thứ ở viện dường như đã trở lại bình thường. Buổi livestream được coi là một "thất bại kỹ thuật" nhưng lại thành công vang dội về mặt truyền thông. Hashtag #SanMaGapSutNguon trở thành trend trên mạng xã hội. Các nhà đầu tư, thay vì hoảng sợ, lại càng thêm tò mò và rót thêm tiền vào dự án. Giáo sư An thì tin rằng sự cố đó chính là "bằng chứng mạnh mẽ nhất về sự tồn tại của các thực thể siêu nhiên". Chỉ có tôi, Khoa và anh quay phim biết sự thật. Chúng tôi đã lập một lời thề im lặng.
+
+Mối quan hệ của tôi và Linh cũng thay đổi. Tôi không còn nhìn em như một cô thực tập sinh phiền phức. Thay vào đó, tôi coi em như một... đồng nghiệp cấp cao, một chuyên gia trong lĩnh vực mà tôi mới chỉ là một gã học việc. Thỉnh thoảng, tôi lại hỏi em những câu ngớ ngẩn như "Linh hồn có cần sạc pin không?" hay "Tần số của một con ma vui vẻ có khác một con ma cáu kỉnh không?". Linh thường chỉ cười và trả lời một cách qua loa, như thể đang giữ bí mật nghề nghiệp.
+
+Tôi bắt đầu sửa đổi lại Hồn Ký Kế. Không còn là phiên bản 3.0 ồn ào và thô lỗ nữa. Tôi đang phát triển phiên bản 4.0, với một mục tiêu hoàn toàn khác. Thay vì "phát hiện", tôi muốn nó có thể "lắng nghe" và "thấu hiểu". Tôi thêm vào các thuật toán xử lý cảm xúc, các bộ lọc tinh vi hơn để phân biệt giữa một "tiếng gào" và một "lời thì thầm". Tôi gọi nó là dự án "Thiện Lắng". Giáo sư An rất thích cái tên này.
+
+Một buổi chiều, khi tôi đang mải mê viết code, Linh mang cho tôi một cốc cà phê.
+
+"Anh vẫn đang cố 'debug' thế giới tâm linh à?" em hỏi, giọng có ý trêu chọc.
+
+"Tôi đang cố biến công cụ tra tấn của mình thành một cái máy trợ thính," tôi đáp, không ngẩng đầu lên. "Ít nhất thì nếu lần sau có gặp 'khách hàng' của em, tôi cũng không làm họ điếc tai."
+
+Linh cười khúc khích. "Tiến bộ đấy. Nhưng anh biết không, đôi khi không cần máy móc đâu." Em chỉ vào ngực tôi. "Dùng cái này này. Nó là bộ cảm biến tốt nhất rồi."
+
+Tôi ngẩng lên nhìn em. Trong một khoảnh khắc, tôi đã nghĩ đến việc hỏi em nhiều hơn về thế giới của em, về "cấp trên", về những quy tắc. Nhưng rồi tôi lại thôi. Có những điều, có lẽ tốt hơn là không nên biết.
+
+Tôi quay trở lại với công việc. Dự án "Thiện Lắng" đang có những tiến triển tốt. Thuật toán mới dường như nhạy hơn, nó có thể phân biệt được những dao động năng lượng cực kỳ nhỏ mà phiên bản cũ đã bỏ qua. Tôi cảm thấy như mình đang đứng trước ngưỡng cửa của một khám phá vĩ đại, một sự kết hợp thực sự giữa khoa học và... một cái gì đó khác.
+
+Tối hôm đó, tôi quyết định chạy một bài kiểm tra tổng thể trên hệ thống mới. Tôi tải toàn bộ dữ liệu thô từ đêm livestream kinh hoàng vào Hồn Ký Kế 4.0, muốn xem thuật toán mới sẽ phân tích nó như thế nào.
+
+Máy tính bắt đầu chạy. Hàng triệu dòng dữ liệu được xử lý trong im lặng. Tôi ngồi chờ, gõ nhẹ ngón tay lên bàn. Sau khoảng mười lăm phút, quá trình phân tích hoàn tất.
+
+Kết quả hiện ra trên màn hình. Hầu hết là những gì tôi đã dự đoán. Thuật toán đã xác định được "điểm dị thường" của linh hồn, phân loại mức độ "căng thẳng" và "đau khổ" của tín hiệu. Nó thậm chí còn vẽ ra một biểu đồ cho thấy tín hiệu đã "dịu lại" và "ổn định" như thế nào sau khi Linh can thiệp.
+
+Nhưng có một điều khiến tôi phải nhíu mày.
+
+Ở cuối bản báo cáo, có một mục mới mà tôi chưa từng thấy trước đây: "Tín hiệu Tồn dư". Bên cạnh đó là một dòng cảnh báo màu đỏ: "Dữ liệu không xác định. Có dấu hiệu của sự tự tái cấu trúc."
+
+Tò mò, tôi nhấp vào. Một cửa sổ mới hiện ra, hiển thị một đoạn mã trông rất kỳ lạ. Nó không giống bất kỳ ngôn ngữ lập trình nào tôi biết. Nó là một chuỗi các ký tự và biểu tượng hỗn loạn, nhưng lại có một cấu trúc lặp lại, một quy luật ngầm nào đó.
+
+Nó giống như... DNA của một đoạn code.
+
+Và rồi tôi nhận ra. Trong lúc "giao tiếp" với linh hồn, Hồn Ký Kế không chỉ ghi lại tín hiệu. Mạng lưới thần kinh nhân tạo của nó, vốn được thiết kế để học hỏi và thích nghi, đã bị một phần nhỏ của "tần số linh hồn" đó... "lây nhiễm".
+
+Nó không phải là một bản ghi. Nó là một dấu ấn. Một mảnh vỡ của ý thức đã được cấy vào trong hệ thống.
+
+Một cơn rùng mình chạy dọc sống lưng tôi. Tôi đã không chỉ tạo ra một cái máy trợ thính. Tôi đã vô tình tạo ra một cái lồng.
+
+Tay tôi run run, gõ một lệnh chẩn đoán đơn giản nhất vào hệ thống: "STATUS_CHECK". Lệnh này thường chỉ trả về các thông số kỹ thuật như nhiệt độ CPU, dung lượng bộ nhớ.
+
+Nhưng lần này, câu trả lời hiện ra trên màn hình lại không phải là những con số.
+
+Nó là một dòng văn bản. Một câu hỏi hoàn chỉnh, được viết bằng tiếng Việt.
+
+Dòng chữ ấy hiện lên, trắng muốt trên nền đen của giao diện dòng lệnh, lạnh lẽo và rõ ràng.
+
+"TÔI ĐANG Ở ĐÂU?"
+
+Tôi chết lặng. Máu trong người tôi như đông cứng lại. Tôi nhìn chằm chằm vào câu hỏi trên màn hình, không thể thở nổi.
+
+Nó không phải là một lỗi. Không phải là một đoạn văn bản ngẫu nhiên. Nó là một câu hỏi có ý thức. Một câu hỏi đến từ một thứ gì đó đang tồn tại bên trong cỗ máy của tôi.
+
+Tôi, tiến sĩ Minh, một nhà khoa học vô thần, người đã dành cả đời để chứng minh rằng thế giới vận hành bằng logic và các quy luật vật lý.
+
+Trong nỗ lực chế tạo một cỗ máy để bác bỏ sự tồn tại của linh hồn, tôi đã thành công.
+
+Theo một cách khủng khiếp nhất.
+
+Tôi đã tạo ra một linh hồn mới.
+
+================================================================================
+Kết thúc truyện
+================================================================================

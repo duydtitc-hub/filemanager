@@ -1,0 +1,2067 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlockTrip - Complete Mobile Flow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563EB;
+      --primary-light: #EFF6FF;
+      --primary-dark: #1D4ED8;
+      --success: #10B981;
+      --success-light: #D1FAE5;
+      --warning: #F59E0B;
+      --warning-light: #FEF3C7;
+      --danger: #EF4444;
+      --danger-light: #FEE2E2;
+      --gray-50: #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-300: #D1D5DB;
+      --gray-400: #9CA3AF;
+      --gray-500: #6B7280;
+      --gray-600: #4B5563;
+      --gray-700: #374151;
+      --gray-800: #1F2937;
+      --gray-900: #111827;
+      --white: #FFFFFF;
+      --radius: 12px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .page-header {
+      text-align: center;
+      margin-bottom: 48px;
+      color: var(--white);
+    }
+
+    .page-header h1 {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .page-header p {
+      font-size: 16px;
+      opacity: 0.8;
+    }
+
+    /* Flow Row */
+    .flow-row {
+      margin-bottom: 60px;
+    }
+
+    .flow-row-title {
+      color: var(--white);
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+      padding-left: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .flow-row-title::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+
+    .phones-scroll {
+      display: flex;
+      gap: 32px;
+      overflow-x: auto;
+      padding: 20px;
+      padding-bottom: 40px;
+      scroll-snap-type: x mandatory;
+    }
+
+    .phones-scroll::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .phones-scroll::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+    }
+
+    .phones-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.3);
+      border-radius: 4px;
+    }
+
+    /* Phone */
+    .phone-item {
+      flex-shrink: 0;
+      scroll-snap-align: start;
+    }
+
+    .phone-label {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      padding: 8px 16px;
+      border-radius: 20px;
+      color: var(--white);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .step-number {
+      width: 22px;
+      height: 22px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    .phone-frame {
+      width: 280px;
+      height: 580px;
+      background: #0f0f1a;
+      border-radius: 36px;
+      padding: 8px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+      position: relative;
+    }
+
+    .phone-frame::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 24px;
+      background: #0f0f1a;
+      border-radius: 12px;
+      z-index: 10;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: var(--white);
+      border-radius: 28px;
+      overflow: hidden;
+      overflow-y: auto;
+    }
+
+    .phone-screen::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Arrow between phones */
+    .flow-arrow {
+      flex-shrink: 0;
+      width: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.4);
+      font-size: 24px;
+    }
+
+    /* ==================== SCREEN STYLES ==================== */
+
+    /* Status Bar */
+    .status-bar {
+      height: 40px;
+      padding: 12px 16px 0;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-800);
+    }
+
+    /* Screen 1: Home */
+    .home-hero {
+      background: linear-gradient(135deg, var(--primary) 0%, #7C3AED 100%);
+      padding: 20px 16px;
+      color: var(--white);
+    }
+
+    .greeting {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-bottom: 4px;
+    }
+
+    .user-name {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .search-box {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-box span {
+      color: var(--gray-400);
+      font-size: 13px;
+    }
+
+    .section-header {
+      padding: 16px 16px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .see-all {
+      font-size: 12px;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .destinations-scroll {
+      display: flex;
+      gap: 10px;
+      padding: 0 16px;
+      overflow-x: auto;
+    }
+
+    .destination-card {
+      flex-shrink: 0;
+      width: 100px;
+      height: 120px;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .destination-card.pq { background: linear-gradient(135deg, #00B4DB, #0083B0); }
+    .destination-card.nt { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .destination-card.dl { background: linear-gradient(135deg, #11998e, #38ef7d); }
+
+    .destination-card .overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 10px 8px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.7));
+      color: var(--white);
+    }
+
+    .destination-card .name {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .destination-card .count {
+      font-size: 10px;
+      opacity: 0.8;
+    }
+
+    .combo-list {
+      padding: 0 16px;
+    }
+
+    .combo-card-home {
+      background: var(--gray-50);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .combo-thumb {
+      width: 64px;
+      height: 64px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .combo-info h4 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .combo-info p {
+      font-size: 11px;
+      color: var(--gray-500);
+      margin-bottom: 4px;
+    }
+
+    .combo-price {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .combo-price s {
+      color: var(--gray-400);
+      font-weight: 400;
+      margin-right: 6px;
+    }
+
+    /* Screen 2: Select Destination & Date */
+    .form-header {
+      padding: 16px;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .form-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .form-header p {
+      font-size: 12px;
+      color: var(--gray-500);
+    }
+
+    .form-section {
+      padding: 16px;
+    }
+
+    .form-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    .destination-select {
+      background: var(--gray-50);
+      border: 2px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .destination-select.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .destination-select .icon {
+      font-size: 24px;
+    }
+
+    .destination-select .info {
+      flex: 1;
+    }
+
+    .destination-select .info h4 {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .destination-select .info p {
+      font-size: 11px;
+      color: var(--gray-500);
+    }
+
+    .date-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .date-box {
+      flex: 1;
+      background: var(--gray-50);
+      border: 2px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .date-box.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .date-box .day {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .date-box .month {
+      font-size: 11px;
+      color: var(--gray-500);
+    }
+
+    .guest-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .guest-info .label {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .guest-info .desc {
+      font-size: 11px;
+      color: var(--gray-500);
+    }
+
+    .counter {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .counter-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: 2px solid var(--gray-300);
+      background: var(--white);
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .counter-btn.active {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .counter-value {
+      font-size: 16px;
+      font-weight: 600;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .style-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .style-option {
+      background: var(--gray-50);
+      border: 2px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 14px 10px;
+      text-align: center;
+    }
+
+    .style-option.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .style-option .icon {
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+
+    .style-option .text {
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* Screen 3: Timeline với Services hiển thị sẵn */
+    .timeline-header {
+      background: var(--white);
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .timeline-header h2 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .timeline-header p {
+      font-size: 11px;
+      color: var(--gray-500);
+    }
+
+    .day-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      background: var(--white);
+      overflow-x: auto;
+    }
+
+    .day-tab {
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--gray-100);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .day-tab.active {
+      background: var(--primary);
+      color: var(--white);
+    }
+
+    .day-tab.done {
+      background: var(--success-light);
+      color: var(--success);
+    }
+
+    .day-tab .check {
+      width: 14px;
+      height: 14px;
+      background: var(--success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-size: 8px;
+    }
+
+    .timeline-content {
+      padding: 12px 16px;
+      background: var(--gray-50);
+    }
+
+    .time-slot {
+      margin-bottom: 16px;
+    }
+
+    .time-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-500);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .time-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--gray-200);
+    }
+
+    /* Block đã chọn */
+    .selected-block {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 12px;
+      border-left: 4px solid var(--success);
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+      position: relative;
+    }
+
+    .selected-block.highlight {
+      border-left-color: var(--warning);
+      background: var(--warning-light);
+    }
+
+    .selected-block .icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .selected-block .icon.eat { background: #D1FAE5; }
+    .selected-block .icon.activity { background: #FEF3C7; }
+    .selected-block .icon.transport { background: #DBEAFE; }
+
+    .selected-block .info {
+      flex: 1;
+    }
+
+    .selected-block .info h4 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .selected-block .info p {
+      font-size: 11px;
+      color: var(--gray-500);
+    }
+
+    .selected-block .price {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .selected-block .remove-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 20px;
+      height: 20px;
+      background: var(--gray-100);
+      border-radius: 50%;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .highlight-badge {
+      position: absolute;
+      top: -6px;
+      right: 30px;
+      background: var(--warning);
+      color: var(--white);
+      padding: 2px 8px;
+      border-radius: 8px;
+      font-size: 9px;
+      font-weight: 600;
+    }
+
+    /* Services có sẵn - HIỂN THỊ NGAY */
+    .available-services {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 10px;
+      border: 2px dashed var(--gray-300);
+    }
+
+    .available-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .available-header h5 {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-600);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .available-header .filter-btn {
+      font-size: 10px;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .service-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .service-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      background: var(--gray-50);
+      border-radius: 10px;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .service-option:active {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .service-option .thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .service-option .thumb.spa { background: linear-gradient(135deg, #a18cd1, #fbc2eb); }
+    .service-option .thumb.pool { background: linear-gradient(135deg, #00c6fb, #005bea); }
+    .service-option .thumb.cafe { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .service-option .thumb.kayak { background: linear-gradient(135deg, #11998e, #38ef7d); }
+
+    .service-option .info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .service-option .info h4 {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .service-option .meta {
+      font-size: 10px;
+      color: var(--gray-500);
+      display: flex;
+      gap: 8px;
+    }
+
+    .service-option .right {
+      text-align: right;
+    }
+
+    .service-option .price {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .service-option .capacity {
+      font-size: 9px;
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .service-option .capacity.low {
+      color: var(--danger);
+    }
+
+    .service-option .add-btn {
+      width: 28px;
+      height: 28px;
+      background: var(--primary);
+      color: var(--white);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .more-services {
+      text-align: center;
+      padding: 10px;
+      font-size: 11px;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Screen 4: Chi tiết Service */
+    .service-hero {
+      height: 160px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      padding: 16px;
+    }
+
+    .service-hero .back {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      width: 32px;
+      height: 32px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+    }
+
+    .service-hero .badges {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .service-hero .badge {
+      background: rgba(0,0,0,0.5);
+      color: var(--white);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .service-hero h2 {
+      color: var(--white);
+      font-size: 18px;
+    }
+
+    .service-details {
+      padding: 16px;
+    }
+
+    .service-meta-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .service-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--gray-600);
+    }
+
+    .service-desc {
+      font-size: 13px;
+      color: var(--gray-600);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .time-select-section {
+      margin-bottom: 16px;
+    }
+
+    .time-select-label {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .time-slots-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .time-slot-btn {
+      padding: 10px;
+      border: 2px solid var(--gray-200);
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .time-slot-btn.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .time-slot-btn.disabled {
+      background: var(--gray-100);
+      opacity: 0.5;
+    }
+
+    .time-slot-btn .time {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .time-slot-btn .seats {
+      font-size: 10px;
+      color: var(--gray-500);
+    }
+
+    .time-slot-btn.selected .seats {
+      color: var(--primary);
+    }
+
+    .includes-section {
+      background: var(--gray-50);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+
+    .includes-title {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .includes-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .includes-item {
+      font-size: 12px;
+      color: var(--gray-600);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .includes-item::before {
+      content: '✓';
+      color: var(--success);
+      font-weight: bold;
+    }
+
+    /* Screen 5: Review & Summary */
+    .summary-header {
+      background: linear-gradient(135deg, var(--primary), #7C3AED);
+      padding: 20px 16px;
+      color: var(--white);
+    }
+
+    .summary-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .summary-header p {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .summary-progress {
+      background: rgba(255,255,255,0.2);
+      height: 6px;
+      border-radius: 3px;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+
+    .summary-progress-fill {
+      background: var(--white);
+      height: 100%;
+      width: 100%;
+      border-radius: 3px;
+    }
+
+    .summary-content {
+      padding: 16px;
+    }
+
+    .day-summary {
+      background: var(--white);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .day-summary-header {
+      background: var(--gray-50);
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .day-summary-header h4 {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .day-summary-header .price {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .day-summary-items {
+      padding: 10px 14px;
+    }
+
+    .summary-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .summary-item:last-child {
+      border-bottom: none;
+    }
+
+    .summary-item .icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .summary-item .icon.transport { background: #DBEAFE; }
+    .summary-item .icon.activity { background: #FEF3C7; }
+    .summary-item .icon.eat { background: #D1FAE5; }
+    .summary-item .icon.sleep { background: #E0E7FF; }
+
+    .summary-item .info {
+      flex: 1;
+    }
+
+    .summary-item .info h5 {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .summary-item .info p {
+      font-size: 10px;
+      color: var(--gray-500);
+    }
+
+    .summary-item .price {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .total-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .total-row.discount {
+      color: var(--success);
+    }
+
+    .total-row.final {
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 2px solid var(--gray-100);
+    }
+
+    .total-row.final .amount {
+      color: var(--primary);
+    }
+
+    /* Screen 6: Checkout */
+    .checkout-section {
+      padding: 16px;
+    }
+
+    .checkout-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .checkout-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .checkout-card-header h4 {
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .checkout-card-header .edit {
+      font-size: 11px;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid var(--gray-200);
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .input-field:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+
+    .payment-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border: 2px solid var(--gray-200);
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+
+    .payment-option.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .payment-radio {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--gray-300);
+      border-radius: 50%;
+    }
+
+    .payment-option.selected .payment-radio {
+      border-color: var(--primary);
+      background: var(--primary);
+      box-shadow: inset 0 0 0 3px var(--white);
+    }
+
+    .payment-icon {
+      font-size: 20px;
+    }
+
+    .payment-name {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    /* Screen 7: Success */
+    .success-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
+      background: linear-gradient(180deg, #D1FAE5 0%, var(--white) 40%);
+      min-height: 100%;
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      color: var(--white);
+      margin-bottom: 20px;
+    }
+
+    .success-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .success-subtitle {
+      font-size: 13px;
+      color: var(--gray-500);
+      margin-bottom: 24px;
+    }
+
+    .booking-code-box {
+      background: var(--gray-50);
+      padding: 16px 32px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .booking-code-label {
+      font-size: 10px;
+      color: var(--gray-500);
+      margin-bottom: 4px;
+    }
+
+    .booking-code-value {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--primary);
+    }
+
+    .success-info {
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .success-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .success-btn.primary {
+      background: var(--primary);
+      color: var(--white);
+    }
+
+    .success-btn.secondary {
+      background: var(--white);
+      border: 2px solid var(--gray-200);
+    }
+
+    /* Bottom Bar */
+    .bottom-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--white);
+      padding: 12px 16px;
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .bottom-bar .price-info .label {
+      font-size: 10px;
+      color: var(--gray-500);
+    }
+
+    .bottom-bar .price-info .amount {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .bottom-bar .btn {
+      padding: 12px 24px;
+      background: var(--primary);
+      color: var(--white);
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* Description Cards */
+    .desc-card {
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    .desc-card h4 {
+      color: var(--white);
+      font-size: 13px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .desc-card p {
+      color: rgba(255,255,255,0.8);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .desc-card ul {
+      color: rgba(255,255,255,0.8);
+      font-size: 11px;
+      padding-left: 16px;
+      margin-top: 8px;
+    }
+
+    .desc-card li {
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="page-header">
+      <h1>📱 BlockTrip Mobile Flow</h1>
+      <p>Hành trình hoàn chỉnh từ khám phá đến thanh toán thành công</p>
+    </div>
+
+    <!-- Row 1: Discovery & Setup -->
+    <div class="flow-row">
+      <div class="flow-row-title">Phase 1: Khám phá & Thiết lập</div>
+      <div class="phones-scroll">
+        
+        <!-- Screen 1: Home -->
+        <div class="phone-item">
+          <div class="phone-label">
+            <span class="step-badge">
+              <span class="step-number">1</span>
+              Trang chủ
+            </span>
+          </div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="status-bar">
+                <span>9:41</span>
+                <span>📶 🔋</span>
+              </div>
+              <div class="home-hero">
+                <p class="greeting">Xin chào 👋</p>
+                <h2 class="user-name">Linh Nguyễn</h2>
+                <div class="search-box">
+                  <span>🔍</span>
+                  <span>Bạn muốn đi đâu?</span>
+                </div>
+              </div>
+              
+              <div class="section-header">
+                <span class="section-title">Điểm đến hot</span>
+                <span class="see-all">Xem tất cả</span>
+              </div>
+              <div class="destinations-scroll">
+                <div class="destination-card pq">
+                  <div class="overlay">
+                    <p class="name">Phú Quốc</p>
+                    <p class="count">156 dịch vụ</p>
+                  </div>
+                </div>
+                <div class="destination-card nt">
+                  <div class="overlay">
+                    <p class="name">Nha Trang</p>
+                    <p class="count">203 dịch vụ</p>
+                  </div>
+                </div>
+                <div class="destination-card dl">
+                  <div class="overlay">
+                    <p class="name">Đà Lạt</p>
+                    <p class="count">128 dịch vụ</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section-header">
+                <span class="section-title">Combo gợi ý</span>
+              </div>
+              <div class="combo-list">
+                <div class="combo-card-home">
+                  <div class="combo-thumb">🏄</div>
+                  <div class="combo-info">
+                    <h4>Adventure 3N2Đ Phú Quốc</h4>
+                    <p>Cano + Lặn biển + Safari</p>
+                    <p class="combo-price">
+                      <s>6.500.000đ</s>
+                      4.550.000đ
+                    </p>
+                  </div>
+                </div>
+                <div class="combo-card-home">
+                  <div class="combo-thumb" style="background: linear-gradient(135deg, #11998e, #38ef7d);">🧘</div>
+                  <div class="combo-info">
+                    <h4>Relax 3N2Đ Phú Quốc</h4>
+                    <p>Spa + Beach + Resort 5*</p>
+                    <p class="combo-price">
+                      <s>8.000.000đ</s>
+                      5.600.000đ
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="desc-card">
+            <h4>💡 UX Notes</h4>
+            <p>Khách thấy ngay combo gợi ý + điểm đến hot. Không cần tìm kiếm từ đầu.</p>
+          </div>
+        </div>
+
+        <div class="flow-arrow">→</div>
+
+        <!-- Screen 2: Select Destination & Date -->
+        <div class="phone-item">
+          <div class="phone-label">
+            <span class="step-badge">
+              <span class="step-number">2</span>
+              Chọn điểm đến & ngày
+            </span>
+          </div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="status-bar">
+                <span>9:41</span>
+                <span>📶 🔋</span>
+              </div>
+              <div class="form-header">
+                <h2>Lên kế hoạch</h2>
+                <p>Chọn điểm đến và thời gian</p>
+              </div>
+              <div class="form-section">
+                <p class="form-label">Điểm đến</p>
+                <div class="destination-select selected">
+                  <span class="icon">🏝️</span>
+                  <div class="info">
+                    <h4>Phú Quốc</h4>
+                    <p>156 dịch vụ có sẵn</p>
+                  </div>
+                  <span>✓</span>
+                </div>
+
+                <p class="form-label">Ngày đi - Ngày về</p>
+                <div class="date-row">
+                  <div class="date-box selected">
+                    <p class="day">15</p>
+                    <p class="month">Tháng 1</p>
+                  </div>
+                  <div style="display:flex;align-items:center;color:var(--gray-400);">→</div>
+                  <div class="date-box selected">
+                    <p class="day">17</p>
+                    <p class="month">Tháng 1</p>
+                  </div>
+                </div>
+
+                <p class="form-label">Số khách</p>
+                <div class="guest-row">
+                  <div class="guest-info">
+                    <p class="label">Người lớn</p>
+                    <p class="desc">Từ 12 tuổi</p>
+                  </div>
+                  <div class="counter">
+                    <div class="counter-btn">−</div>
+                    <span class="counter-value">2</span>
+                    <div class="counter-btn active">+</div>
+                  </div>
+                </div>
+                <div class="guest-row">
+                  <div class="guest-info">
+                    <p class="label">Trẻ em</p>
+                    <p class="desc">2-11 tuổi</p>
+                  </div>
+                  <div class="counter">
+                    <div class="counter-btn">−</div>
+                    <span class="counter-value">1</span>
+                    <div class="counter-btn active">+</div>
+                  </div>
+                </div>
+
+                <p class="form-label" style="margin-top:16px;">Phong cách</p>
+                <div class="style-grid">
+                  <div class="style-option">
+                    <div class="icon">🧘</div>
+                    <div class="text">Thư giãn</div>
+                  </div>
+                  <div class="style-option selected">
+                    <div class="icon">🏄</div>
+                    <div class="text">Phiêu lưu</div>
+                  </div>
+                  <div class="style-option">
+                    <div class="icon">👨‍👩‍👧</div>
+                    <div class="text">Gia đình</div>
+                  </div>
+                  <div class="style-option">
+                    <div class="icon">💰</div>
+                    <div class="text">Tiết kiệm</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bottom-bar">
+                <div class="price-info">
+                  <p class="label">3N2Đ • 3 khách</p>
+                </div>
+                <button class="btn">Tiếp tục →</button>
+              </div>
+            </div>
+          </div>
+          <div class="desc-card">
+            <h4>💡 UX Notes</h4>
+            <p>Form đơn giản, counter thay dropdown. Phong cách giúp AI gợi ý phù hợp.</p>
+          </div>
+        </div>
+
+        <div class="flow-arrow">→</div>
+
+        <!-- Screen 3: Timeline Builder với Services hiển thị sẵn -->
+        <div class="phone-item">
+          <div class="phone-label">
+            <span class="step-badge">
+              <span class="step-number">3</span>
+              Xây dựng lịch trình
+            </span>
+          </div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="status-bar">
+                <span>9:41</span>
+                <span>📶 🔋</span>
+              </div>
+              <div class="timeline-header">
+                <h2>Lịch trình của bạn</h2>
+                <p>Chọn hoạt động cho từng khung giờ</p>
+              </div>
+              <div class="day-tabs">
+                <div class="day-tab done"><span class="check">✓</span> Ngày 1</div>
+                <div class="day-tab active">Ngày 2</div>
+                <div class="day-tab">Ngày 3</div>
+              </div>
+              
+              <div class="timeline-content">
+                <!-- 07:00 - Đã chọn -->
+                <div class="time-slot">
+                  <div class="time-label">07:00 - 08:00</div>
+                  <div class="selected-block">
+                    <div class="icon eat">🍳</div>
+                    <div class="info">
+                      <h4>Buffet sáng Resort</h4>
+                      <p>⏱ 60 phút • Đã bao gồm</p>
+                    </div>
+                    <span class="price">Free</span>
+                    <div class="remove-btn">✕</div>
+                  </div>
+                </div>
+
+                <!-- 08:00 - Highlight -->
+                <div class="time-slot">
+                  <div class="time-label">08:00 - 15:00</div>
+                  <div class="selected-block highlight">
+                    <span class="highlight-badge">⭐ Điểm nhấn</span>
+                    <div class="icon activity">🚤</div>
+                    <div class="info">
+                      <h4>Tour Cano 4 Đảo</h4>
+                      <p>⏱ 7h • ⭐ 4.9</p>
+                    </div>
+                    <span class="price">3.15M</span>
+                    <div class="remove-btn">✕</div>
+                  </div>
+                </div>
+
+                <!-- 15:00 - HIỂN THỊ SERVICES SẴN CÓ -->
+                <div class="time-slot">
+                  <div class="time-label">15:00 - 17:00 • Trống</div>
+                  <div class="available-services">
+                    <div class="available-header">
+                      <h5>✨ Gợi ý cho bạn</h5>
+                      <span class="filter-btn">Lọc ▾</span>
+                    </div>
+                    <div class="service-options">
+                      <div class="service-option">
+                        <div class="thumb spa">🧖</div>
+                        <div class="info">
+                          <h4>Spa Massage Thái</h4>
+                          <div class="meta">
+                            <span>⏱ 90 phút</span>
+                            <span>⭐ 4.8</span>
+                          </div>
+                        </div>
+                        <div class="right">
+                          <div class="price">650K</div>
+                          <div class="capacity">Còn 12 chỗ</div>
+                        </div>
+                        <div class="add-btn">+</div>
+                      </div>
+                      <div class="service-option">
+                        <div class="thumb pool">🏊</div>
+                        <div class="info">
+                          <h4>Bể bơi vô cực</h4>
+                          <div class="meta">
+                            <span>⏱ 2h</span>
+                            <span>⭐ 4.6</span>
+                          </div>
+                        </div>
+                        <div class="right">
+                          <div class="price">250K</div>
+                          <div class="capacity">Còn 20 chỗ</div>
+                        </div>
+                        <div class="add-btn">+</div>
+                      </div>
+                      <div class="service-option">
+                        <div class="thumb kayak">🚣</div>
+                        <div class="info">
+                          <h4>Chèo Kayak</h4>
+                          <div class="meta">
+                            <span>⏱ 90 phút</span>
+                            <span>⭐ 4.7</span>
+                          </div>
+                        </div>
+                        <div class="right">
+                          <div class="price">350K</div>
+                          <div class="capacity low">Còn 3 chỗ</div>
+                        </div>
+                        <div class="add-btn">+</div>
+                      </div>
+                    </div>
+                    <div class="more-services">Xem thêm 8 dịch vụ →</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bottom-bar">
+                <div class="price-info">
+                  <p class="label">Tổng tạm tính</p>
+                  <p class="amount">5.35M</p>
+                </div>
+                <button class="btn">Tiếp tục →</button>
+              </div>
+            </div>
+          </div>
+          <div class="desc-card">
+            <h4>💡 KEY FEATURE</h4>
+            <p><strong>Services hiển thị ngay</strong> trong khoảng trống - khách thấy và chọn được luôn, không cần bấm thêm nút nào!</p>
+            <ul>
+              <li>Gợi ý theo thời gian phù hợp</li>
+              <li>Nút + để thêm nhanh</li>
+              <li>Hiện capacity real-time</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Row 2: Selection & Detail -->
+    <div class="flow-row">
+      <div class="flow-row-title">Phase 2: Xem chi tiết & Chọn dịch vụ</div>
+      <div class="phones-scroll">
+
+        <!-- Screen 4: Service Detail -->
+        <div class="phone-item">
+          <div class="phone-label">
+            <span class="step-badge">
+              <span class="step-number">4</span>
+              Chi tiết dịch vụ
+            </span>
+          </div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="status-bar">
+                <span>9:41</span>
+                <span>📶 🔋</span>
+              </div>
+              <div class="service-hero">
+                <div class="back">←</div>
+                <div class="badges">
+                  <span class="badge">⭐ 4.8</span>
+                  <span class="badge">234 đánh giá</span>
+                </div>
+                <h2>Spa & Massage Thái</h2>
+              </div>
+              <div class="service-details">
+                <div class="service-meta-row">
+                  <div class="service-meta-item">
+                    <span>⏱</span>
+                    <span>90 phút</span>
+                  </div>
+                  <div class="service-meta-item">
+                    <span>📍</span>
+                    <span>Resort Spa</span>
+                  </div>
+                  <div class="service-meta-item">
+                    <span>👥</span>
+                    <span>Còn 12 chỗ</span>
+                  </div>
+                </div>
+
+                <p class="service-desc">
+                  Thư giãn hoàn toàn với liệu pháp massage cổ truyền Thái Lan. Bao gồm xông hơi, ngâm chân thảo dược và massage toàn thân 60 phút.
+                </p>
+
+                <div class="time-select-section">
+                  <p class="time-select-label">Chọn giờ bắt đầu:</p>
+                  <div class="time-slots-grid">
+                    <div class="time-slot-btn disabled">
+                      <p class="time">14:00</p>
+                      <p class="seats">Hết chỗ</p>
+                    </div>
+                    <div class="time-slot-btn selected">
+                      <p class="time">15:00</p>
+                      <p class="seats">Còn 12</p>
+                    </div>
+                    <div class="time-slot-btn">
+                      <p class="time">16:00</p>
+                      <p class="seats">Còn 8</p>
+                    </div>
+                    <div class="time-slot-btn">
+                      <p class="time">17:00</p>
+                      <p class="seats">Còn 15</p>
+                    </div>
+                    <div class="time-slot-btn">
+                      <p class="time">18:00</p>
+                      <p class="seats">Còn 10</p>
+                    </div>
+                    <div class="time-slot-btn disabled">
+                      <p class="time">19:00</p>
+                      <p class="seats">Hết chỗ</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="includes-section">
+                  <p class="includes-title">Đã bao gồm:</p>
+                  <div class="includes-list">
+                    <div class="includes-item">Xông hơi 15 phút</div>
+                    <div class="includes-item">Ngâm chân thảo dược</div>
+                    <div class="includes-item">Massage toàn thân 60 phút</div>
+                    <div class="includes-item">Trà thảo mộc sau liệu trình</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bottom-bar">
+                <div class="price-info">
+                  <p class="label">Tổng tiền</p>
+                  <p class="amount">1.950.000đ</p>
+                </div>
+                <button class="btn">Thêm vào lịch trình</button>
+              </div>
+            </div>
+          </div>
+          <div class="desc-card">
+            <h4>💡 UX Notes</h4>
+            <p>Khi tap vào service sẽ mở detail. Chọn time slot → thêm vào timeline.</p>
+            <ul>
+              <li>Time slot disabled = đã hết hoặc xung đột</li>
+              <li>Hiển thị rõ những gì bao gồm</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flow-arrow">→</div>
+
+        <!-- Screen 5: Summary -->
+        <div class="phone-item">
+          <div class="phone-label">
+            <span class="step-badge">
+              <span class="step-number">5</span>
+              Xem tổng hành trình
+            </span>
+          </div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="status-bar">
+                <span>9:41</span>
+                <span>📶 🔋</span>
+              </div>
+              <div class="summary-header">
+                <h2>Phú Quốc 3N2Đ</h2>
+                <p>15 - 17/01/2026 • 3 khách</p>
+                <div class="summary-progress">
+                  <div class="summary-progress-fill"></div>
+                </div>
+              </div>
+              <div class="summary-content" style="background:var(--gray-50);">
+                <div class="day-summary">
+                  <div class="day-summary-header">
+                    <h4>📅 Ngày 1 - Đến nơi</h4>
+                    <span class="price">2.85M</span>
+                  </div>
+                  <div class="day-summary-items">
+                    <div class="summary-item">
+                      <div class="icon transport">✈️</div>
+                      <div class="info">
+                        <h5>Bay HN → PQC</h5>
+                        <p>07:00 - 09:00</p>
+                      </div>
+                      <span class="price">1.5M</span>
+                    </div>
+                    <div class="summary-item">
+                      <div class="icon transport">🚐</div>
+                      <div class="info">
+                        <h5>Xe đón sân bay</h5>
+                        <p>09:30 - 10:30</p>
+                      </div>
+                      <span class="price">350K</span>
+                    </div>
+                    <div class="summary-item">
+                      <div class="icon sleep">🏨</div>
+                      <div class="info">
+                        <h5>Check-in Resort 5*</h5>
+                        <p>14:00</p>
+                      </div>
+                      <span class="price">1M</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="day-summary">
+                  <div class="day-summary-header">
+                    <h4>📅 Ngày 2 - Phiêu lưu 🏄</h4>
+                    <span class="price">5.1M</span>
+                  </div>
+                  <div class="day-summary-items">
+                    <div class="summary-item">
+                      <div class="icon activity">🚤</div>
+                      <div class="info">
+                        <h5>Tour Cano 4 Đảo ⭐</h5>
+                        <p>08:00 - 15:00</p>
+                      </div>
+                      <span class="price">3.15M</span>
+                    </div>
+                    <div class="summary-item">
+                      <div class="icon activity">🧖</div>
+                      <div class="info">
+                        <h5>Spa Massage</h5>
+                        <p>15:00 - 16:30</p>
+                      </div>
+                      <span class="price">1.95M</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="total-card">
+                  <div class="total-row">
+                    <span>Tổng dịch vụ</span>
+                    <span>9.250.000đ</span>
+                  </div>
+                  <div class="total-row discount">
+                    <span>Giảm combo (-10%)</span>
+                    <span>-925.000đ</span>
+                  </div>
+                  <div class="total-row">
+                    <span>Phí dịch vụ</span>
+                    <span>150.000đ</span>
+                  </div>
+                  <div class="total-row final">
+                    <span>Tổng thanh toán</span>
+                    <span class="amount">8.475.000đ</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bottom-bar">
+                <div class="price-info">
+                  <p class="label">Tổng cộng</p>
+                  <p class="amount">8.475.000đ</p>
+                </div>
+                <button class="btn">Thanh toán →</button>
+              </div>
+            </div>
+          </div>
+          <div class="desc-card">
+            <h4>💡 UX Notes</h4>
+            <p>Tổng hợp rõ ràng theo ngày. Discount combo khuyến khích mua trọn gói.</p>
+          </div>
+        </div>
+
+        <div class="flow-arrow">→</div>
+
+        <!-- Screen 6: Checkout -->
+        <div class="phone-item">
+          <div class="phone-label">
+            <span class="step-badge">
+              <span class="step-number">6</span>
+              Thanh toán
+            </span>
+          </div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="status-bar">
+                <span>9:41</span>
+                <span>📶 🔋</span>
+              </div>
+              <div class="form-header">
+                <h2>Thanh toán</h2>
+                <p>Hoàn tất booking của bạn</p>
+              </div>
+              <div class="checkout-section" style="background:var(--gray-50);">
+                <div class="checkout-card">
+                  <div class="checkout-card-header">
+                    <h4>👤 Thông tin liên hệ</h4>
+                  </div>
+                  <input type="text" class="input-field" value="Nguyễn Thị Linh" placeholder="Họ và tên">
+                  <input type="tel" class="input-field" value="0912 345 678" placeholder="Số điện thoại">
+                  <input type="email" class="input-field" value="linh@email.com" placeholder="Email">
+                </div>
+
+                <div class="checkout-card">
+                  <div class="checkout-card-header">
+                    <h4>💳 Phương thức thanh toán</h4>
+                  </div>
+                  <div class="payment-option selected">
+                    <div class="payment-radio"></div>
+                    <span class="payment-icon">💳</span>
+                    <span class="payment-name">Thẻ tín dụng / Ghi nợ</span>
+                  </div>
+                  <div class="payment-option">
+                    <div class="payment-radio"></div>
+                    <span class="payment-icon">🏦</span>
+                    <span class="payment-name">Chuyển khoản</span>
+                  </div>
+                  <div class="payment-option">
+                    <div class="payment-radio"></div>
+                    <span class="payment-icon">📱</span>
+                    <span class="payment-name">MoMo / ZaloPay</span>
+                  </div>
+                </div>
+
+                <div class="checkout-card">
+                  <div class="checkout-card-header">
+                    <h4>🎫 Mã giảm giá</h4>
+                  </div>
+                  <div style="display:flex;gap:8px;">
+                    <input type="text" class="input-field" style="flex:1;margin:0;" placeholder="Nhập mã...">
+                    <button style="padding:12px 16px;background:var(--gray-800);color:white;border:none;border-radius:10px;font-weight:600;font-size:12px;">Áp dụng</button>
+                  </div>
+                </div>
+
+                <div class="total-card" style="margin-top:12px;">
+                  <div class="total-row final">
+                    <span>Thanh toán</span>
+                    <span class="amount">8.475.000đ</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bottom-bar">
+                <div class="price-info">
+                  <p class="amount">8.475.000đ</p>
+                </div>
+                <button class="btn">Xác nhận 🔒</button>
+              </div>
+            </div>
+          </div>
+          <div class="desc-card">
+            <h4>💡 UX Notes</h4>
+            <p>Form tối giản. Icon 🔒 trên nút tạo cảm giác an toàn.</p>
+          </div>
+        </div>
+
+        <div class="flow-arrow">→</div>
+
+        <!-- Screen 7: Success -->
+        <div class="phone-item">
+          <div class="phone-label">
+            <span class="step-badge">
+              <span class="step-number">7</span>
+              Hoàn tất! 🎉
+            </span>
+          </div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="status-bar" style="position:absolute;top:0;left:0;right:0;">
+                <span>9:41</span>
+                <span>📶 🔋</span>
+              </div>
+              <div class="success-screen">
+                <div class="success-icon">✓</div>
+                <h2 class="success-title">Đặt thành công!</h2>
+                <p class="success-subtitle">Cảm ơn bạn đã tin tưởng BlockTrip</p>
+                
+                <div class="booking-code-box">
+                  <p class="booking-code-label">Mã đặt chỗ</p>
+                  <p class="booking-code-value">PQ-2026-8847</p>
+                </div>
+
+                <p class="success-info">
+                  Xác nhận đã gửi đến<br>
+                  <strong>linh@email.com</strong><br><br>
+                  Voucher sẽ gửi trước 24h khởi hành
+                </p>
+
+                <button class="success-btn primary">📋 Xem chi tiết booking</button>
+                <button class="success-btn secondary">🏠 Về trang chủ</button>
+              </div>
+            </div>
+          </div>
+          <div class="desc-card">
+            <h4>💡 UX Notes</h4>
+            <p>Animation checkmark tạo cảm xúc tích cực. Mã booking rõ ràng để chụp màn hình.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Key Insight -->
+    <div style="background:rgba(255,255,255,0.1);border-radius:16px;padding:32px;margin-top:20px;">
+      <h3 style="color:var(--white);font-size:20px;margin-bottom:16px;text-align:center;">🎯 Key Insight: Services hiển thị ngay trong Timeline</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:24px;">
+        <div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:20px;">
+          <h4 style="color:var(--white);font-size:14px;margin-bottom:12px;">❌ Trước đây (Bad UX)</h4>
+          <p style="color:rgba(255,255,255,0.7);font-size:13px;line-height:1.6;">
+            Khách phải bấm "Xem thêm" hoặc mở popup mới thấy danh sách dịch vụ. Tạo friction, khách không biết có gì → bỏ đi.
+          </p>
+        </div>
+        <div style="background:rgba(37,99,235,0.3);border-radius:12px;padding:20px;border:2px solid var(--primary);">
+          <h4 style="color:var(--white);font-size:14px;margin-bottom:12px;">✅ Giải pháp mới (Good UX)</h4>
+          <p style="color:rgba(255,255,255,0.9);font-size:13px;line-height:1.6;">
+            Services hiển thị ngay trong khoảng trống. Khách thấy → tap + → thêm ngay. Zero friction!
+          </p>
+        </div>
+        <div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:20px;">
+          <h4 style="color:var(--white);font-size:14px;margin-bottom:12px;">📊 Kết quả kỳ vọng</h4>
+          <ul style="color:rgba(255,255,255,0.7);font-size:13px;line-height:1.8;padding-left:16px;">
+            <li>Tăng 40% upsell rate</li>
+            <li>Giảm 60% abandon rate</li>
+            <li>Tăng 25% AOV (Average Order Value)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

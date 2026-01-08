@@ -1,0 +1,637 @@
+Công ty từng hứa sẽ thưởng cho tôi ba triệu tệ, đến lúc phát tiền thì chỉ còn lại đúng… một trăm tệ.
+
+Tôi đến tìm bạn trai của sếp – cũng là giám đốc kỹ thuật – để hỏi cho ra lẽ, thì thấy anh ta đang vắt chân chữ ngũ ngồi tựa vào ghế văn phòng, mặt treo nụ cười giả tạo:
+
+“Dự án của cô ấy à, tôi thấy vẫn còn nhiều chỗ cần tối ưu. Đợi khi nào cô làm tôi hài lòng, tôi sẽ ký duyệt tiền thưởng.”
+
+Tôi cố nén giận, bình tĩnh nói:
+
+“Giám đốc Trương, trong biên bản xác nhận nghiệm thu mà khách hàng ký có ghi rất rõ ràng: ‘đã nghiệm thu, đạt tiêu chuẩn’, hoàn toàn không nhắc gì đến việc tối ưu cả.
+
+Hơn nữa, những phần tối ưu sau này thuộc phạm vi bảo trì hậu kỳ, không ảnh hưởng gì đến việc chi thưởng cho dự án.”
+
+Không ngờ anh ta lại thản nhiên đáp:
+
+“Số tiền đó quá lớn, tôi ký thì cũng được thôi, nhưng sẽ chia nhỏ để trả dần. Mỗi tháng, ngoài lương ra sẽ cộng thêm cho cô 100 tệ tiền thưởng. Cô cứ chăm chỉ làm việc, rồi sớm muộn gì cũng nhận đủ thôi.”
+
+Không bao lâu sau, công ty ký được một hợp đồng lớn trị giá hàng trăm triệu.
+
+Giám đốc Trương định giao dự án cho tôi phụ trách, tôi liền đem đoạn tin nhắn từng nói chuyện với anh ta in ra, đặt thẳng lên bàn trước mặt anh ta, khẽ cười:
+
+“Tôi không rảnh nhận dự án này đâu. Hồi nãy chính anh bảo tôi chạy ra ngoài mười cây số mua cà phê pha thủ công, nếu lỡ về trễ là ảnh hưởng hiệu suất, mất luôn KPI đó.”
+
+Ba tháng trước, một tập đoàn lớn công khai mở thầu dự án “số hóa dữ liệu thông minh”, ngân sách lên tới ba mươi triệu tệ.
+
+Chị Thẩm Vi, sếp của tôi, đã tìm đến, đặt hết kỳ vọng: mong tôi giúp công ty giành được hợp đồng ngàn vạn này, từ đó mở rộng thị phần trong lĩnh vực công nghiệp.
+
+Tôi không hề do dự. Dẫn theo đội ngũ kỹ thuật, tôi đóng cửa “ở ẩn” suốt ba tháng – ăn ngủ ngay tại văn phòng.
+
+Khoảng thời gian đó, mỗi ngày tôi chỉ ngủ được bốn tiếng. Không ngừng tối ưu thuật toán, chỉnh sửa hệ thống. Cuối cùng, trong buổi đấu thầu, tôi vượt qua tất cả các đối thủ mạnh, giành được hợp đồng trong tay.
+
+Công ty lập tức tổ chức tiệc ăn mừng hoành tráng. Thẩm Vi đứng trên sân khấu, giơ cao ly rượu tuyên bố:
+
+“Hôm nay, tôi muốn đặc biệt cảm ơn Bách Dật! Nếu không có công nghệ cốt lõi của cô ấy, không có đội ngũ của cô ấy ngày đêm chiến đấu, thì đã chẳng có bản hợp đồng ba mươi triệu này! Tôi tuyên bố: thưởng cho Bách Dật ba triệu tệ, phát cùng lương vào cuối tháng!”
+
+Buổi tiệc qua đi không bao lâu, công ty bắt đầu rộ lên lời đồn đại — nói rằng tôi dựa vào năng lực kỹ thuật để leo cao, thậm chí còn có ý với chị Thẩm Vi.
+
+Tôi choáng váng. Đi hỏi vài đồng nghiệp thân thiết mới biết: Trương Hạo Kiệt – giám đốc kỹ thuật, cũng là bạn trai của Thẩm Vi – nhiều lần công khai phàn nàn rằng “Bách Dật quá cứng đầu, kỹ thuật nói một là một, khiến vị trí giám đốc của mình như đồ trang trí.”
+
+Tâm địa hắn nhỏ mọn, vốn đã khó chịu khi thấy sếp lớn quan tâm tôi quá mức. Lại nghe được tuyên dương công khai tại tiệc mừng, lửa ghen càng bùng lên.
+
+Hắn cho rằng tôi vừa đe dọa vị trí của hắn, vừa có ý định “chen chân” vào chuyện tình cảm, nên cố tình lan truyền những tin đồn không hay.
+
+Đến cuối tháng, tôi mở ứng dụng tiền lương, chờ đợi ba triệu tệ tiền thưởng — nhưng chẳng thấy đâu.
+
+Tôi cảm thấy có gì đó sai sai, hỏi phòng tài chính thì họ bảo: “Còn đợi giám đốc ký duyệt.”
+
+Tôi lập tức đến phòng làm việc của Trương Hạo Kiệt.
+
+Tôi gõ cửa: “Giám đốc Trương, xin lỗi làm phiền. Tôi muốn hỏi về tiến trình ký duyệt phần thưởng ba triệu cho dự án – hiện đã đến bước nào rồi ạ?”
+
+Hắn đang ngồi vắt chân, lướt điện thoại, chẳng buồn ngẩng đầu: “À, là Tiểu Bách à, ngồi đi.”
+
+Tôi kéo ghế ngồi xuống, chờ câu trả lời.
+
+Hắn từ tốn đặt điện thoại xuống, khoanh tay trên bàn, nhếch môi cười nhạt:
+
+“Cô nói khoản thưởng ba triệu ấy hả? Tôi còn đang xem xét.”
+
+Tôi cố giữ bình tĩnh: “Giám đốc Trương, dự án đã nghiệm thu đạt chuẩn, khách hàng cũng chấm điểm tuyệt đối, sếp Thẩm từng tuyên bố công khai… Vậy còn lý do gì để trì hoãn?”
+
+Hắn tùy ý cầm tập tài liệu lên lật vài trang, lạnh nhạt nói:
+
+“Tôi có trao đổi với bên khách hàng, họ nói còn vài chức năng nhỏ cần tối ưu. Giờ phát ba triệu luôn thì hơi vội, đúng không?”
+
+Tim tôi chùng xuống. Rõ ràng lúc nghiệm thu, khách hàng đã ký giấy xác nhận: “đáp ứng đầy đủ yêu cầu hợp đồng, không cần chỉnh sửa gì thêm.” Sao giờ lại có chuyện “cần tối ưu”?
+
+Tôi lấy điện thoại, mở đúng tệp “Xác nhận nghiệm thu”, đưa đến trước mặt hắn:
+
+“Giám đốc Trương, đây là giấy xác nhận của khách hàng, trên đó ghi rất rõ: ‘đáp ứng toàn bộ điều kiện hợp đồng, nghiệm thu đạt’. Không có bất cứ điều khoản nào nói đến việc cần tối ưu. Dù sau này có điều chỉnh gì, thì cũng thuộc phạm vi bảo trì – và theo hợp đồng, điều đó không ảnh hưởng đến việc phát thưởng.”
+
+Hắn chẳng buồn liếc, chỉ đưa tay đẩy giấy lại cho tôi:
+
+“Bách Dật, cô đừng lấy mấy tờ giấy đó ra nói chuyện với tôi. Muốn tôi ký thì cũng được — chia nhỏ mà nhận. Mỗi tháng ngoài lương sẽ phát thêm cho cô 100 tệ. Cố gắng làm việc tốt, dần dần rồi cũng đủ thôi.”
+
+Tôi cố nén cơn giận trong lòng, giọng lạnh hẳn đi:
+
+“Giám đốc Trương, ý anh là gì vậy?”
+
+Hắn ngả người ra sau, lại vắt chân chữ ngũ:
+
+“Ý rất đơn giản thôi. Phát một lần ba triệu tệ thì ảnh hưởng không tốt, cũng không phù hợp với nguyên tắc ‘khuyến khích dài hạn’ của công ty.”
+
+Hắn ngừng lại một chút rồi nói tiếp:
+
+“Vì vậy bắt đầu từ tháng này, mỗi tháng tôi sẽ phê duyệt cho cô thêm 100 tệ tiền thưởng ngoài lương cứng. Cô cứ yên tâm làm việc, đừng gây chuyện, làm đủ lâu, không phạm sai lầm, thì sớm muộn gì cũng nhận đủ thôi.”
+
+“…Một trăm tệ?”
+
+Tôi gần như tưởng mình nghe nhầm, lặp lại bằng giọng không thể tin nổi:
+
+“Anh tính nhầm à? Ba triệu chia mỗi tháng một trăm thì tôi phải đợi hai nghìn năm rưỡi mới được nhận đủ đấy!”
+
+Hắn vẫn giữ nụ cười dửng dưng, nhưng giọng điệu lại vô cùng áp đặt:
+
+“Không thể tính toán thiển cận như vậy được. Làm việc không nên chỉ nhìn trước mắt. Công ty phát triển lên thì người hưởng lợi đầu tiên chính là cô. Một trăm tệ này là tấm lòng, cũng là thái độ – thể hiện công ty không quên công lao của cô.”
+
+Rồi hắn đột ngột đổi giọng, mang theo hàm ý đe dọa:
+
+“Cô vừa lập công xong, nếu vì chút tiền thưởng mà gây mâu thuẫn nội bộ, ảnh hưởng đến lộ trình thăng chức hay phân bổ tài nguyên sau này, chẳng phải mất nhiều hơn được sao?”
+
+Tôi nghe mà thấy vừa nực cười vừa phẫn nộ.
+
+Rõ ràng mọi thứ đều có chứng cứ rõ ràng, hắn lại có thể bẻ cong mọi lý lẽ, ngang nhiên cắt xén phần thưởng đáng lẽ thuộc về tôi, rồi còn mặt dày “vẽ bánh” để dằn mặt ngược lại.
+
+Lúc đó, điện thoại trong tay khẽ rung – là thành viên trong nhóm nhắn hỏi tình hình tiền thưởng thế nào rồi.
+
+Tôi hít một hơi thật sâu, đè xuống cơn tức muốn đập bàn ngay tại chỗ, quyết định trực tiếp đến gặp chị Thẩm Vi.
+
+Tôi gõ cửa phòng làm việc của chị ấy, kể lại toàn bộ sự việc từ đầu đến cuối, rồi đưa ra bản xác nhận nghiệm thu của khách hàng:
+
+“Chị Thẩm, trong hợp đồng và giấy xác nhận đều ghi rất rõ. Ba triệu tiền thưởng là chị đã tuyên bố trước toàn công ty, lẽ ra phải được phát đủ và đúng hạn.”
+
+Thẩm Vi cầm bản xác nhận, nhưng không trả lời ngay. Chị ấy thở dài:
+
+“Tiểu Bách, chị biết em có công lớn, cũng hiểu rõ những gì chị từng nói. Nhưng Hạo Kiệt cũng vì muốn tốt cho công ty. Một lần phát khoản thưởng lớn thế này, rất dễ khiến người khác trong công ty bất mãn…”
+
+Tôi còn định phản bác:
+
+“Nhưng mỗi tháng chỉ có 100 tệ thì quá vô lý rồi—”
+
+Chị ấy giơ tay cắt lời, giọng tuy có vẻ an ủi nhưng rõ ràng đang thiên vị:
+
+“Dù sao Hạo Kiệt cũng là giám đốc kỹ thuật, phụ trách quy trình đánh giá và phát thưởng, anh ấy có góc nhìn riêng. Em cũng thông cảm cho anh ấy một chút. Sau này chị sẽ bàn lại với anh ấy, cố gắng tăng lên 1.000 tệ mỗi tháng. Công ty sẽ không để em thiệt đâu.”
+
+Tôi bật cười vì tức giận. Một nghìn tệ mỗi tháng? Vậy thì tôi cũng phải đợi… 250 năm mới nhận đủ?
+
+Đừng nói đến tôi, ngay cả Thẩm Vi cũng chẳng sống nổi đến lúc đó.
+
+Suy cho cùng, từ đầu đến cuối, chị ta chưa từng có ý định đứng về phía tôi. Cái gọi là lời tuyên dương trước toàn công ty, có khi chỉ là một vở kịch diễn cho đẹp mặt.
+
+Tôi không nói thêm lời nào, đè nén nỗi thất vọng và lạnh lẽo trong lòng, bình tĩnh nói:
+
+“Nếu đã vậy thì tôi cũng không ép nữa. Gần đây tôi làm việc cường độ cao liên tục, cảm thấy hơi đuối sức. Tôi muốn xin nghỉ điều chỉnh ba ngày để hồi phục.”
+
+Thẩm Vi hơi khựng lại, chắc không ngờ tôi sẽ đưa ra yêu cầu này. Sau vài giây chần chừ, chị ta gật đầu:
+
+“Cũng được, nên nghỉ ngơi một chút. Chị duyệt đơn, em cứ yên tâm nghỉ phép.”
+
+Tôi rời khỏi văn phòng, vừa ngồi xuống chỗ làm thì phần mềm nội bộ lập tức bật lên một tin nhắn – từ Trương Hạo Kiệt.
+
+Tôi mở tin nhắn ra xem, thì thấy một danh sách nhiệm vụ dày đặc, toàn là những việc lặt vặt chẳng liên quan gì đến chuyên môn.
+
+Thậm chí còn có cả “hỗ trợ phòng hành chính chuyển đồ nội thất mới về” và “đi gặp ban quản lý tòa nhà để bàn chuyện khử trùng định kỳ” — đúng kiểu chân chạy vặt.
+
+Cuối tin nhắn, hắn còn thêm một câu “dặn dò”:
+
+【Tiểu Bách à, nghỉ ngơi thì cũng đừng rảnh rỗi quá. Làm thêm chút việc cho công ty cũng là chuyện tốt. Mấy việc này không khó, tranh thủ lúc nghỉ làm giúp đi, coi như san sẻ áp lực.】
+
+Tôi nhìn chằm chằm vào màn hình, cơn giận bốc thẳng lên óc.
+
+Rõ ràng đã được duyệt nghỉ, hắn lại cố tình đẩy sang mớ việc không liên quan, rõ ràng là kiếm cớ gây sự, cố tình làm khó.
+
+Tôi đáp ngay:
+
+【Giám đốc Trương, các nhiệm vụ này không thuộc phạm vi công việc của tôi, và tôi đã được duyệt nghỉ nên không có nghĩa vụ xử lý các việc không khẩn cấp.】
+
+Chưa đến nửa phút sau, điện thoại tôi đã đổ chuông.
+
+Giọng hắn bên kia vang lên, không hề che giấu sự áp đặt:
+
+“Bách Dật, ý cô là gì? Giao cho cô mấy việc trong khả năng mà cũng tìm cách từ chối? Công ty nuôi cô không phải để cô chọn việc dễ mà làm đâu!”
+
+Tôi lạnh lùng đáp lại:
+
+“Những việc này không thuộc trách nhiệm của tôi.”
+
+“Giờ thì là trách nhiệm của cô đấy!”
+
+Hắn gằn giọng, âm lượng vút cao:
+
+“Tôi là giám đốc bộ phận, tôi phân công thì cô phải làm! Nếu cô không làm, tôi sẽ xử lý theo kiểu làm việc tiêu cực, tháng này không có thưởng, sau này cũng đừng mơ thăng chức!”
+
+Những lời đe dọa chát chúa vang lên trong tai, tôi siết chặt điện thoại, móng tay gần như cắm vào lòng bàn tay.
+
+Lời thiên vị của Thẩm Vi còn chưa nguôi trong đầu, giờ lại bị Trương Hạo Kiệt ép từng bước thế này, nỗi ức nghẹn khiến tôi nghẹn cả ngực.
+
+Nhưng lúc này chưa phải lúc trở mặt.
+
+Tôi hít sâu, ép mình bình tĩnh lại:
+
+“Biết rồi, giám đốc.”
+
+Tôi cúp máy, cố gắng trấn tĩnh bản thân, bắt đầu xử lý đống việc linh tinh hắn đẩy sang.
+
+Nhưng điều khiến tôi lạnh lòng hơn, là khi Thẩm Vi biết rõ Trương Hạo Kiệt giao việc lố bịch như vậy, chị ta không những không nói một lời trách mắng, mà còn gọi tôi vào phòng “tâm sự”.
+
+Miệng thì nói: “Người trẻ trải nghiệm thêm chút việc không hại gì. Những chuyện này cũng rèn tính kiên nhẫn cho em.”
+
+Khoảnh khắc nghe thấy câu đó, một thùng nước lạnh như đổ thẳng lên đầu tôi.
+
+Công ty này, ban đầu chỉ là một xưởng nhỏ năm người, nhờ công nghệ lõi tôi tự phát triển mà thoát cảnh phá sản, từng bước vươn lên.
+
+Từ căn phòng thuê chật hẹp ban đầu đến tòa nhà văn phòng khang trang hiện giờ, tôi và Thẩm Vi đã cùng nhau gây dựng từ hai bàn tay trắng.
+
+Nhưng giờ đây, chỉ vì một người đàn ông, chị ta dung túng chuyện chèn ép trắng trợn như thế, đến một lời công bằng cũng không nói nổi.
+
+Tôi bỗng nhiên hiểu ra.
+
+Có lẽ trong mắt chị ta, công ty đã vững rồi, tôi không còn quan trọng nữa.
+
+Chị ta quên mất rằng, công nghệ cốt lõi, khách hàng chiến lược… gần như đều nằm trong tay tôi.
+
+Không có tôi, cái công ty nhìn thì vững chãi này, chẳng qua chỉ là tòa lâu đài xây bằng giấy.
+
+Khi tôi còn đang nhức đầu với danh sách vật tư cần xử lý, một tin nhắn mới lại bật lên.
+
+Là Trương Hạo Kiệt.
+
+【Cà phê ở quán dưới lầu uống chán rồi, cô đi ra tiệm ở phía đông thành phố ấy. Chỗ đó cà phê pha tay ngon, lấy một ly không đường không sữa. Tôi gửi địa chỉ rồi, nửa tiếng quay lại. Tôi còn phải họp.】
+
+Tôi mở địa chỉ ra xem — tận mười cây số.
+
+Nửa tiếng quay về? Có mọc cánh cũng không kịp.
+
+Tôi còn chưa kịp trả lời thì ngoài cửa văn phòng đã ồn ào.
+
+Một đồng nghiệp bên phòng marketing chạy vào, vẻ mặt đầy hưng phấn:
+
+“Giám đốc Trương, có tin vui! Dự án trí tuệ nhân tạo trị giá hàng trăm triệu, bên khách hàng đã đồng ý ký hợp đồng rồi. Bên mình cần cử người ngay để phụ trách!”
+
+Mắt Trương Hạo Kiệt sáng lên, hắn lập tức đi thẳng đến chỗ tôi, giọng dứt khoát như ra lệnh:
+
+“Bách Dật, hợp đồng lớn như vậy, cô mau bỏ hết việc tay, phụ trách đối ứng ngay lập tức. Nhất định phải giành lấy dự án này!”
+
+Tôi ngẩng đầu nhìn hắn, thấy bộ dạng sốt ruột đến mức lộ liễu ấy mà buồn cười.
+
+Tôi mỉm cười, giơ điện thoại lên lắc lắc:
+
+“Xin lỗi giám đốc Trương, tôi không tiếp nhận được.”
+
+“Anh vừa bảo tôi đi mua cà phê pha tay tận mười cây số, còn dặn phải quay lại trong vòng nửa tiếng để không làm lỡ giờ họp của anh.
+
+Nếu không về kịp là ảnh hưởng hiệu suất, trừ KPI đó.”
+
+Mặt Trương Hạo Kiệt sầm lại ngay lập tức, giọng đầy bực tức:
+
+“Cô cố tình đúng không? Một ly cà phê thì quan trọng gì bằng dự án hàng trăm triệu? Mau bỏ chuyện cà phê sang một bên, đi đối ứng dự án trước!”
+
+“Không được đâu,” tôi nhún vai, giọng thản nhiên,
+
+“Anh là giám đốc, đã phân công nhiệm vụ thì tôi đâu dám cãi? Lỡ vì đi lo việc khác mà làm anh lỡ ly cà phê pha tay, sau này lại quy tôi là làm việc tiêu cực, tôi không gánh nổi đâu.”
+
+“Cô…!”
+
+Trương Hạo Kiệt bị tôi chặn họng, nghẹn lời trong giây lát, sắc mặt đen như than, một lúc sau mới rít qua kẽ răng một câu:
+
+“Đừng có giở mấy trò khôn vặt trước mặt tôi! Đừng tưởng mình là không thể thay thế. Không có cô, công ty vẫn chạy vù vù!”
+
+Nói xong, hắn lập tức quay đầu hét về phía không xa:
+
+“Vương Uy, dự án hàng trăm triệu này giao cho cậu! Làm cho tốt vào! Nếu cậu giành được, tôi sẽ đích thân đề xuất thưởng cao cho cậu!”
+
+Mắt Vương Uy sáng rỡ, mặt cười đến mức nhăn nhúm, vội vàng bước nhanh tới gật đầu:
+
+“Cảm ơn giám đốc đã tin tưởng! Tôi nhất định sẽ cố gắng hết sức, tuyệt đối không phụ lòng mong mỏi của anh!”
+
+Trương Hạo Kiệt liếc tôi một cái, ánh mắt đầy khinh thường và khiêu khích.
+
+Sau đó, hắn ngang nhiên gọi thẳng đến phòng nhân sự, nói rõ mồn một trước mặt mọi người:
+
+“Alo, làm giúp tôi thủ tục tạm đình chỉ công tác cho Bách Dật. Lý do là làm việc tiêu cực, không chấp hành sắp xếp của phòng ban, gây ảnh hưởng đến tiến độ dự án trọng điểm của công ty.”
+
+Tôi đứng nhìn hắn xử lý mọi chuyện một cách độc đoán và phi lý như vậy mà không còn thấy tức nữa.
+
+Chỉ còn lại một lớp lạnh lẽo, bình tĩnh đến đáng sợ.
+
+Một người giám đốc công tư bất phân, thẳng tay chèn ép nhân viên chỉ vì hiềm khích cá nhân.
+
+Một công ty đã đánh mất tâm ban đầu, dẹp hết lẽ công bằng.
+
+Còn lưu luyến gì nữa?
+
+Tôi không tranh cãi, cũng không dây dưa.
+
+Giữa những ánh nhìn tò mò, thương hại và hả hê xung quanh, tôi lặng lẽ đứng dậy, gom lại những món đồ thuộc về mình.
+
+Vương Uy cố tình đi ngang qua, cúi người, hạ giọng đủ nghe nhưng cũng đủ cho mấy người xung quanh hóng được:
+
+“Bách Dật, thấy chưa? Dự án hàng trăm triệu, cuối cùng vẫn là tôi được chọn. Cô tưởng có chút kỹ thuật thì ghê gớm lắm hả? Cũng chỉ đến đây là hết đường thôi.”
+
+Hắn cười khẩy, giọng nói ngập tràn hả hê:
+
+“Lúc cô giành được hợp đồng ba mươi triệu, cái kiểu kiêu ngạo đó tôi vẫn nhớ như in. Cứ tưởng cô sẽ mãi mãi đắc thế. Kết quả thì sao? Cũng chỉ là một con cờ bị loại bỏ thôi.”
+
+“Dự án lần này để tôi xử lý, sau này công ty này chính là sân chơi của tôi rồi!”
+
+Tôi ngẩng đầu, liếc hắn một cái, không nói gì.
+
+Đối với kiểu người đắc ý ti tiện như hắn, tốn một lời cũng là lãng phí.
+
+Tôi ôm đống đồ đơn giản của mình, lặng lẽ bước ra khỏi tòa nhà công ty.
+
+Đúng lúc đó, điện thoại rung lên.
+
+Trên màn hình hiện đúng hai chữ: Thẩm Vi.
+
+Tôi do dự vài giây, cuối cùng vẫn bấm nghe máy.
+
+“Bách Dật, em đang ở đâu? Mau quay lại công ty đi!”
+
+Giọng Thẩm Vi đầy căng thẳng, xen lẫn chút hoảng loạn không dễ nhận ra.
+
+“Vừa rồi giám đốc nhân sự vội vàng chạy đến tìm chị, nói rằng Hạo Kiệt cho em tạm đình chỉ công tác? Chị hoàn toàn không biết anh ta lại làm vậy!”
+
+“Chị Thẩm,” tôi cười nhạt, giọng bình thản nhưng đượm mỉa mai, “chị thật sự không biết, hay chỉ giả vờ không biết thôi? Trong lòng chị rõ ràng nhất mà.”
+
+Tôi nói tiếp, từng câu rõ ràng, không hề run giọng:
+
+“Lúc hắn chia nhỏ ba triệu tiền thưởng của tôi thành mỗi tháng một trăm tệ, chị không biết? Lúc hắn ép tôi, dù đã được duyệt nghỉ, vẫn phải gánh một đống việc linh tinh, dọa trừ KPI nếu không làm, chị cũng không biết? Lúc hắn bắt tôi đi mua cà phê tận mười cây số rồi yêu cầu phải quay lại trong vòng nửa tiếng, chị vẫn không biết sao?”
+
+Đầu dây bên kia im lặng một lúc lâu.
+
+Cuối cùng, giọng Thẩm Vi mới vang lên, run nhẹ nhưng cố giữ bình tĩnh:
+
+“Bách Dật, chị biết em chịu ấm ức. Nhưng nghe chị nói đã — dự án trí tuệ nhân tạo trị giá hàng trăm triệu kia, phía khách hàng đã nói rõ, họ chỉ chấp nhận khung kỹ thuật và thuật toán do em xây dựng. Không có em, Vương Uy không thể gánh nổi đâu!”
+
+“Chị sẽ lập tức bảo phòng tài chính chuyển toàn bộ ba triệu tiền thưởng cho em, thêm năm trăm nghìn tệ bồi thường cá nhân. Khoản này coi như chị tự trả, xem như xin lỗi em. Em quay lại được không? Công ty thực sự không thể mất em!”
+
+“Thẩm Vi,” tôi ngắt lời, giọng tôi đã hoàn toàn phẳng lặng, không còn chút dao động nào: “Chuyện này chưa bao giờ là vấn đề tiền bạc.”
+
+“Còn Trương Hạo Kiệt thì sao? Hắn dựa vào việc là người yêu chị, tự nhiên nhảy lên làm sếp của tôi, rồi ỷ quyền công tư lẫn lộn, chèn ép công khai, cắt thưởng vô lý, đe dọa trắng trợn.”
+
+“Giữ lại một kẻ như thế trong công ty, hôm nay hắn có thể hại tôi, ngày mai hắn cũng có thể vì tư lợi mà kéo cả công ty xuống.”
+
+“Tôi ở lại chỉ khiến đôi bên thêm hao tổn. So với việc bị giày vò từng ngày, chi bằng dứt khoát rời đi — coi như giải thoát cho cả hai bên.”
+
+Nói xong, tôi không đợi cô ta phản ứng thêm, trực tiếp cúp máy.
+
+Tôi mở danh bạ, kéo tên Thẩm Vi vào danh sách chặn.
+
+Khoảnh khắc đó, tôi bỗng cảm thấy lòng mình thật nhẹ.
+
+Không còn vướng bận, không còn do dự, chỉ muốn rời khỏi nơi khiến tôi thất vọng đến lạnh người này, càng xa càng tốt.
+
+Về đến nhà, tôi đặt chiếc laptop và USB trong tay xuống bàn, ngồi lặng một lúc nhìn ra cửa sổ.
+
+Tâm trạng rối như tơ vò.
+
+Từng có lúc, tôi nghĩ nơi ấy là mảnh đất lý tưởng để hiện thực hóa ước mơ, là bến cảng nơi mọi người cùng nhau chiến đấu.
+
+Nhưng giờ đây, nó chẳng khác nào một cái lồng ngột ngạt đến nghẹt thở.
+
+Tôi hít sâu một hơi, mở máy tính, không chút do dự đăng nhập hệ thống quản lý của công ty, nộp đơn xin nghỉ việc.
+
+Ở mục lý do nghỉ việc, tôi chỉ viết tám chữ: “Không cùng chí hướng, tìm kiếm phát triển.”
+
+Sau đó, tôi lập tức hủy kích hoạt hòm thư công việc, gỡ bỏ toàn bộ quyền truy cập hệ thống, cắt đứt sạch mọi liên hệ với nơi đó.
+
+Vừa làm xong, điện thoại đã hiện thông báo mới từ nhóm chat nội bộ — tôi còn chưa kịp rời khỏi nhóm.
+
+Mở lên xem, tin nhắn của Trương Hạo Kiệt bị ghim ngay đầu, giọng điệu tràn đầy mỉa mai không che giấu:
+
+【@Bách Dật đã muốn đi thì tôi cũng không giữ. Đừng tưởng mình là nhân vật không thể thay thế. Trái đất không ngừng quay vì thiếu ai, công ty thiếu cô vẫn hoạt động bình thường. Với thái độ không tuân lệnh, đụng tí là bỏ việc như cô, tôi cũng tò mò xem còn công ty nào dám nhận! Khuyên cô nên sớm nhìn rõ thực tế, kẻo đến lúc hối cũng không kịp.】
+
+Bên dưới là một loạt đồng nghiệp xu nịnh theo gió xoay chiều, tranh nhau “góp vui”:
+
+【Đúng rồi, Bách Dật hơi bốc đồng thật, giám đốc Trương cũng chỉ vì công ty thôi mà.】
+
+【Không có nền tảng công ty, thì làm sao có được ngày hôm nay? Nói nghỉ là nghỉ, thật thiếu trách nhiệm.】
+
+【Có lẽ là nghĩ mình có chút năng lực rồi tự mãn đấy, kiểu người này đi đâu cũng không sống yên được đâu.】
+
+Nhìn những lời lẽ đảo trắng thay đen ấy, tôi chỉ thấy nực cười.
+
+Tôi không trả lời, cũng chẳng phản bác, mà trực tiếp rời khỏi tất cả nhóm chat công ty, rồi tắt âm điện thoại.
+
+Người trong sạch không cần giải thích.
+
+Đối với những kẻ như thế, phí lời là thừa thãi.
+
+Điều tôi không ngờ là — sáng hôm sau, vừa bật lại âm thanh điện thoại, một cuộc gọi từ số lạ đã đến.
+
+Tôi do dự một chút rồi bắt máy.
+
+Bên kia là một giọng nữ ôn hòa, dứt khoát:
+
+“Xin chào, tôi xin hỏi đây có phải là cô Bách Dật không? Tôi là Hứa Mộng, giám đốc nhân sự của Khải Tinh Technology.”
+
+Khải Tinh?
+
+Tim tôi khẽ run.
+
+Đó là một trong những tập đoàn hàng đầu trong ngành — cũng là đối thủ cạnh tranh trực tiếp với công ty cũ.
+
+Năng lực mạnh, danh tiếng tốt, đã lâu tôi ngưỡng mộ.
+
+Tôi giữ thái độ lịch sự, đáp lại:
+
+“Chào chị, không biết chị gọi tôi có việc gì?”
+
+Giọng Hứa Mộng đầy thành ý:
+
+“Chúng tôi đã theo dõi thành tích của cô trong lĩnh vực dữ liệu thông minh từ lâu. Đặc biệt là lần cô dẫn dắt đội ngũ giành được dự án ba mươi triệu tệ, tạo tiếng vang rất lớn trong ngành.”
+
+“Chúng tôi cũng vừa hay biết cô đang có sự thay đổi nghề nghiệp, nên rất hy vọng được mời cô gia nhập Khải Tinh.”
+
+Cô ấy ngừng lại giây lát, rồi nói tiếp:
+
+“Chúng tôi muốn mời cô giữ vị trí Phó Tổng Giám đốc kỹ thuật, mức lương gấp ba lần vị trí cũ, có riêng một nhóm R&D độc lập dưới quyền cô.”
+
+“Bên cạnh đó, mỗi năm chúng tôi còn cấp khoản trợ cấp nghiên cứu phát triển không dưới 5 triệu tệ. Nếu cô có hứng thú, chúng tôi có thể sắp xếp lịch hẹn để trao đổi cụ thể.”
+
+Những điều kiện ấy không chỉ thể hiện thành ý, mà còn vượt xa những gì tôi từng nghĩ đến.
+
+Tôi không chút do dự, lập tức đồng ý buổi hẹn gặp.
+
+Sáng hôm sau, tôi đến trụ sở chính của Khải Tinh, có buổi trao đổi chuyên sâu với CEO và Hứa Mộng.
+
+Họ rất đồng tình với tầm nhìn công nghệ và góc nhìn ngành nghề của tôi.
+
+Còn tôi, cũng vô cùng hài lòng với văn hóa doanh nghiệp và định hướng phát triển của họ.
+
+Chiều hôm đó, chúng tôi chính thức ký kết hợp đồng lao động.
+
+Sau khi vào làm ở Khải Tinh, họ quả nhiên giữ đúng mọi cam kết.
+
+Tôi được trao toàn quyền quyết định và một sự tin tưởng trọn vẹn hiếm có.
+
+Tôi nhanh chóng thành lập đội ngũ nghiên cứu cốt lõi, tối ưu lại khung kỹ thuật của mình rồi bắt tay vào dự án mới.
+
+Trong khi đó, công ty cũ lại bắt đầu lâm vào khủng hoảng.
+
+Trương Hạo Kiệt bất chấp sự phản đối của mọi người, nhất quyết giao dự án hàng trăm triệu kia cho Vương Uy phụ trách.
+
+Vương Uy xưa nay chỉ giỏi xu nịnh, hoàn toàn không nắm được kỹ thuật trọng điểm.
+
+Thời còn theo tôi làm dự án, hắn chỉ phụ trách vài hạng mục phụ bên lề, không đụng đến lõi hệ thống.
+
+Khi tiếp quản, hắn hoàn toàn mù mờ không biết bắt đầu từ đâu.
+
+Hắn cố gắng sao chép lại phương án kỹ thuật cũ của tôi, nhưng không hiểu được thuật toán trọng tâm nên chỉ biết chắp vá lung tung.
+
+Hệ thống làm ra đầy lỗ hổng, không đáp ứng được yêu cầu cốt lõi của khách hàng, ngay cả độ ổn định cơ bản cũng không đảm bảo.
+
+Phía khách hàng liên tục tổ chức các buổi đánh giá lại dự án, mỗi lần đều đưa ra hàng loạt yêu cầu sửa chữa, đặt ra thời hạn gắt gao.
+
+Vương Uy dẫn đội OT liên tục để chỉnh sửa, nhưng càng sửa càng loạn, lỗi càng nhiều.
+
+Ngày bàn giao dự án đã cận kề, vậy mà tiến độ còn đang giậm chân tại giai đoạn đầu.
+
+Lúc này Trương Hạo Kiệt mới bắt đầu hoảng hốt.
+
+Hắn đích thân lao vào “chỉ đạo”, nhưng bản thân vốn là tay mơ trong kỹ thuật, nên cái gọi là “chỉ đạo” chẳng khác gì nói suông.
+
+Kết quả chỉ càng khiến đội ngũ thêm rối loạn.
+
+Không thể tiếp tục che giấu, Trương Hạo Kiệt đành phải cúi đầu đến tìm Thẩm Vi, thừa nhận sự thật, giọng nói mang theo chút chột dạ:
+
+“Thẩm Vi, cái dự án đó… đúng là có chút vấn đề. Vương Uy hình như không kham nổi.”
+
+“Cái gì?!”
+
+Thẩm Vi lập tức bật dậy khỏi ghế, giọng đầy lửa giận:
+
+“Trương Hạo Kiệt, lúc trước anh cam đoan với tôi thế nào? Anh nói Vương Uy làm được, nói công ty không cần Bách Dật vẫn chạy tốt!”
+
+“Giờ thì sao? Dự án nát bét, khách hàng dọa hủy hợp đồng, còn đòi bồi thường. Anh bảo tôi thu dọn đống đổ nát này kiểu gì?”
+
+Trương Hạo Kiệt cúi đầu lí nhí:
+
+“Anh cũng không ngờ lại ra nông nỗi này… Anh nghĩ hắn theo Bách Dật lâu thế rồi, ít nhiều cũng học được chút gì…”
+
+Thẩm Vi tức đến bật cười:
+
+“Anh có biết cái dự án này giá trị bao nhiêu không?! Hơn một trăm triệu! Anh vì muốn đạp Bách Dật, vì tư thù cá nhân mà đem cả công ty ra đánh cược à?”
+
+“Nói cho anh biết, nếu dự án này sụp, công ty không chỉ mất tiền lời, mà uy tín cũng tiêu tan. Đến lúc chuỗi vốn gãy luôn, thì chúng ta chỉ còn nước… uống gió Tây Bắc!”
+
+Cuộc cãi vã giữa hai người làm không ít nhân viên hoang mang.
+
+Cuối cùng, họ cãi nhau không vui vẻ gì mà mỗi người bỏ đi một hướng.
+
+Dù giận đến mức run tay, Thẩm Vi cũng hiểu rõ mức độ nghiêm trọng của chuyện này.
+
+Cô ta nghĩ đi nghĩ lại, người duy nhất có thể xoay chuyển cục diện, chỉ có tôi.
+
+Cô ta gọi cho tôi liên tục, nhưng đều không thể kết nối — vì tôi đã chặn số từ lâu.
+
+Không dừng lại ở đó, cô ta còn nhờ mấy đồng nghiệp cũ thời khởi nghiệp đứng ra khuyên nhủ, mong tôi trở lại.
+
+Họ liên tục nhắn tin, gọi điện, kể cho tôi nghe tình hình nguy cấp của công ty, gửi lời xin lỗi thay mặt Thẩm Vi.
+
+Họ nói, cô ta đã nhận ra lỗi lầm.
+
+Cô ta sẽ để Trương Hạo Kiệt công khai xin lỗi, tước bỏ chức giám đốc, thậm chí sẵn sàng chuyển nhượng 20% cổ phần công ty cho tôi — chỉ cần tôi quay về cứu dự án.
+
+Nhưng tôi vẫn kiên quyết từ chối.
+
+Có những tổn thương, một khi đã gây ra, thì không còn cách nào bù đắp.
+
+Có những niềm tin, một khi sụp đổ, thì không bao giờ xây lại được.
+
+Tôi nói thẳng với các đồng nghiệp cũ: tôi đã tìm được chỗ đứng vững chắc ở công ty mới, và sẽ không quay lại.
+
+Vì dự án thất bại mà tôi lại kiên quyết không quay lại, Trương Hạo Kiệt hoàn toàn phát điên.
+
+Hắn không cam tâm chịu thua, càng không chịu thừa nhận bản thân bất tài.
+
+Để đổ trách nhiệm và trả đũa tôi, hắn bắt đầu tung tin đồn khắp ngành.
+
+Hắn nói tôi vì không hài lòng đãi ngộ nên cố ý nhảy việc, mang theo cả công nghệ lõi lẫn dữ liệu khách hàng của công ty — gán cho tôi cái mác “kẻ phản bội vô ơn.”
+
+Không dừng ở đó, hắn còn lật mặt trước, giở chiêu “ác nhân cáo trạng trước”, đưa đơn kiện tôi ra tòa, yêu cầu bồi thường tổn thất kinh tế lên đến 50 triệu tệ.
+
+Hắn đưa ra một đống “chứng cứ” — bao gồm ảnh chụp màn hình file dự án khi tôi còn làm việc, bản in lịch sử trao đổi với khách hàng, thậm chí là nhật ký đăng nhập hệ thống trước khi nghỉ việc — với mục đích chứng minh tôi đánh cắp bí mật thương mại.
+
+Khi biết mình bị kiện, tôi đang dẫn dắt đội ngũ tiến hành giai đoạn then chốt của một dự án công nghệ lớn.
+
+Tôi hoàn toàn không hoảng loạn, mà lập tức liên hệ luật sư chuyên nghiệp, thu thập tài liệu phản tố, chuẩn bị ứng phó pháp lý.
+
+Ngày ra tòa, Trương Hạo Kiệt dẫn theo luật sư riêng, khí thế hùng hổ, như thể chắc chắn nắm phần thắng trong tay.
+
+Trong phiên xét xử, phía luật sư của hắn thao thao bất tuyệt, trình bày “sự thật”, đưa ra những “bằng chứng” đã chuẩn bị từ trước, cố dồn tôi vào thế bất lợi.
+
+Đến lượt tôi, luật sư đại diện bước lên bục rất bình tĩnh.
+
+Từng bằng chứng chúng tôi chuẩn bị được lần lượt trình bày: bằng sáng chế, giấy chứng nhận kỹ thuật do tôi đứng tên cá nhân, hợp đồng lao động, nội quy công ty.
+
+Tôi nhìn thẳng vào phía tòa, nói rành rọt:
+
+“Nhật ký nghiên cứu thể hiện toàn bộ kỹ thuật là tôi tự phát triển trong thời gian còn học đại học, không liên quan đến công ty cũ. Nội quy nhân sự của công ty cũng ghi rõ: kỹ thuật có trước khi gia nhập thuộc sở hữu cá nhân.”
+
+Tôi chỉ vào điều khoản trong hợp đồng:
+
+“Công ty chưa từng ký với tôi bất kỳ thỏa thuận bảo mật nào, cũng không trả bất kỳ khoản phụ cấp bảo mật nào. Vì vậy, không có cơ sở pháp lý để cáo buộc tôi làm rò rỉ bí mật thương mại.”
+
+Cuối cùng, tôi xuất trình thư xác nhận từ phía khách hàng.
+
+“Khách hàng nêu rõ: họ lựa chọn công ty cũ là vì năng lực và uy tín cá nhân của tôi. Lý do ngưng hợp tác là vì công ty không đáp ứng được yêu cầu kỹ thuật, hoàn toàn không phải do tôi lôi kéo khách.”
+
+Chuỗi bằng chứng liền mạch, logic rõ ràng, không thể phản bác.
+
+Trương Hạo Kiệt và luật sư của hắn nhìn đống tài liệu, mặt trắng bệch.
+
+Sự tự tin ban đầu biến mất không dấu vết.
+
+Sau quá trình xét xử, tòa tuyên án công khai: bác bỏ toàn bộ yêu cầu khởi kiện của Trương Hạo Kiệt, vì không đủ căn cứ pháp lý.
+
+Đồng thời, do hành vi kiện cáo ác ý, làm tổn hại danh dự của tôi, tòa yêu cầu hắn bồi thường 200 nghìn tệ bao gồm phí tổn hại danh tiếng và chi phí thuê luật sư.
+
+Vụ kiện này khiến công ty cũ trở thành trò cười trong ngành.
+
+Ngay sau khi bản án được tuyên, truyền thông lập tức đăng tải thông tin.
+
+Chuyện Trương Hạo Kiệt lấy công báo tư thù, lạm dụng pháp lý trả đũa cá nhân, chuyện công ty dung túng lãnh đạo ức hiếp nhân viên, rối loạn quản lý… nhanh chóng lan truyền khắp giới.
+
+Người trong ngành rì rầm bàn tán:
+
+“Cái công ty này điên thật, không giữ nổi nhân tài lại còn kiện ngược?”
+
+“Chiêu của Trương Hạo Kiệt đúng là rẻ tiền, thua dự án còn mất mặt. Ai dám hợp tác nữa?”
+
+“Năng lực của Bách Dật thì ai chẳng biết. Công ty làm vậy, chẳng khác nào đẩy công thần rời đi.”
+
+Một số doanh nghiệp từng có ý định hợp tác, sau khi thấy tin tức, lập tức dừng đàm phán.
+
+Ngay cả những khách hàng lâu năm cũng dao động, bắt đầu đánh giá lại rủi ro hợp tác — trong đó có hai bên chủ động đề nghị chấm dứt hợp đồng.
+
+Không khí nội bộ công ty thì ngày càng hỗn loạn.
+
+Nhiều kỹ sư trụ cột âm thầm liên hệ với các công ty tuyển dụng.
+
+Ai cũng sợ nếu ở lại, sớm muộn gì cũng bị kéo xuống đáy cùng con tàu đắm.
+
+Sau khi chấm dứt hợp tác với công ty cũ, phía khách hàng của dự án hàng trăm triệu nhanh chóng chủ động liên hệ với Khải Tinh — nơi tôi đang làm việc.
+
+Qua vài vòng trao đổi và trình bày giải pháp kỹ thuật, họ tỏ ra cực kỳ hài lòng với đề án của chúng tôi và lập tức ký hợp đồng hợp tác.
+
+Cuối cùng, dưới sự dẫn dắt của tôi, cả đội đã hoàn thành xuất sắc dự án.
+
+Hệ thống bàn giao không chỉ đáp ứng đầy đủ yêu cầu của khách hàng mà còn vượt xa mong đợi về hiệu suất, nhận được lời khen ngợi nồng nhiệt từ đối tác.
+
+Thành công này không chỉ củng cố vị thế của Khải Tinh trong ngành, mà còn giúp danh tiếng cá nhân của tôi vươn lên một tầm cao mới.
+
+Ngược lại, công ty cũ thì đã hoàn toàn rơi vào tình trạng sa sút không thể cứu vãn.
+
+Thẩm Vi đầu bù tóc rối, một mặt phải xoay xở với khủng hoảng tài chính, một mặt phải xử lý hậu quả dồn dập, lại còn phải nghe Trương Hạo Kiệt cằn nhằn trách móc mỗi ngày.
+
+Tình cảm giữa hai người cứ thế rạn nứt qua từng trận cãi vã, cuối cùng tan vỡ hoàn toàn.
+
+Để cứu vãn công ty, Thẩm Vi phải chạy vạy vay vốn khắp nơi, thậm chí bán tháo tài sản, nhưng kết quả vẫn chẳng được bao nhiêu.
+
+Công ty từng được xem như “ngôi sao mới nổi” trong ngành, chỉ trong vòng chưa đầy nửa năm đã rơi từ đỉnh cao xuống vực thẳm.
+
+Còn tôi, ở Khải Tinh, lại như cá gặp nước.
+
+Nhờ dự án trăm triệu đó, tôi cùng đội ngũ tạo nên thành tích rực rỡ, mang về lợi nhuận đáng kể cho công ty.
+
+Công ty hoàn toàn ghi nhận đóng góp của tôi: không những giữ đúng mọi cam kết, mà còn chính thức bổ nhiệm tôi làm Tổng giám đốc kỹ thuật, giao toàn quyền phụ trách mảng R&D và phát triển thị trường.
+
+Hiện tại, tôi vừa nắm giữ cổ phần, vừa lãnh đạo một đội ngũ nghiên cứu đầy năng lượng, ngày ngày tập trung sâu vào lĩnh vực sở trường.
+
+Tôi đã được thị trường công nhận, được giới chuyên môn tôn trọng.
+
+Tôi không còn phải chịu cảnh thiệt thòi, không cần nhìn sắc mặt ai để sống, có thể toàn tâm toàn ý làm điều mình yêu thích, thực hiện trọn vẹn giá trị bản thân.
+
+Thỉnh thoảng, tôi vẫn nghe vài chuyện bên lề về Thẩm Vi và Trương Hạo Kiệt từ mấy đồng nghiệp cũ.
+
+Sau khi chia tay, Trương Hạo Kiệt thân bại danh liệt trong ngành.
+
+Không một công ty đàng hoàng nào muốn thuê hắn, cuối cùng chỉ có thể lượn lờ làm vài việc lặt vặt ở mấy xưởng gia công nhỏ.
+
+Thế nhưng hắn vốn đã quen làm “sếp”, thích phô trương, năng lực lại không có, nên việc gì cũng chê mệt, chê ít tiền.
+
+Dần dà, hắn chẳng làm gì nữa, ở nhà sống lay lắt bằng cách bán dần những món đồ xa xỉ Thẩm Vi từng tặng.
+
+Nghe đâu sau này hắn còn dính vào cờ bạc, nợ nần chồng chất, cuối cùng bị chủ nợ đánh gãy chân, phải rúc trong căn trọ tồi tàn mà sống mòn từng ngày.
+
+Còn Thẩm Vi sau đó thì cố gắng chuyển hướng công ty sang mảng gia công kỹ thuật đơn giản, nhưng do thiếu khách hàng ổn định, không có lợi thế cạnh tranh, nên chẳng nhận được hợp đồng nào ra hồn.
+
+Cuối cùng, cô ta buộc phải tuyên bố phá sản, gánh trên lưng khoản nợ lên đến hàng triệu tệ.
+
+Để trả nợ, Thẩm Vi không còn lựa chọn nào khác ngoài việc buông hết sĩ diện.
+
+Cô ta đi bưng bê trong nhà hàng, giao đồ ăn ngoài giờ, mỗi ngày làm việc hơn chục tiếng.
+
+Tệ hơn nữa, bố mẹ cô ta vì lo lắng cho con gái mà lần lượt phát bệnh, phải nhập viện cùng lúc.
+
+Chi phí điều trị đắt đỏ khiến cô ta càng thêm chật vật, phải chạy đôn chạy đáo giữa bệnh viện và chỗ làm, sống lay lắt trong tuyệt vọng.
+
+Khi nghe những tin tức đó, trong lòng tôi không gợn chút sóng.
+
+Một công ty dung túng sâu mọt, coi thường người làm ra thành quả, đánh mất cái tâm ban đầu — kết cục như vậy chỉ là điều tất yếu.
+
+Còn tôi, đã dứt khỏi tất cả, vươn mình trong một bầu trời rộng lớn hơn, bắt đầu hành trình hoàn toàn mới của riêng mình.
+
+Trải nghiệm lần này giúp tôi hiểu ra một điều:
+
+Vàng thật sẽ luôn tỏa sáng.
+
+Năng lực lõi và giá trị thật sự, vĩnh viễn phải nằm trong tay chính mình.
+
+Còn những đòn chèn ép, những cái bẫy bẩn thỉu kia, rốt cuộc chỉ là tảng đá lót đường — giúp tôi trở nên mạnh mẽ hơn, xuất sắc hơn.
+
+Còn những kẻ từng xem thường, từng giẫm đạp tôi — sẽ sớm phải trả giá đắt cho sự thiển cận và bỉ ổi của chính họ.
+
+(hoàn)

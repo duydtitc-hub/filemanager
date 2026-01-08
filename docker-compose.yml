@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  tts-audio:
+    build: .
+    image: tts-audio
+    container_name: tts-audio
+    ports:
+      - "8005:8000" # expose TTS + album endpoints on single host port
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - .:/app
+      - ./whisper-cache:/root/.cache/whisper
+      - ./outputs:/app/outputs
+    networks:
+      - app-network
+
+  discord-bot:
+    build: ./discord-bot
+    container_name: discord-video-bot
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+    volumes:
+      - ./discord-bot:/app
+    depends_on:
+      - tts-audio
+    networks:
+      - app-network
+
+networks:
+
+  app-network:
+    driver: bridge

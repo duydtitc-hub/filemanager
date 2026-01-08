@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Block Service - Minimal Design</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563EB;
+      --primary-light: #EFF6FF;
+      --primary-hover: #1D4ED8;
+      --success: #10B981;
+      --success-light: #D1FAE5;
+      --warning: #F59E0B;
+      --warning-light: #FEF3C7;
+      --danger: #EF4444;
+      --danger-light: #FEE2E2;
+      --gray-50: #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-300: #D1D5DB;
+      --gray-400: #9CA3AF;
+      --gray-500: #6B7280;
+      --gray-600: #4B5563;
+      --gray-700: #374151;
+      --gray-800: #1F2937;
+      --gray-900: #111827;
+      --white: #FFFFFF;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+      --radius: 12px;
+      --radius-lg: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-800);
+      line-height: 1.5;
+    }
+
+    /* Layout */
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar - Block Options */
+    .sidebar {
+      width: 280px;
+      background: var(--white);
+      border-right: 1px solid var(--gray-200);
+      padding: 24px;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      margin-bottom: 24px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-weight: 700;
+    }
+
+    .logo-text {
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .sidebar-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-400);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    /* Block Type Cards */
+    .block-types {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .block-type-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      background: var(--gray-50);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+    }
+
+    .block-type-card:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+
+    .block-type-card.active {
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+
+    .block-type-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .block-type-icon.transport { background: #DBEAFE; }
+    .block-type-icon.activity { background: #FEF3C7; }
+    .block-type-icon.eat { background: #D1FAE5; }
+    .block-type-icon.sleep { background: #E0E7FF; }
+
+    .block-type-info h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .block-type-info p {
+      font-size: 12px;
+      color: var(--gray-500);
+    }
+
+    /* Combo Templates */
+    .combo-section {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--gray-200);
+    }
+
+    .combo-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .combo-card {
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: var(--radius);
+      color: var(--white);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .combo-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .combo-card h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .combo-card p {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .combo-card.adventure {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .combo-card.family {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 280px;
+      padding: 32px 40px;
+    }
+
+    /* Header */
+    .page-header {
+      margin-bottom: 32px;
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+      font-size: 15px;
+      color: var(--gray-500);
+    }
+
+    /* Trip Settings */
+    .trip-settings {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+
+    .setting-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .setting-card:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+    }
+
+    .setting-icon {
+      font-size: 20px;
+    }
+
+    .setting-info label {
+      display: block;
+      font-size: 11px;
+      color: var(--gray-400);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .setting-info span {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    /* Day Tabs */
+    .day-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .day-tab {
+      padding: 12px 24px;
+      background: var(--white);
+      border: 2px solid var(--gray-200);
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .day-tab:hover {
+      border-color: var(--primary);
+    }
+
+    .day-tab.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: var(--white);
+    }
+
+    .day-tab.completed {
+      background: var(--success-light);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    .day-tab .check {
+      width: 18px;
+      height: 18px;
+      background: var(--success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-size: 10px;
+    }
+
+    /* Timeline */
+    .timeline-container {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 32px;
+    }
+
+    .timeline {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      border: 1px solid var(--gray-200);
+    }
+
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .timeline-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .timeline-subtitle {
+      font-size: 13px;
+      color: var(--gray-500);
+      margin-top: 2px;
+    }
+
+    .auto-fill-btn {
+      padding: 10px 16px;
+      background: var(--gray-100);
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .auto-fill-btn:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    /* Timeline Items */
+    .timeline-items {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .timeline-item {
+      display: flex;
+      align-items: stretch;
+      gap: 16px;
+    }
+
+    .timeline-time {
+      width: 50px;
+      padding-top: 16px;
+      text-align: right;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-500);
+    }
+
+    .timeline-track {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 18px;
+    }
+
+    .timeline-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--gray-300);
+      border: 3px solid var(--white);
+      box-shadow: 0 0 0 2px var(--gray-300);
+      z-index: 1;
+    }
+
+    .timeline-dot.filled {
+      background: var(--success);
+      box-shadow: 0 0 0 2px var(--success);
+    }
+
+    .timeline-dot.highlight {
+      background: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+
+    .timeline-line {
+      width: 2px;
+      flex: 1;
+      background: var(--gray-200);
+      margin: 4px 0;
+    }
+
+    .timeline-content {
+      flex: 1;
+      padding: 8px 0;
+    }
+
+    /* Block Card */
+    .block-card {
+      background: var(--gray-50);
+      border-radius: var(--radius);
+      padding: 16px;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .block-card:hover {
+      border-color: var(--gray-300);
+    }
+
+    .block-card.highlight {
+      background: var(--warning-light);
+      border-color: var(--warning);
+    }
+
+    .block-card.highlight::before {
+      content: '⭐ Điểm nhấn';
+      position: absolute;
+      top: -10px;
+      right: 12px;
+      background: var(--warning);
+      color: var(--white);
+      padding: 2px 10px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .block-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .block-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      margin-right: 12px;
+    }
+
+    .block-icon.transport { background: #DBEAFE; }
+    .block-icon.activity { background: #FEF3C7; }
+    .block-icon.eat { background: #D1FAE5; }
+    .block-icon.sleep { background: #E0E7FF; }
+
+    .block-main {
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .block-info h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .block-info p {
+      font-size: 12px;
+      color: var(--gray-500);
+    }
+
+    .block-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .block-action-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: none;
+      background: var(--white);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .block-action-btn:hover {
+      background: var(--gray-200);
+    }
+
+    .block-action-btn.delete:hover {
+      background: var(--danger-light);
+      color: var(--danger);
+    }
+
+    .block-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--gray-200);
+    }
+
+    .block-meta {
+      font-size: 12px;
+      color: var(--gray-500);
+      display: flex;
+      gap: 12px;
+    }
+
+    .block-price {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    /* Empty Block */
+    .block-empty {
+      background: var(--white);
+      border: 2px dashed var(--gray-300);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .block-empty:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .block-empty-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .block-empty-text {
+      font-size: 13px;
+      color: var(--gray-500);
+    }
+
+    .block-empty-text strong {
+      color: var(--primary);
+    }
+
+    /* Suggestions Panel */
+    .suggestions-panel {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      border: 1px solid var(--gray-200);
+      position: sticky;
+      top: 32px;
+    }
+
+    .suggestions-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .suggestions-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .suggestions-subtitle {
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-top: 2px;
+    }
+
+    .filter-tags {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .filter-tag {
+      padding: 6px 12px;
+      background: var(--gray-100);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-tag:hover {
+      background: var(--gray-200);
+    }
+
+    .filter-tag.active {
+      background: var(--primary);
+      color: var(--white);
+    }
+
+    /* Suggestion Cards */
+    .suggestion-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .suggestion-card {
+      background: var(--gray-50);
+      border-radius: var(--radius);
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+    }
+
+    .suggestion-card:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .suggestion-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .suggestion-main {
+      display: flex;
+      gap: 12px;
+    }
+
+    .suggestion-img {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .suggestion-info h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .suggestion-info p {
+      font-size: 12px;
+      color: var(--gray-500);
+    }
+
+    .suggestion-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--warning);
+    }
+
+    .suggestion-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .suggestion-meta {
+      font-size: 11px;
+      color: var(--gray-500);
+    }
+
+    .suggestion-price {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .quick-add-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.2s;
+    }
+
+    .quick-add-btn:hover {
+      background: var(--primary-hover);
+      transform: scale(1.1);
+    }
+
+    .capacity-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      background: var(--danger-light);
+      color: var(--danger);
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .capacity-badge.ok {
+      background: var(--success-light);
+      color: var(--success);
+    }
+
+    /* Conflict Warning */
+    .conflict-warning {
+      background: var(--danger-light);
+      border: 1px solid var(--danger);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .conflict-icon {
+      font-size: 20px;
+    }
+
+    .conflict-text {
+      flex: 1;
+    }
+
+    .conflict-text strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+
+    .conflict-text span {
+      font-size: 12px;
+      color: var(--gray-600);
+    }
+
+    /* Bottom Bar */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 280px;
+      right: 0;
+      background: var(--white);
+      border-top: 1px solid var(--gray-200);
+      padding: 16px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .bottom-summary {
+      display: flex;
+      gap: 32px;
+    }
+
+    .summary-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .summary-label {
+      font-size: 12px;
+      color: var(--gray-500);
+    }
+
+    .summary-value {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .summary-value.price {
+      color: var(--primary);
+    }
+
+    .bottom-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-secondary {
+      background: var(--gray-100);
+      color: var(--gray-700);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray-200);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Smart Suggestion Banner */
+    .smart-banner {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: var(--radius);
+      padding: 16px;
+      color: var(--white);
+      margin-bottom: 20px;
+    }
+
+    .smart-banner h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .smart-banner p {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .smart-banner-action {
+      margin-top: 12px;
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      border-radius: 6px;
+      color: var(--white);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .smart-banner-action:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .timeline-container {
+        grid-template-columns: 1fr;
+      }
+
+      .suggestions-panel {
+        position: static;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        display: none;
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding: 20px;
+      }
+
+      .bottom-bar {
+        left: 0;
+        padding: 16px 20px;
+      }
+
+      .trip-settings {
+        flex-direction: column;
+      }
+    }
+
+    /* Animation */
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .block-card, .suggestion-card {
+      animation: slideIn 0.3s ease-out;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">B</div>
+          <span class="logo-text">BlockTrip</span>
+        </div>
+      </div>
+
+      <p class="sidebar-title">Loại dịch vụ</p>
+      <div class="block-types">
+        <div class="block-type-card">
+          <div class="block-type-icon transport">🚐</div>
+          <div class="block-type-info">
+            <h4>Di chuyển</h4>
+            <p>Bay, xe, tàu...</p>
+          </div>
+        </div>
+        <div class="block-type-card active">
+          <div class="block-type-icon activity">🏄</div>
+          <div class="block-type-info">
+            <h4>Hoạt động</h4>
+            <p>Tour, trải nghiệm</p>
+          </div>
+        </div>
+        <div class="block-type-card">
+          <div class="block-type-icon eat">🍜</div>
+          <div class="block-type-info">
+            <h4>Ăn uống</h4>
+            <p>Nhà hàng, quán ăn</p>
+          </div>
+        </div>
+        <div class="block-type-card">
+          <div class="block-type-icon sleep">🏨</div>
+          <div class="block-type-info">
+            <h4>Nghỉ ngơi</h4>
+            <p>Khách sạn, resort</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="combo-section">
+        <p class="sidebar-title">Combo gợi ý</p>
+        <div class="combo-cards">
+          <div class="combo-card">
+            <h4>🧘 Combo Thư giãn</h4>
+            <p>3N2Đ • Spa + Biển + Nghỉ dưỡng</p>
+          </div>
+          <div class="combo-card adventure">
+            <h4>🏄 Combo Phiêu lưu</h4>
+            <p>4N3Đ • Cano + Lặn + Safari</p>
+          </div>
+          <div class="combo-card family">
+            <h4>👨‍👩‍👧 Combo Gia đình</h4>
+            <p>3N2Đ • VinWonders + Beach</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="page-header">
+        <h1 class="page-title">Lên lịch trình của bạn</h1>
+        <p class="page-subtitle">Kéo thả block hoặc click để thêm dịch vụ vào từng ngày</p>
+      </div>
+
+      <!-- Trip Settings -->
+      <div class="trip-settings">
+        <div class="setting-card">
+          <span class="setting-icon">📍</span>
+          <div class="setting-info">
+            <label>Điểm đến</label>
+            <span>Phú Quốc</span>
+          </div>
+        </div>
+        <div class="setting-card">
+          <span class="setting-icon">📅</span>
+          <div class="setting-info">
+            <label>Ngày đi</label>
+            <span>15 - 17/01/2026</span>
+          </div>
+        </div>
+        <div class="setting-card">
+          <span class="setting-icon">👥</span>
+          <div class="setting-info">
+            <label>Số khách</label>
+            <span>2 người lớn, 1 trẻ em</span>
+          </div>
+        </div>
+        <div class="setting-card">
+          <span class="setting-icon">💰</span>
+          <div class="setting-info">
+            <label>Ngân sách</label>
+            <span>8 - 12 triệu</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day Tabs -->
+      <div class="day-tabs">
+        <div class="day-tab completed">
+          <span class="check">✓</span>
+          Ngày 1 • 15/01
+        </div>
+        <div class="day-tab active">
+          Ngày 2 • 16/01
+        </div>
+        <div class="day-tab">
+          Ngày 3 • 17/01
+        </div>
+      </div>
+
+      <!-- Timeline Container -->
+      <div class="timeline-container">
+        <!-- Timeline -->
+        <div class="timeline">
+          <div class="timeline-header">
+            <div>
+              <h2 class="timeline-title">🏄 Ngày phiêu lưu</h2>
+              <p class="timeline-subtitle">3 hoạt động • Ước tính 2.850.000đ</p>
+            </div>
+            <button class="auto-fill-btn">
+              ✨ Tự động điền
+            </button>
+          </div>
+
+          <!-- Conflict Warning -->
+          <div class="conflict-warning" style="display: none;">
+            <span class="conflict-icon">⚠️</span>
+            <div class="conflict-text">
+              <strong>Xung đột thời gian</strong>
+              <span>Tour Cano kết thúc 15:00, không thể đặt Spa lúc 14:30</span>
+            </div>
+          </div>
+
+          <div class="timeline-items">
+            <!-- 07:00 - Breakfast -->
+            <div class="timeline-item">
+              <div class="timeline-time">07:00</div>
+              <div class="timeline-track">
+                <div class="timeline-dot filled"></div>
+                <div class="timeline-line"></div>
+              </div>
+              <div class="timeline-content">
+                <div class="block-card">
+                  <div class="block-header">
+                    <div class="block-main">
+                      <div class="block-icon eat">🍳</div>
+                      <div class="block-info">
+                        <h4>Buffet sáng tại Resort</h4>
+                        <p>Đã bao gồm trong giá phòng</p>
+                      </div>
+                    </div>
+                    <div class="block-actions">
+                      <button class="block-action-btn">✏️</button>
+                      <button class="block-action-btn delete">🗑️</button>
+                    </div>
+                  </div>
+                  <div class="block-footer">
+                    <div class="block-meta">
+                      <span>⏱ 60 phút</span>
+                      <span>📍 Resort</span>
+                    </div>
+                    <span class="block-price">Miễn phí</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 08:00 - Cano Tour -->
+            <div class="timeline-item">
+              <div class="timeline-time">08:00</div>
+              <div class="timeline-track">
+                <div class="timeline-dot highlight"></div>
+                <div class="timeline-line"></div>
+              </div>
+              <div class="timeline-content">
+                <div class="block-card highlight">
+                  <div class="block-header">
+                    <div class="block-main">
+                      <div class="block-icon activity">🚤</div>
+                      <div class="block-info">
+                        <h4>Tour Cano 4 Đảo</h4>
+                        <p>Khám phá 4 đảo đẹp nhất Phú Quốc</p>
+                      </div>
+                    </div>
+                    <div class="block-actions">
+                      <button class="block-action-btn">✏️</button>
+                      <button class="block-action-btn delete">🗑️</button>
+                    </div>
+                  </div>
+                  <div class="block-footer">
+                    <div class="block-meta">
+                      <span>⏱ 7 tiếng</span>
+                      <span>📍 Bến tàu An Thới</span>
+                      <span>⭐ 4.9</span>
+                    </div>
+                    <span class="block-price">1.050.000đ × 3</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 15:00 - Empty slot -->
+            <div class="timeline-item">
+              <div class="timeline-time">15:00</div>
+              <div class="timeline-track">
+                <div class="timeline-dot"></div>
+                <div class="timeline-line"></div>
+              </div>
+              <div class="timeline-content">
+                <div class="block-empty">
+                  <div class="block-empty-icon">➕</div>
+                  <p class="block-empty-text">
+                    <strong>Thêm hoạt động</strong><br>
+                    Khoảng trống 2 tiếng
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 17:00 - Sunset -->
+            <div class="timeline-item">
+              <div class="timeline-time">17:00</div>
+              <div class="timeline-track">
+                <div class="timeline-dot filled"></div>
+                <div class="timeline-line"></div>
+              </div>
+              <div class="timeline-content">
+                <div class="block-card">
+                  <div class="block-header">
+                    <div class="block-main">
+                      <div class="block-icon activity">🌅</div>
+                      <div class="block-info">
+                        <h4>Sunset Sanato Beach</h4>
+                        <p>Ngắm hoàng hôn + cocktail</p>
+                      </div>
+                    </div>
+                    <div class="block-actions">
+                      <button class="block-action-btn">✏️</button>
+                      <button class="block-action-btn delete">🗑️</button>
+                    </div>
+                  </div>
+                  <div class="block-footer">
+                    <div class="block-meta">
+                      <span>⏱ 2 tiếng</span>
+                      <span>📍 Bãi Sao</span>
+                    </div>
+                    <span class="block-price">450.000đ × 3</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 19:00 - Dinner -->
+            <div class="timeline-item">
+              <div class="timeline-time">19:00</div>
+              <div class="timeline-track">
+                <div class="timeline-dot filled"></div>
+                <div class="timeline-line" style="background: transparent;"></div>
+              </div>
+              <div class="timeline-content">
+                <div class="block-card">
+                  <div class="block-header">
+                    <div class="block-main">
+                      <div class="block-icon eat">🦐</div>
+                      <div class="block-info">
+                        <h4>BBQ Hải sản Dinh Cậu</h4>
+                        <p>Set hải sản cao cấp cho 3 người</p>
+                      </div>
+                    </div>
+                    <div class="block-actions">
+                      <button class="block-action-btn">✏️</button>
+                      <button class="block-action-btn delete">🗑️</button>
+                    </div>
+                  </div>
+                  <div class="block-footer">
+                    <div class="block-meta">
+                      <span>⏱ 90 phút</span>
+                      <span>📍 Dinh Cậu</span>
+                    </div>
+                    <span class="block-price">850.000đ</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Suggestions Panel -->
+        <div class="suggestions-panel">
+          <div class="suggestions-header">
+            <div>
+              <h3 class="suggestions-title">Gợi ý cho bạn</h3>
+              <p class="suggestions-subtitle">Dựa trên sở thích & thời gian trống</p>
+            </div>
+          </div>
+
+          <!-- Smart Banner -->
+          <div class="smart-banner">
+            <h4>💡 Gợi ý thông minh</h4>
+            <p>Bạn có 2 tiếng trống lúc 15:00. Thêm Spa để thư giãn sau tour Cano?</p>
+            <button class="smart-banner-action">+ Thêm Spa 15:00</button>
+          </div>
+
+          <!-- Filter Tags -->
+          <div class="filter-tags">
+            <span class="filter-tag active">Tất cả</span>
+            <span class="filter-tag">🏊 Biển</span>
+            <span class="filter-tag">🧖 Spa</span>
+            <span class="filter-tag">🛒 Mua sắm</span>
+          </div>
+
+          <!-- Suggestion Cards -->
+          <div class="suggestion-cards">
+            <div class="suggestion-card">
+              <div class="suggestion-top">
+                <div class="suggestion-main">
+                  <div class="suggestion-img">🧖</div>
+                  <div class="suggestion-info">
+                    <h4>Spa & Massage Thái</h4>
+                    <p>90 phút • Phù hợp 15:00</p>
+                  </div>
+                </div>
+                <button class="quick-add-btn">+</button>
+              </div>
+              <div class="suggestion-bottom">
+                <div>
+                  <span class="suggestion-meta">⭐ 4.8 • 234 đánh giá</span>
+                  <span class="capacity-badge ok">✓ Còn 12 chỗ</span>
+                </div>
+                <span class="suggestion-price">650.000đ</span>
+              </div>
+            </div>
+
+            <div class="suggestion-card">
+              <div class="suggestion-top">
+                <div class="suggestion-main">
+                  <div class="suggestion-img" style="background: linear-gradient(135deg, #11998e, #38ef7d);">🏊</div>
+                  <div class="suggestion-info">
+                    <h4>Bể bơi vô cực</h4>
+                    <p>2 tiếng • Phù hợp 15:00</p>
+                  </div>
+                </div>
+                <button class="quick-add-btn">+</button>
+              </div>
+              <div class="suggestion-bottom">
+                <div>
+                  <span class="suggestion-meta">⭐ 4.6 • 156 đánh giá</span>
+                  <span class="capacity-badge ok">✓ Còn 20 chỗ</span>
+                </div>
+                <span class="suggestion-price">250.000đ</span>
+              </div>
+            </div>
+
+            <div class="suggestion-card">
+              <div class="suggestion-top">
+                <div class="suggestion-main">
+                  <div class="suggestion-img" style="background: linear-gradient(135deg, #f093fb, #f5576c);">🛍️</div>
+                  <div class="suggestion-info">
+                    <h4>Chợ đêm Phú Quốc</h4>
+                    <p>Tự do • Gợi ý sau 19:00</p>
+                  </div>
+                </div>
+                <button class="quick-add-btn">+</button>
+              </div>
+              <div class="suggestion-bottom">
+                <div>
+                  <span class="suggestion-meta">⭐ 4.5 • 89 đánh giá</span>
+                  <span class="capacity-badge">🔥 Còn 5 chỗ</span>
+                </div>
+                <span class="suggestion-price">Miễn phí</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Bar -->
+    <div class="bottom-bar">
+      <div class="bottom-summary">
+        <div class="summary-item">
+          <span class="summary-label">Tổng dịch vụ</span>
+          <span class="summary-value">8 blocks</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Hoàn thành</span>
+          <span class="summary-value">75%</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Tổng tiền</span>
+          <span class="summary-value price">8.250.000đ</span>
+        </div>
+      </div>
+      <div class="bottom-actions">
+        <button class="btn btn-secondary">Lưu nháp</button>
+        <button class="btn btn-primary">Tiếp tục thanh toán →</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

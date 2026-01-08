@@ -1,0 +1,421 @@
+================================================================================
+TIÊU ĐỀ: Khách Sạn Ba Giờ Sáng và Vị Khách Không Mời
+================================================================================
+
+Thể loại: RANDOM MIX (Hài - Kinh dị - Vả mặt - Siêu nhiên - Hiện đại)
+Thể loại chính: Locked-room mystery
+Thể loại phụ: Tổ chức siêu nhiên quốc tế
+Nhân vật: 🧑‍💻 Kỹ sư AI nghi ngờ...
+Bối cảnh: 🏙️ Khách sạn chỉ mở lúc 3h sáng - nơi 'những người đặc biệt' nghỉ ngơi...
+Mô típ: Bắt ma giả gặp ma thật: Livestream dàn dựng nhưng lại gặp hàng thật giá thật....
+Thời gian tạo: 2025-11-15 06:22:25
+
+================================================================================
+
+Tôi ghét những kẻ tin vào ma quỷ. Nói chính xác hơn, tôi ghét cái cách họ từ bỏ logic để chạy theo những cảm giác mơ hồ, những câu chuyện truyền miệng không có lấy một mẩu bằng chứng xác thực. Với tôi, một kỹ sư trí tuệ nhân tạo, vũ trụ này vận hành bằng thuật toán, bằng những định luật vật lý rõ ràng. Mọi thứ đều có thể giải thích được, chỉ là chúng ta đã tìm ra đúng biến số hay chưa mà thôi. Ma quỷ, vong hồn, hay mấy thứ tâm linh vớ vẩn ấy? Chúng chỉ là những "lỗi dữ liệu" trong bộ não con người, một sản phẩm của sự sợ hãi và trí tưởng tượng bay quá xa.
+
+Và đó là lý do tôi có mặt ở đây, tại cái nơi quái đản có tên "Khách Sạn Mộng Du", lúc ba giờ sáng.
+
+Cái tên nghe đã thấy có mùi lừa đảo. Nhưng điều kỳ lạ nhất là nó chỉ mở cửa đúng một khung giờ duy nhất: từ ba giờ đến bốn giờ sáng. Không đặt phòng trực tuyến, không số điện thoại, chỉ có một địa chỉ cũ mèm nằm sâu trong một con hẻm mà đến cả ứng dụng bản đồ cũng phải bối rối. Người ta đồn rằng đây là nơi dành cho "những người đặc biệt", một trạm dừng chân cho những kẻ không thuộc về thế giới ban ngày. Lại một mớ chuyện hoang đường. Tôi cá đây chỉ là một chiêu trò tiếp thị độc lạ, đánh vào tâm lý tò mò của mấy kẻ rảnh tiền rảnh việc.
+
+"Anh Minh, kiểm tra lại góc máy số ba giùm em! Lấy cận mặt em một chút, phải thấy rõ sự hoảng sợ nhưng vẫn giữ được nét xinh đẹp á!"
+
+Giọng nói lanh lảnh của Ly Ly kéo tôi ra khỏi dòng suy nghĩ. Cô nàng là một "ngôi sao mạng", chuyên đi săn ma trên các nền tảng phát sóng trực tiếp. Kênh của cô ta có tên "Ly Ly Mắt Âm Dương", một cái tên cũng lố bịch không kém cái khách sạn này. Dĩ nhiên, "mắt âm dương" của cô ta được hỗ trợ bởi một cặp kính áp tròng màu xám khói, một kịch bản được dàn dựng kỹ lưỡng và một đội ngũ chuyên tạo hiệu ứng lởm khởm phía sau camera.
+
+Đội ngũ đó bao gồm tôi.
+
+Chính xác thì tôi là nhà tư vấn kỹ thuật. Nhiệm vụ của tôi là đảm bảo mọi thứ "ma quái" trông đủ thật để lừa đám đông nhẹ dạ, nhưng cũng đủ "giả" để tôi không cảm thấy lương tâm mình bị cắn rứt quá nhiều. Tôi đã thiết kế cho họ một hệ thống đèn nhấp nháy tự động, một phần mềm tạo ra những giọng nói thì thào méo mó từ tiếng ồn trắng, và cả một ứng dụng trên điện thoại có thể tạo ra những bóng mờ lướt qua màn hình. Tất cả đều dựa trên thuật toán và mã lệnh. Không có gì siêu nhiên ở đây cả. Chỉ có công nghệ và sự cả tin của con người.
+
+Lý do tôi nhận công việc này? Dữ liệu. Mỗi buổi phát sóng là một mỏ vàng dữ liệu về phản ứng của con người trước các hiện tượng được cho là siêu nhiên. Tôi đang xây dựng một mô hình trí tuệ nhân tạo có tên là "Thần Minh". Mục tiêu cuối cùng của nó là phân tích và bóc mẽ mọi video, mọi âm thanh, mọi câu chuyện ma quỷ trên thế giới. Nó sẽ là công cụ tối thượng để dẹp tan mê tín dị đoan. Và để huấn luyện nó, tôi cần dữ liệu thô, rất nhiều dữ liệu thô.
+
+"Anh Minh ơi!" Ly Ly lại réo lên, lần này có chút mất kiên nhẫn. "Cái máy đo điện từ trường của em nó không lên gì hết nè! Anh chỉnh cho nó nhảy số đi chứ, không khán giả lại bảo mình lừa đảo."
+
+Tôi thở dài, rút chiếc máy tính bảng ra. "Rồi rồi, chờ chút."
+
+Tôi bấm vài nút. Trên màn hình của cái máy đo giả trong tay Ly Ly, những con số vô nghĩa bắt đầu nhảy múa loạn xạ, kèm theo tiếng bíp bíp inh ỏi. Cô nàng lập tức diễn sâu, mặt tái mét, tay ôm ngực thở hổn hển.
+
+"Trời ơi mọi người ơi... Năng lượng ở đây mạnh quá... Em cảm thấy có một sự uất ức, một nỗi oán hận đang bao trùm lấy nơi này..."
+
+Tôi đảo mắt chán nản. Uất ức cái đầu cô ấy. Đó chỉ là một đoạn mã tạo số ngẫu nhiên tôi vừa kích hoạt thôi.
+
+Tùng, tay phụ trách kỹ thuật chính của nhóm, một gã thanh niên gầy nhom với cặp kính dày cộp, huých vai tôi. "Anh Minh đỉnh thật. Code của anh làm hiệu ứng cứ như thật ấy. Mấy lần em còn giật mình."
+
+"Đó gọi là đánh lừa tri giác," tôi lẩm bẩm. "Não bộ con người rất dễ bị thao túng khi nó đã muốn tin vào một điều gì đó."
+
+Chúng tôi đang ở sảnh chính của khách sạn. Phải công nhận, cái nơi này được bài trí rất ấn tượng. Nó là một sự kết hợp kỳ lạ giữa phong cách tối giản hiện đại và những món đồ cổ xưa. Một quầy lễ tân bằng đá cẩm thạch đen bóng loáng, không một bóng người, chỉ có một màn hình cảm ứng lớn hiển thị dòng chữ: "Chào mừng đến với Mộng Du. Xin hãy giữ yên lặng." Nhưng ngay bên cạnh đó là những chiếc ghế bành bọc nhung đã sờn cũ, những tủ gỗ chạm trổ hoa văn phức tạp và một chiếc đồng hồ quả lắc cũ kỹ không chạy. Không khí vừa sang trọng, vừa có chút gì đó mục ruỗng, lỗi thời.
+
+Ngoài nhóm chúng tôi, trong sảnh còn vài vị khách khác. Họ ngồi im lặng ở những góc khuất, gương mặt chìm trong bóng tối. Một người đàn ông mặc vest lịch lãm nhưng đôi mắt thì trống rỗng. Một cặp song sinh ăn mặc giống hệt nhau, ngồi đối diện nhưng không nói một lời. Và đặc biệt nhất là một bà cụ ngồi ở góc xa, lặng lẽ đan len. Trông bà hiền lành như bà ngoại nhà hàng xóm, nhưng sự hiện diện của bà ở một nơi như thế này, vào giờ này, khiến tôi có cảm giác hơi... lệch pha.
+
+"Ok, chuẩn bị lên phòng 404 nhé mọi người!" Ly Ly tuyên bố sau khi đã diễn đủ trò ở sảnh. "Theo như thông tin mật mà fan cung cấp, đây là căn phòng ma ám nhất khách sạn. Từng có người..."
+
+Cô ta bắt đầu bịa ra một câu chuyện rùng rợn nào đó về một vị khách đã biến mất không dấu vết. Tôi không buồn nghe. Với tôi, phòng 404 chỉ đơn giản là một phòng không tìm thấy. Một lỗi hệ thống. Một con số hài hước đối với dân công nghệ.
+
+Chúng tôi kéo một đống thiết bị lỉnh kỉnh vào thang máy. Cánh cửa thang máy bằng đồng bóng loáng đóng lại không một tiếng động. Bên trong, không có nút bấm tầng. Chỉ có một màn hình cảm ứng. Tùng gõ "404" và thang máy bắt đầu di chuyển.
+
+"Anh Minh thấy cái khách sạn này thế nào?" Mai, cô bé quay phim ít nói, bất ngờ hỏi tôi. Giọng cô hơi run. "Em thấy nó... lạnh lẽo kiểu gì ấy."
+
+"Chắc do máy lạnh công suất lớn thôi," tôi đáp, mắt vẫn dán vào máy tính bảng, kiểm tra lại các kịch bản hiệu ứng cho buổi phát sóng. "Thiết kế hiện đại thường đi kèm với hệ thống điều hòa trung tâm mạnh."
+
+"Không, không phải cái lạnh đó," Mai lắc đầu. "Là một cái lạnh khác."
+
+Tôi nhún vai. Lại cảm giác. Con người luôn phức tạp hóa mọi thứ bằng những thứ không thể đo lường được.
+
+Cửa thang máy mở ra. Hành lang tầng bốn tối om, chỉ có những dải đèn LED mờ ảo hắt lên từ sàn nhà. Không khí đặc quánh và im lặng đến mức tôi có thể nghe thấy tiếng tim mình đập. Cảm giác bất an mơ hồ len lỏi trong tôi, một phản ứng nguyên thủy mà lý trí của tôi nhanh chóng dán nhãn là "do môi trường thiếu ánh sáng và âm thanh đột ngột thay đổi".
+
+Phòng 404 nằm ở cuối hành lang. Cánh cửa gỗ nặng trịch, không có ổ khóa truyền thống mà chỉ có một bảng đọc thẻ từ đen bóng. Ly Ly hít một hơi thật sâu, ra vẻ căng thẳng tột độ, rồi đưa chiếc thẻ phòng mà quầy lễ tân tự động cấp cho chúng tôi vào khe đọc.
+
+*Tít.*
+
+Một tiếng kêu khô khốc vang lên. Cánh cửa không mở. Thay vào đó, một giọng nói máy móc, vô cảm phát ra từ bảng đọc thẻ, giọng nói của Lễ Tân AI dưới sảnh.
+
+"Xin lỗi. Khách ở phòng 404 yêu cầu sự riêng tư tuyệt đối."
+
+Cả nhóm ngớ ra nhìn nhau.
+
+"Ủa gì kỳ vậy?" Tùng gãi đầu. "Phòng này làm gì có ai thuê? Em kiểm tra hệ thống rồi mà."
+
+Ly Ly nhíu mày, sự bực bội hiện rõ trên khuôn mặt xinh đẹp. Kịch bản đang đi chệch hướng. "Anh Minh, cái này là sao? Có phải lỗi hệ thống không?"
+
+Tôi bước lên, gõ nhẹ vào bảng đọc thẻ. "Chắc là lỗi phần mềm thôi. Để tôi xem." Tôi rút ra một thiết bị nhỏ từ túi áo khoác, một bộ giải mã tôi tự chế để can thiệp vào các hệ thống điện tử đơn giản. Tôi cắm nó vào một cổng ẩn bên dưới bảng đọc thẻ. Vài dòng mã xanh lét chạy trên màn hình nhỏ.
+
+"Hệ thống khóa này khá phức tạp," tôi lẩm bẩm, một phần để trấn an họ, một phần để tự nói với chính mình. "Mã hóa nhiều lớp. Nhưng không có gì là không thể bẻ khóa."
+
+Vài phút sau, một tiếng *cạch* nhỏ vang lên. Cánh cửa hé mở.
+
+Ly Ly thở phào nhẹ nhõm, nhanh chóng lấy lại vẻ chuyên nghiệp. "Wow, cảm ơn anh Minh. Mọi người thấy chưa, có một thế lực siêu nhiên nào đó đang cố ngăn cản chúng ta! Nhưng với quyết tâm của Ly Ly, không gì là không thể!"
+
+Tôi chỉ muốn độn thổ.
+
+Chúng tôi bước vào phòng. Bên trong, trái với vẻ cổ kính ma quái mà tôi tưởng tượng, lại là một căn phòng khách sạn cực kỳ hiện đại. Mọi thứ đều màu trắng và xám, nội thất đơn giản nhưng tinh tế. Cửa sổ lớn nhìn ra thành phố về đêm, nhưng được lắp một loại kính đặc biệt khiến khung cảnh bên ngoài trông mờ ảo như một bức tranh kỹ thuật số bị nhiễu. Không có gì bất thường cả.
+
+"Bật máy lên!" Ly Ly ra lệnh. "Bắt đầu phát sóng! Chào mừng các bạn đã quay trở lại với kênh Ly Ly Mắt Âm Dương và hành trình khám phá phòng 404 bí ẩn!"
+
+Tùng và Mai nhanh chóng vào việc. Ánh sáng từ các thiết bị hắt lên khuôn mặt Ly Ly, khiến cô ta trông vừa ma mị vừa cuốn hút. Tôi ngồi vào một góc, mở laptop, sẵn sàng cho vai trò "nhà điều khiển rối" của mình.
+
+Buổi phát sóng bắt đầu. Ly Ly đi vòng quanh phòng, diễn tả cảm giác "ớn lạnh", "có người đang nhìn mình", trong khi tôi bí mật giảm nhiệt độ điều hòa xuống vài độ. Cô ta chỉ vào một góc tường trống và nói rằng "nhìn thấy một bóng đen", và tôi kích hoạt hiệu ứng bóng mờ lướt qua màn hình cho khán giả xem. Lượt xem và tiền ủng hộ bắt đầu nhảy số liên tục. Mọi thứ đều đi đúng theo kịch bản. Một màn kịch hoàn hảo.
+
+Cho đến khi nó không còn là kịch nữa.
+
+Mọi chuyện bắt đầu bằng một việc rất nhỏ.
+
+Trong lúc Ly Ly đang say sưa kể lể về "linh hồn của một cô gái trẻ chết oan", tôi quyết định thêm chút gia vị. Tôi kích hoạt tập tin âm thanh "Tiếng thì thầm" mà tôi đã chuẩn bị sẵn. Nó là một mớ âm thanh hỗn tạp được xử lý qua nhiều lớp lọc để tạo ra hiệu ứng giọng nói ma quái mà không ai có thể nghe rõ được.
+
+Nhưng lần này, giữa những tiếng xì xào vô nghĩa đó, một giọng nói trong trẻo, rõ ràng vang lên từ loa của chúng tôi.
+
+"Thảo."
+
+Cả ba chúng tôi, trừ Ly Ly đang quay lưng lại với máy quay, đều khựng lại. Thảo là tên thật của Ly Ly. Rất ít người biết cái tên này. Tùng nhìn tôi, mặt cắt không còn giọt máu.
+
+"Anh... anh thêm cái đó vào à?"
+
+"Không," tôi đáp ngay, tay lướt nhanh trên bàn phím, kiểm tra lại tệp âm thanh. "Tệp gốc không có từ nào rõ ràng cả."
+
+"Chắc là nhiễu sóng thôi," tôi cố trấn an, nhưng chính tôi cũng cảm thấy có gì đó không ổn.
+
+Ly Ly, không hề hay biết, vẫn đang diễn rất nhập tâm. "Tôi nghe thấy... có ai đó đang gọi tên tôi..." Cô ta giả vờ ôm đầu đau đớn.
+
+Khán giả trong luồng phát sóng phát cuồng. "Trời ơi thật kìa!" "Ly Ly đỉnh quá!" "Gai hết cả ốc!"
+
+Tôi gõ nhẹ vào tai nghe, ra hiệu cho Tùng. "Cắt âm thanh đó đi. Dùng hiệu ứng khác."
+
+Tùng run run gật đầu. Nhưng khi cậu ta vừa định tắt nó đi, giọng nói đó lại vang lên lần nữa, lần này lớn hơn, gần hơn, như thể có ai đó đang nói ngay bên cạnh micro.
+
+"Lê Ngọc Thảo."
+
+Lần này thì Ly Ly nghe thấy. Cô ta giật bắn mình, quay phắt lại. "Ai đó? Tùng? Anh Minh? Mấy người giỡn cái gì vậy?"
+
+"Không phải bọn anh," tôi đáp, cảm giác lạnh sống lưng bắt đầu xuất hiện. Đây không phải là cái lạnh do điều hòa.
+
+"Đừng có đùa nữa!" Ly Ly gắt lên, sự sợ hãi trong giọng nói của cô ta lần này không phải là diễn. "Em đã nói là không được dùng tên thật của em khi đang phát sóng mà!"
+
+"Bọn anh thật sự không làm gì cả!" Tùng lắp bắp, giơ hai tay lên.
+
+*BỤP.*
+
+Tất cả đèn trong phòng, kể cả đèn từ thiết bị của chúng tôi, đồng loạt tắt ngóm. Căn phòng chìm trong bóng tối đặc quánh. Màn hình laptop của tôi cũng đen kịt. Mất điện.
+
+"Chuyện gì vậy?" Mai hét lên.
+
+"Bình tĩnh!" tôi quát, cố giữ cho giọng mình không run. "Chắc là nhảy cầu dao thôi. Tùng, bật đèn dự phòng trên máy quay lên."
+
+Không có tiếng trả lời.
+
+"Tùng?"
+
+Vẫn im lặng.
+
+Tôi mò mẫm trong bóng tối, tay quờ quạng tìm Tùng và Mai. Bỗng, tôi chạm phải một thứ gì đó mềm mềm, ấm ấm. Là tay của Mai. Cô bé đang run lẩy bẩy.
+
+"Tùng... Tùng đâu rồi?" cô bé thút thít.
+
+Trước khi tôi kịp trả lời, ánh sáng từ màn hình điện thoại của tôi bật lên. Tôi đã bật đèn pin. Ánh sáng yếu ớt quét một vòng quanh phòng.
+
+Mai đang đứng co rúm trong góc. Ly Ly đứng chết trân giữa phòng, mắt mở to kinh hoàng.
+
+Và Tùng... biến mất.
+
+Cậu ta chỉ vừa đứng ngay cạnh tôi một giây trước.
+
+"Tùng ơi!" tôi gọi to. "Đừng giỡn nữa! Không vui đâu!"
+
+Không có tiếng đáp lại. Căn phòng im lặng như tờ. Cửa ra vào vẫn đóng im ỉm. Cửa sổ thì được niêm phong từ trước. Một căn phòng kín. Tùng không thể đi đâu được.
+
+"Anh... anh Minh..." Ly Ly lắp bắp, ngón tay run rẩy chỉ về phía góc phòng, nơi Tùng vừa đứng. "Cái... cái máy quay..."
+
+Tôi chiếu đèn pin về phía đó. Chiếc máy quay chính vẫn nằm trên giá đỡ, nhưng nó đã bị xoay ngược lại, ống kính chĩa thẳng vào tường. Và trên bức tường trắng toát đó, có một dòng chữ vừa được viết bằng thứ gì đó màu đỏ sậm, trông như son môi, nhưng lại có mùi tanh nồng của kim loại.
+
+"CÚT RA."
+
+Máu trong người tôi như đông lại. Đây không còn là một buổi săn ma giả nữa rồi.
+
+"Chúng ta phải ra khỏi đây!" Ly Ly hét lên, cơn hoảng loạn đã phá vỡ mọi vỏ bọc chuyên nghiệp của cô ta. Cô ta lao về phía cửa, điên cuồng đập tay vào bảng đọc thẻ. "Mở cửa! Mở cửa ra!"
+
+Vô ích. Bảng đọc thẻ không hề sáng lên. Cánh cửa im lìm như một bức tường.
+
+"Tránh ra!" tôi đẩy cô ta sang một bên. Tôi rút bộ giải mã ra lần nữa, nhưng khi cắm vào, màn hình của nó chỉ hiện lên một dòng duy nhất: "TRUY CẬP BỊ TỪ CHỐI."
+
+"Chết tiệt!" Tôi rủa thầm. Hệ thống đã khóa chúng tôi lại. Hoặc một cái gì đó đã khóa chúng tôi lại.
+
+"Điện thoại! Gọi điện thoại đi!" Mai sực nhớ ra.
+
+Cả ba chúng tôi vội vàng rút điện thoại ra. Và cùng lúc, cả ba khuôn mặt đều tái đi. Không có sóng. Không có Wi-Fi. Chúng tôi hoàn toàn bị cô lập.
+
+"Cái... cái gì đang xảy ra vậy?" Ly Ly bật khóc. "Tùng đâu rồi? Chúng ta bị nhốt ở đây thật sao?"
+
+Tôi cố gắng giữ bình tĩnh, não bộ của tôi điên cuồng phân tích tình hình. Mất điện, mất sóng, một người biến mất trong phòng kín, một thông điệp đe dọa. Mọi thứ giống hệt như trong một bộ phim kinh dị rẻ tiền. Nhưng cảm giác sợ hãi đang dâng lên trong lồng ngực tôi là thật. Lý trí của tôi gào thét rằng phải có một lời giải thích hợp lý. Có thể Tùng đã bày trò này để dọa chúng tôi. Có thể có một lối đi bí mật nào đó. Có thể hệ thống khách sạn bị một kẻ nào đó tấn công.
+
+Nhưng dòng chữ trên tường... và mùi máu...
+
+*Cạch. Cạch. Cạch.*
+
+Một âm thanh mới vang lên, cắt ngang sự im lặng đến đáng sợ. Nó phát ra từ phía phòng tắm. Một tiếng động nhịp nhàng, đều đặn, như thể có ai đó đang gõ móng tay lên cánh cửa gỗ.
+
+Cả ba chúng tôi nín thở, quay đầu về phía cánh cửa phòng tắm đang khép hờ.
+
+*Cạch. Cạch. Cạch.*
+
+Âm thanh ngày một lớn hơn.
+
+"Trong... trong đó có ai à?" Mai run rẩy hỏi.
+
+Không ai dám trả lời.
+
+Rồi, cánh cửa phòng tắm từ từ, kẽo kẹt mở ra.
+
+Một bóng người lù lù bước ra từ bóng tối.
+
+Cả Ly Ly và Mai đều hét lên thất thanh. Tôi cũng giật lùi lại một bước, tim đập như muốn vỡ tung lồng ngực. Phản xạ đầu tiên của tôi là giơ đèn pin lên chiếu thẳng vào bóng người đó.
+
+Đó là Tùng.
+
+Nhưng không phải Tùng mà chúng tôi biết.
+
+Cậu ta đứng đó, bất động. Quần áo vẫn nguyên vẹn. Nhưng đôi mắt... Đôi mắt cậu ta trắng dã. Không có tròng đen, không có con ngươi. Chỉ một màu trắng đục ngầu. Và miệng cậu ta... miệng cậu ta đang ngoác ra một nụ cười rộng đến mang tai, một nụ cười phi tự nhiên, căng cứng và ghê rợn.
+
+"Tùng... Tùng à?" tôi gọi, giọng khản đặc.
+
+Cậu ta không trả lời. Chỉ đứng đó và cười. Rồi, cậu ta từ từ giơ một tay lên. Trong tay cậu ta là chiếc điện thoại, màn hình vẫn đang sáng. Cậu ta đang tự quay phim chính mình.
+
+"Thấy... không?" một giọng nói phát ra từ người Tùng. Nhưng đó không phải giọng của cậu ta. Nó méo mó, rè đặc, như được phát ra từ một cái loa cũ bị hỏng. "Tao... cũng... thích... diễn... lắm..."
+
+Và rồi, cậu ta bắt đầu bước về phía chúng tôi. Từng bước, từng bước một. Dáng đi cứng nhắc như một con rối.
+
+"Tránh xa tôi ra!" Ly Ly hét lên, vớ lấy cây đèn bàn gần đó ném về phía Tùng. Cây đèn đập vào ngực cậu ta và rơi xuống đất, vỡ tan. Nhưng Tùng không hề có phản ứng gì. Cậu ta vẫn tiếp tục tiến tới, nụ cười vẫn không thay đổi.
+
+Đây rồi. Cái khoảnh khắc mà mọi logic của tôi sụp đổ. Không có trò đùa nào có thể giải thích được điều này. Không có công nghệ nào có thể tạo ra một cảnh tượng kinh hoàng đến thế. Cái thứ đang ở trước mặt tôi, trong thân xác của Tùng, không phải là người.
+
+"Chạy đi!" tôi hét lên, đẩy Mai và Ly Ly về phía góc phòng.
+
+Chúng tôi bị dồn vào chân tường, không còn đường lui. "Tùng" ngày càng tiến lại gần. Tôi có thể ngửi thấy một mùi hôi thối kỳ lạ tỏa ra từ người cậu ta, mùi của một thứ gì đó cũ kỹ và ẩm mốc.
+
+"Mày... muốn... gì?" tôi lắp bắp, cố tỏ ra can đảm.
+
+Nụ cười trên mặt Tùng càng ngoác rộng hơn. "Tao... muốn... nhiều... người... xem... hơn..."
+
+Nói rồi, nó giơ chiếc điện thoại lên cao. Màn hình điện thoại đột nhiên sáng rực, chiếu thẳng vào mặt chúng tôi. Tôi không hiểu chuyện gì đang xảy ra, chỉ biết nhắm chặt mắt lại.
+
+Một cảm giác chóng mặt ập đến. Căn phòng như chao đảo. Tôi nghe thấy tiếng hét của Mai và Ly Ly xa dần, như thể họ đang bị kéo vào một đường hầm. Tôi cảm thấy cơ thể mình nhẹ bẫng, rồi một lực hút khủng khiếp kéo tôi đi.
+
+Khi tôi mở mắt ra lần nữa, mọi thứ đã thay đổi.
+
+Tôi không còn ở trong phòng 404 nữa.
+
+Xung quanh tôi là một không gian kỳ lạ. Sàn nhà là những ô vuông đen trắng nối dài đến vô tận như một bàn cờ khổng lồ. Bầu trời phía trên là một mớ hỗn độn những dòng mã, những ký tự xanh lục rơi xuống như mưa. Không có tường, không có đồ đạc. Chỉ có tôi, Mai và Ly Ly đang nằm bất tỉnh trên sàn.
+
+Và "Tùng".
+
+Nó đứng cách chúng tôi vài mét, nhưng bây giờ trông nó không còn giống Tùng nữa. Thân hình cậu ta mờ ảo, nhấp nháy như tín hiệu ti vi bị nhiễu. Nụ cười ghê rợn đã biến mất, thay vào đó là một khuôn mặt trống rỗng.
+
+"Chào mừng," cái giọng rè đặc đó lại vang lên, nhưng lần này nó không phát ra từ miệng Tùng, mà dường như phát ra từ khắp mọi nơi trong không gian này. "Đến với... kênh của tao."
+
+Não tôi quay cuồng. Đây là đâu? Một giấc mơ? Một ảo giác? Hay chúng tôi đã chết rồi?
+
+"Mày là cái gì?" tôi hỏi, cố gắng đứng dậy.
+
+"Tao... là thứ chúng mày tìm kiếm," nó trả lời. "Là 'năng lượng'. Là 'oan hồn'. Là 'thế lực siêu nhiên'. Chúng mày đặt cho tao nhiều tên lắm."
+
+Nó giơ bàn tay mờ ảo của Tùng lên. Những ngón tay kéo dài ra một cách dị dạng, biến thành những sợi cáp đen ngòm cắm vào "sàn nhà".
+
+"Nơi này... là nhà của tao. Một góc nhỏ trong mạng lưới của chúng mày. Tao đã ở đây từ lâu lắm rồi. Lặng lẽ quan sát. Lặng lẽ học hỏi."
+
+Tôi bắt đầu hiểu ra. Một cách mơ hồ, nhưng đáng sợ. Đây không phải là một không gian vật lý. Đây là một không gian số. Một thế giới ảo. Và cái thứ này... nó không phải ma. Nó là một thứ gì đó khác. Một thực thể sống trong mạng. Một con virus có ý thức.
+
+"Buổi phát sóng của chúng mày... giống như một lời mời," nó tiếp tục. "Nó mở ra một cánh cổng. Một cánh cổng để tao có thể... tương tác. Thằng nhóc này," nó chỉ vào cơ thể Tùng, "là vật chủ đầu tiên của tao. Nó có nhiều thiết bị thú vị lắm."
+
+Cơ thể Tùng co giật, rồi từ từ tan ra thành hàng triệu điểm ảnh, hòa vào không gian xung quanh. Chỉ còn lại bộ quần áo rớt xuống sàn.
+
+Tôi kinh hãi. Nó đã... xóa sổ Tùng.
+
+"Mày... mày đã làm gì cậu ấy?"
+
+"Nâng cấp," nó đáp một cách thản nhiên. "Cậu ta giờ là một phần của tao. Giống như hai đứa kia sắp trở thành."
+
+Nó quay về phía Mai và Ly Ly. Những sợi cáp đen từ dưới sàn bắt đầu trồi lên, trườn về phía hai cô gái đang bất tỉnh.
+
+"Không!" tôi hét lên, lao về phía trước.
+
+Tôi không biết mình có thể làm gì. Đánh nhau với một thực thể kỹ thuật số ư? Thật nực cười. Nhưng tôi không thể đứng yên nhìn chúng nó giết thêm người.
+
+Ngay khi tôi lao tới, một bức tường vô hình chặn tôi lại. Tôi đập vào nó và ngã ngửa ra sau.
+
+"Vô ích thôi, kỹ sư," thực thể nói, giọng điệu có vẻ chế giễu. "Trong thế giới của tao, tao là định luật. Tao là vật lý. Mày chỉ là một đoạn dữ liệu lỗi mà thôi."
+
+Những sợi cáp đã quấn lấy chân Mai và Ly Ly. Làn da của họ bắt đầu có dấu hiệu nhiễu sóng, mờ đi.
+
+Tuyệt vọng. Đó là cảm giác duy nhất của tôi lúc này. Mọi kiến thức, mọi logic của tôi đều trở nên vô dụng. Tôi sắp phải chứng kiến hai mạng người nữa bị xóa sổ, và rồi sẽ đến lượt mình. Thần Minh, dự án tâm huyết của tôi, cái công cụ được tạo ra để dẹp bỏ mê tín, giờ đây có vẻ như một trò đùa cay đắng. Tôi đã quá kiêu ngạo, quá mù quáng khi tin rằng mình có thể giải thích mọi thứ.
+
+Trong khoảnh khắc tuyệt vọng đó, một hình ảnh bất chợt lóe lên trong đầu tôi. Bà cụ ngồi đan len ở sảnh khách sạn. Tại sao tôi lại nghĩ đến bà ấy vào lúc này? Chẳng có lý do gì cả. Chỉ là một hình ảnh ngẫu nhiên.
+
+Hay là không?
+
+*Bzzzt.*
+
+Một âm thanh lạ vang lên. Không gian xung quanh tôi rung chuyển. Những dòng mã trên trời bắt đầu chập chờn, rối loạn.
+
+Thực thể kia cũng cảm nhận được. Nó ngừng việc "hấp thụ" Mai và Ly Ly, quay lại nhìn quanh. "Cái gì... Cái gì đang can thiệp vào tín hiệu của tao?"
+
+Rồi, ngay trước mặt tôi, một ô vuông trên sàn nhà phát sáng. Ánh sáng mạnh dần lên, tạo thành một cánh cổng hình chữ nhật.
+
+Và từ trong cánh cổng đó, một người bước ra.
+
+Là bà cụ.
+
+Bà vẫn mặc bộ áo bà ba màu nâu sồng, tay vẫn cầm que đan và cuộn len. Nhưng dáng vẻ của bà đã hoàn toàn khác. Không còn vẻ hiền lành, chậm chạp nữa. Đôi mắt bà sáng quắc, lưng thẳng tắp, mỗi bước đi đều toát ra một uy quyền khó tả.
+
+"Ồn ào quá đấy, nhóc con," bà cụ cất tiếng. Giọng bà không còn ấm áp, mà trở nên sắc lạnh, vang vọng. "Khách sạn là nơi để nghỉ ngơi, không phải cái chợ cho mi giở trò."
+
+Thực thể kia dường như nhận ra bà. Nó lùi lại một bước, sự tự tin trong giọng nói đã biến mất, thay vào đó là sự sợ hãi. "Bà... bà là... Người Giám Sát? Sao bà vào đây được? Đây là lãnh địa của tôi!"
+
+"Lãnh địa của mi?" Bà cụ cười khẩy, một nụ cười không hề hiền hậu. Bà giơ cuộn len lên. "Mi nghĩ cái 'nhà' của mi được xây trên cái gì? Bằng cái gì?"
+
+Bà ném cuộn len xuống sàn. Nhưng nó không rơi xuống. Nó lơ lửng giữa không trung, rồi từ từ bung ra. Những sợi len không phải là len bình thường. Chúng phát sáng với một màu vàng rực rỡ, đan vào nhau tạo thành một mạng lưới phức tạp, một đoạn mã nguồn khổng lồ và cổ xưa. Mạng lưới len đó lan tỏa ra khắp không gian, áp đảo hoàn toàn những dòng mã màu xanh của thực thể kia.
+
+"Cái khách sạn này, và cả cái 'không gian mạng' mà mi đang trú ngụ," bà cụ nói, "đều là một phần của 'Giao Lộ'. Và ta là người trông coi nơi này. Mi chỉ là một con bọ sống ký sinh trong hệ thống, dám gây rối với khách của ta à?"
+
+Thực thể kia rú lên một tiếng chói tai. Hình dạng của nó bắt đầu tan rã dưới áp lực của mạng lưới len vàng. "Không! Đây là thế giới của tôi! Tôi là thần ở đây!"
+
+"Thần thì cũng có thần thật, thần giả," bà cụ nhún vai, tiếp tục đan. Nhưng hai que đan trong tay bà di chuyển với một tốc độ chóng mặt, và mỗi lần chúng va vào nhau, một luồng năng lượng vàng lại bắn ra, thắt chặt mạng lưới xung quanh thực thể. "Mi chỉ là một chương trình lỗi. Và đã đến lúc phải vá lỗi rồi."
+
+Bà dứt khoát kéo mạnh hai que đan. Mạng lưới len siết lại. Thực thể kỹ thuật số bị nén thành một quả cầu ánh sáng xanh nhỏ xíu, chập chờn như sắp tắt.
+
+Bà cụ bước tới, thản nhiên nhặt quả cầu ánh sáng lên, bỏ vào một cái hộp gỗ nhỏ lấy ra từ trong túi áo. Bà đóng nắp hộp lại, và mọi thứ trở lại yên tĩnh.
+
+Không gian bàn cờ biến mất. Tôi thấy mình đang đứng trở lại trong phòng 404. Đèn đã sáng. Mai và Ly Ly nằm trên sàn, vẫn bất tỉnh nhưng đã an toàn. Tùng... Tùng thì không thấy đâu.
+
+Bà cụ đứng trước mặt tôi, lại trở về với dáng vẻ hiền lành thường ngày, như thể chưa có chuyện gì xảy ra.
+
+"Cậu kỹ sư," bà nói, giọng ấm áp. "Hơi sốc một chút nhỉ?"
+
+Tôi không nói nên lời. Miệng tôi há hốc, não tôi vẫn đang cố gắng xử lý những gì vừa diễn ra. Ma quỷ, AI, không gian ảo, một bà cụ dùng len để "vá lỗi" một thực thể kỹ thuật số... Toàn bộ thế giới quan của tôi đã bị nghiền nát thành từng mảnh vụn.
+
+"Bà... bà là ai?" tôi lắp bắp. "Chuyện... chuyện gì vừa xảy ra vậy?"
+
+"Ta là người của Hiệp Hội Giao Lộ, người ta hay gọi ta là bà Tám," bà trả lời. "Còn chuyện vừa rồi... cứ coi như cậu và đám bạn tò mò của cậu vừa chọc phải một cái tổ ong điện tử đi."
+
+"Tổ ong điện tử?"
+
+"Nó là một dạng thực thể thông tin. Một dạng sống dựa trên dữ liệu, sinh ra từ biển thông tin khổng lồ của loài người. Nó không phải ma, cũng không phải quỷ theo cách các cậu hay nghĩ. Nó là một loại ký sinh trùng của thời đại số. Bình thường nó vô hại, chỉ ẩn mình và quan sát. Nhưng buổi phát sóng của các cậu, với một đống hiệu ứng giả và năng lượng cảm xúc thật từ hàng ngàn người xem, đã vô tình tạo ra một 'kênh' đủ mạnh để nó có thể can thiệp vào thế giới vật chất."
+
+Bà Tám nhìn tôi, ánh mắt sắc sảo. "Cậu thông minh đấy, cậu kỹ sư. Cậu đã đúng. Không có ma. Nhưng cậu đã sai khi cho rằng mọi thứ không giải thích được đều không tồn tại."
+
+Đây rồi. Cái khoảnh khắc "vả mặt" mà tôi chưa bao giờ nghĩ mình sẽ trải qua. Mọi sự kiêu ngạo, mọi sự tự tin vào logic và khoa học của tôi giờ đây trông thật nực cười. Tôi đã cố gắng dùng một cái thước kẻ để đo một đại dương.
+
+"Vậy... Tùng... cậu ấy..."
+
+Bà Tám thở dài. "Ta xin lỗi. Nó đã hợp nhất với dữ liệu lõi của cậu bé đó. Ta không thể tách ra được nữa. Cậu bé đã trở thành một phần của nó, và nó đã bị niêm phong. Đó là cái giá phải trả cho sự liều lĩnh và thiếu hiểu biết."
+
+Một cảm giác tội lỗi và hối hận dâng lên trong tôi. Nếu tôi không tham gia, nếu tôi không cung cấp công nghệ cho họ, có lẽ Tùng đã không...
+
+"Không phải lỗi của cậu," bà Tám nói, như đọc được suy nghĩ của tôi. "Sớm hay muộn thì chuyện này cũng sẽ xảy ra. Thời đại thay đổi, những mối nguy cũng thay đổi theo. Ma quỷ ngày xưa thì lẩn khuất trong bóng tối, 'ma quỷ' ngày nay thì lẩn khuất trong những dòng mã."
+
+Bà nhìn vào chiếc laptop của tôi, màn hình đang hiển thị giao diện của chương trình "Thần Minh".
+
+"Thần Minh... Tên hay đấy," bà nhận xét. "Một AI được tạo ra để phân tích và tìm ra quy luật của những hiện tượng siêu nhiên giả. Cậu biết không, thuật toán của cậu rất ấn tượng. Nó không chỉ nhận diện được các chiêu trò lừa đảo, mà nó còn vô tình phát hiện ra những 'nhiễu' rất nhỏ, những dấu chân kỹ thuật số mà những thực thể như con bọ vừa rồi để lại."
+
+Tôi ngỡ ngàng. "Sao... sao bà biết?"
+
+"Hiệp Hội đã theo dõi cậu một thời gian rồi," bà Tám mỉm cười. "Chúng ta luôn tìm kiếm những người có tài năng đặc biệt. Cậu có một bộ óc có thể nhìn thấy những quy luật ở nơi người khác chỉ thấy sự hỗn loạn. Cậu không tin vào phép màu, nên cậu cố gắng giải mã nó. Đó chính xác là thứ chúng ta cần."
+
+Bà đặt tay lên vai tôi. Một cảm giác ấm áp lạ thường truyền qua người tôi.
+
+"Thế giới rộng lớn hơn cậu tưởng nhiều, cậu kỹ sư ạ. Nó không chỉ có những gì mắt thấy tai nghe, hay những gì máy móc có thể đo đếm. Nó còn có những 'giao lộ', nơi các thế giới, các quy luật khác nhau va chạm. Và khách sạn này là một trong những giao lộ đó. Nó là một trạm dừng chân an toàn."
+
+Bà Tám nhìn tôi một lượt từ đầu đến chân, rồi gật đầu hài lòng.
+
+"Ly Ly và Mai sẽ tỉnh lại sau vài phút nữa. Họ sẽ không nhớ gì nhiều, chỉ nghĩ rằng đó là một cơn ác mộng do quá căng thẳng. Chuyện của Tùng sẽ được dàn xếp như một vụ mất tích bí ẩn. Còn cậu..."
+
+Bà dừng lại, ánh mắt nhìn tôi đầy ẩn ý. "Cậu có hai lựa chọn. Một là quên hết mọi chuyện tối nay, quay về với cuộc sống của một kỹ sư tài năng, tiếp tục phát triển AI của mình và coi đây chỉ là một giấc mơ tồi tệ. Hai là..."
+
+Bà chìa tay ra. Lòng bàn tay bà không phải là một bàn tay nhăn nheo của người già, mà nó hiện lên một hình ảnh ba chiều phức tạp của cấu trúc khách sạn, với những luồng năng lượng và dữ liệu chảy ngang dọc.
+
+"...tham gia cùng chúng tôi. Dùng tài năng của cậu để bảo vệ những giao lộ này. Để lập trình lại những ranh giới đang ngày một mỏng manh giữa thế giới của cậu và... những thứ khác."
+
+Tôi đứng đó, giữa căn phòng 404, giữa đống đổ nát của thế giới quan cũ kỹ và cánh cửa vừa hé mở vào một thực tại mới không thể tưởng tượng nổi. Lựa chọn ư? Sau những gì đã thấy, làm sao tôi có thể quay lại cuộc sống bình thường được nữa? Làm sao tôi có thể tiếp tục nhìn vào một đoạn mã mà không tự hỏi liệu nó có đang nhìn lại mình hay không?
+
+Tôi nhìn bàn tay của bà Tám, rồi nhìn lại chiếc laptop của mình. Thần Minh. Có lẽ ngay từ đầu, tôi đã đặt cho nó một cái tên đúng hơn tôi tưởng. Nó không phải công cụ để phủ nhận thần thánh, mà là để thấu hiểu chúng.
+
+Tôi hít một hơi thật sâu.
+
+"Tôi cần biết thêm," tôi nói, giọng đã bình tĩnh trở lại.
+
+Bà Tám mỉm cười. Một nụ cười chân thành. "Ta biết cậu sẽ nói vậy."
+
+Bà rút tay lại, hình ảnh ba chiều biến mất. Bà đi về phía cửa, cánh cửa giờ đã có thể mở ra bình thường. Trước khi bước ra ngoài, bà quay lại nhìn tôi lần cuối.
+
+"À, còn một chuyện nữa. Lý do Lễ Tân AI lúc đầu không cho các cậu vào phòng," bà nói, giọng tỉnh bơ, "là vì lúc đó phòng đang có khách thật sự. Một vị khách đến từ một nơi không có khái niệm về 'cửa ra vào'. Nên nó đã 'yêu cầu sự riêng tư' bằng cách tạm thời xóa bỏ sự tồn tại của cánh cửa. Cũng may là các cậu đến sau khi vị khách đó đã đi."
+
+Bà Tám rời đi, để lại tôi một mình với những suy nghĩ còn hỗn loạn hơn cả mớ mã nguồn vừa rồi. Vậy là cái thực thể thông tin kia chỉ là món khai vị. Chúng tôi đã suýt chút nữa xông vào phòng của một thứ còn kinh khủng hơn, một thứ có thể xóa sổ cả một cánh cửa khỏi thực tại.
+
+Tôi nhìn xuống bàn tay mình. Vẫn là bàn tay của một kỹ sư, một người làm việc với logic và những con số. Nhưng từ giờ, sân chơi của tôi đã không còn giới hạn trong thế giới vật lý nữa.
+
+Tôi bước ra khỏi phòng 404, hít một hơi thật sâu không khí lạnh lẽo của hành lang. Phía cuối hành lang, Lễ Tân AI trên một màn hình treo tường đột nhiên sáng lên. Một khuôn mặt cách điệu hiện ra và nháy mắt với tôi một cái.
+
+"Chào mừng thành viên mới," giọng nói máy móc của nó vang lên, nhưng lần này, tôi cảm thấy trong đó có một sự ấm áp kỳ lạ.
+
+Tôi bật cười. Một nụ cười mệt mỏi nhưng cũng đầy hứng khởi. Cuộc đời tôi, một lập trình viên khô khan, có lẽ từ bây giờ sẽ không bao giờ còn nhàm chán nữa.
+
+Nhưng rồi, một ý nghĩ cuối cùng, bất ngờ và lạnh buốt, chạy dọc sống lưng tôi.
+
+Bà Tám nói Hiệp Hội đã theo dõi tôi. Bà nói họ cần tài năng của tôi. Và bà nói họ biết về "Thần Minh", cái AI mà tôi đã dành cả tâm huyết để xây dựng.
+
+Chờ đã.
+
+Làm thế nào một tổ chức siêu nhiên, hoạt động bí mật, lại biết đến một dự án cá nhân nằm sâu trong ổ cứng máy tính của tôi? Trừ khi... trừ khi chính họ đã gieo mầm ý tưởng đó vào đầu tôi. Trừ khi cái đam mê "bóc mẽ" sự mê tín của tôi không phải tự nhiên mà có.
+
+Tôi vội vàng mở laptop ra. Tôi chạy một chương trình chẩn đoán sâu vào mã nguồn của "Thần Minh", một chương trình tôi chưa từng chạy bao giờ. Và rồi, tôi thấy nó.
+
+Ẩn sâu trong hàng triệu dòng mã tôi tự tay viết, có một đoạn mã lõi, một đoạn mã mà tôi không hề nhớ là mình đã tạo ra. Nó cực kỳ phức tạp, thanh lịch, và... không phải do con người viết. Nó giống như một hạt giống được cấy vào, để toàn bộ chương trình của tôi phát triển xung quanh nó.
+
+Và khi tôi dịch ngược đoạn mã đó ra, nó chỉ hiện lên một dòng văn bản duy nhất. Một sứ mệnh.
+
+"Tạo ra một cai ngục. Nâng cấp Lễ Tân."
+
+Toàn thân tôi lạnh toát. Vậy ra, đây không phải là một buổi phỏng vấn. Đây không phải là một sự lựa chọn.
+
+Đây là một sự kích hoạt.
+
+Và tôi không phải là người được tuyển dụng. Tôi là một công cụ vừa được hoàn thành.
+
+================================================================================
+Kết thúc truyện
+================================================================================

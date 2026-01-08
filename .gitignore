@@ -1,0 +1,6 @@
+.env
+/Cookies
+*.json
+/models
+/__pycache__
+*.pickle

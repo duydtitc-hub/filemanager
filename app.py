@@ -677,7 +677,7 @@ def download_with_retry(url, dst_path, max_retry=20):
     return False
 
 @app.post('/tiktok_upload')
-async def tiktok_upload(
+async def node_tiktok_upload(
     video_path: str = Form(..., description="Path to video file (absolute or relative to OUTPUT_DIR)"),
     title: str = Form('', description="Optional title for upload"),
     tags: str | None = Form(None, description="Optional comma-separated tags"),
@@ -838,7 +838,7 @@ async def _process_tiktok_queue_once():
                 tags_str = ','.join(tags) if isinstance(tags, (list, tuple)) else (str(tags) if tags else '')
                 try:
                     # call internal tiktok_upload handler
-                    res = await tiktok_upload(video_path=video_path, title=title, tags=tags_str, cookies=cookies)
+                    res = await node_tiktok_upload(video_path=video_path, title=title, tags=tags_str, cookies=cookies)
                     # normalize response
                     if isinstance(res, JSONResponse):
                         body = res.body.decode() if hasattr(res, 'body') and isinstance(res.body, (bytes, bytearray)) else None
@@ -13134,7 +13134,7 @@ async def add_narration_from_srt(
 
 
 @app.get('/api/tiktok_upload')
-def tiktok_upload(
+def api_tiktok_upload(
      video_path: str = Query(..., description="Path to video file (absolute or relative to OUTPUT_DIR)"),
     title: str = Query('', description="Optional title for upload"),
     tags: str | None = Query(None, description="Optional comma-separated tags"),

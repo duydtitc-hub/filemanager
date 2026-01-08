@@ -13,6 +13,7 @@ from typing import List, Optional, Union
 import json
 import os
 from playwright.sync_api import sync_playwright, Page, Browser, BrowserContext
+from DiscordMethod import send_discord_message
 # Async uploader removed — keep sync-only Playwright usage
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 cookies_dir = os.path.join(BASE_DIR, 'Cookies')
@@ -72,8 +73,8 @@ class TikTokUploader:
             data = json.loads(p.read_text(encoding='utf8'))
             # Playwright expects list of cookie dicts
             self._context.add_cookies(data)
-        except Exception:
-            pass
+        except Exception as exc:
+            send_discord_message(f"⚠️ TikTok cookies load failed: {exc}")
 
     # --- Tags helper persistence ------------------------------------------------
     def _load_tags(self) -> List[str]:
@@ -426,6 +427,7 @@ class TikTokUploader:
         # Start browser if needed
         if not self._page:
             self.start()
+        send_discord_message(f"🚀 TikTok upload starting: {os.path.basename(video_path)}")
 
         page = self._page
         cookies_path =os.path.join(cookies_dir, cookies_path) if cookies_path else os.path.join(cookies_dir, 'DemNgheChuyen.json')
@@ -435,8 +437,9 @@ class TikTokUploader:
                 self._sleep(self.action_delay)
                 page.reload()
                 self._sleep(self.action_delay)
+                send_discord_message(f"🗂️ Cookies applied from {os.path.basename(cookies_path)}")
             except Exception:
-                pass
+                send_discord_message(f"⚠️ Cookie reload failed for {os.path.basename(cookies_path)}")
 
         page.goto(self.UPLOAD_URL)
         self._sleep(self.action_delay)
@@ -444,7 +447,7 @@ class TikTokUploader:
         # attach file - wait for the file input to appear (page may render it asynchronously)
         file_input = None
         try:
-            file_input = page.wait_for_selector('input[type=file]', timeout=15000)
+            file_input = page.wait_for_selector('input[type=file]', timeout=10000)
         except Exception:
             # fallback: try a few times with small delays
             for _ in range(6):
@@ -462,6 +465,7 @@ class TikTokUploader:
 
         # wait for upload
         uploaded = self.wait_for_upload_complete(timeout=wait_times.get('upload', 300) if wait_times else 300)
+        send_discord_message(f"📤 Upload progress indicator {'reached' if uploaded else 'did not reach'} completion for {os.path.basename(video_path)}")
 
         # clear filename-like text and then type caption/tags
         self.clear_filename_and_field_with_backspaces(video_path)
@@ -482,8 +486,10 @@ class TikTokUploader:
 
         # wait for music check
         music_ok = self.wait_for_music_clear(timeout=wait_times.get('music', 120) if wait_times else 120)
+        send_discord_message(f"🎵 Music check status: {'OK' if music_ok else 'Not OK'}")
         if not music_ok:
             # do not auto-publish
+            send_discord_message("🚫 Music requirement blocked TikTok upload")
             return False
 
         # click post
@@ -492,8 +498,10 @@ class TikTokUploader:
             # try confirmation
             self._sleep(self.action_delay)
             self.click_post_confirmation()
+            send_discord_message("✅ TikTok post action clicked")
         # allow server to process
         self._sleep(5)
+        send_discord_message("🏁 TikTok upload flow completed")
         return True
 
 

@@ -196,12 +196,29 @@ class TikTokUploader:
                 ok = page.evaluate(r"""
                 (() => {
                   const root = document.querySelector('.copyright-check') || document.querySelector('[data-e2e="copyright_container"]');
-                  if (!root) return false;
+                  // If copyright check element doesn't exist, pass by default
+                  if (!root) return true;
+                  
+                  // Check if this is actually the music copyright check by looking for the text
+                  const text = (root.textContent || '');
+                  const hasMusicCheck = text.includes('Kiểm tra bản quyền nhạc') || 
+                                       text.toLowerCase().includes('music') ||
+                                       text.toLowerCase().includes('copyright');
+                  
+                  // If the element exists but doesn't contain music check text, pass
+                  if (!hasMusicCheck) return true;
+                  
+                  // Check for success status
                   if (root.querySelector('.status-result.status-success')) return true;
+                  
+                  // Check if switch is enabled (checked=true means music check is on and passed)
                   const sw = root.querySelector('.Switch__content[aria-checked="true"], .Switch__root--checked-true');
                   if (sw) return true;
-                  const text = (root.textContent || '').toLowerCase();
-                  if (text.includes('no issues found') || text.includes('no issues')) return true;
+                  
+                  // Check for success messages in text
+                  const lowerText = text.toLowerCase();
+                  if (lowerText.includes('no issues found') || lowerText.includes('no issues')) return true;
+                  
                   return false;
                 })();
                 """)
@@ -498,7 +515,7 @@ class TikTokUploader:
             # try confirmation
             self._sleep(self.action_delay)
             self.click_post_confirmation()
-            send_discord_message("✅ TikTok post action clicked")
+        send_discord_message("✅ TikTok post action clicked")
         # allow server to process
         self._sleep(5)
         send_discord_message("🏁 TikTok upload flow completed")

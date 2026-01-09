@@ -677,21 +677,18 @@ def download_with_retry(url, dst_path, max_retry=20):
     return False
 
 @app.post('/tiktok_upload')
-async def scheduler_tiktok_upload(
+async def node_tiktok_upload(
     video_path: str = Form(..., description="Path to video file (absolute or relative to OUTPUT_DIR)"),
     title: str = Form('', description="Optional title for upload"),
     tags: str | None = Form(None, description="Optional comma-separated tags"),
     cookies: str | None = Form(None, description="Optional cookies file path for uploader"),
     no_headless: bool = Form(False, description="Run uploader with --no-headless flag"),
 ):
-    """Internal handler for TikTok scheduler worker only.
+    """Run the Node TikTok uploader directly (synchronous execution inside a thread).
 
-    This endpoint is called by the background worker to process scheduled uploads.
-    Do NOT call this directly for manual uploads - use /api/tiktok_upload instead.
+    This endpoint does not enqueue a background worker; it executes the Node
+    uploader and returns stdout/stderr and exit code.
     """
-    import sys
-    import threading
-    
     # Resolve provided path relative to OUTPUT_DIR when not absolute
     try:
         if not os.path.isabs(video_path):
@@ -700,282 +697,41 @@ async def scheduler_tiktok_upload(
         pass
 
     if not os.path.exists(video_path):
-        send_discord_message(f"❌ TikTok scheduler: video not found: {video_path}")
         return JSONResponse(status_code=404, content={"error": "video not found"})
 
-    tags_list = tags.split(',') if tags else []
+    node_bin = shutil.which('node') or shutil.which('nodejs')
+    if not node_bin:
+        return JSONResponse(status_code=500, content={"error": "node executable not found on PATH"})
 
-    def do_upload():
-        # Run Python Playwright uploader in a separate process
-        try:
-            script = os.path.join(BASE_DIR, 'tiktok_uploader.py')
-            cmd = [
-                sys.executable,
-                script,
-                '--video', video_path,
-                '--caption', title or '',
-            ]
-            if tags_list:
-                cmd += ['--tags', ','.join(tags_list)]
-            # Resolve cookies: if caller provided a name, look under Cookies/ folder
-            resolved_cookies = None
-            if cookies:
-                if os.path.isabs(cookies) and os.path.exists(cookies):
-                    resolved_cookies = cookies
-                else:
-                    # try Cookies/<name> and Cookies/<name>.json
-                    cbase = os.path.join(BASE_DIR, 'Cookies')
-                    candidate = os.path.join(cbase, cookies)
-                    candidate_json = os.path.join(cbase, cookies + '.json')
-                    if os.path.exists(candidate):
-                        resolved_cookies = candidate
-                    elif os.path.exists(candidate_json):
-                        resolved_cookies = candidate_json
-                    else:
-                        # fallback: use provided value as-is
-                        resolved_cookies = cookies
-            if resolved_cookies:
-                cmd += ['--cookies', resolved_cookies]
-            if no_headless:
-                cmd += ['--no-headless']
+    uploader_js = os.path.join(BASE_DIR, 'tiktokupload', 'upload.js')
+    if not os.path.exists(uploader_js):
+        return JSONResponse(status_code=500, content={"error": f"uploader not found: {uploader_js}"})
 
-            proc = subprocess.run(cmd, cwd=BASE_DIR, capture_output=True, text=True)
-            try:
-                logger.debug('tiktok scheduler uploader stdout: %s', proc.stdout)
-                logger.debug('tiktok scheduler uploader stderr: %s', proc.stderr)
-            except Exception:
-                pass
-            return {
-                'ok': proc.returncode == 0,
-                'rc': proc.returncode,
-                'stdout': proc.stdout,
-                'stderr': proc.stderr,
-            }
-        except Exception:
-            logger.exception('scheduler do_upload subprocess error')
-            return {'ok': False, 'error': 'subprocess failed'}
+    cmd = [node_bin, uploader_js, video_path]
+    if title:
+        cmd += [title]
+    if tags:
+        cmd += ["--tags", tags]
+    if cookies:
+        cmd += ["--cookies", cookies]
+    if no_headless:
+        cmd += ["--no-headless"]
 
-    # Run the sync Playwright uploader in a dedicated thread
-    result = {}
-    def _worker():
-        try:
-            result['resp'] = do_upload()
-        except Exception as e:
-            result['exc'] = e
-
-    thr = threading.Thread(target=_worker)
-    thr.start()
-    thr.join()
-    
-    if 'exc' in result:
-        send_discord_message(f"❌ TikTok scheduler upload exception: {result['exc']}")
-        return JSONResponse(status_code=500, content={"error": str(result['exc'])})
-    
-    resp = result.get('resp') or {}
-    ok = bool(resp.get('ok'))
-    if ok:
-        send_discord_message(f"✅ TikTok scheduler upload completed: {os.path.basename(video_path)}")
-        return JSONResponse(status_code=200, content={"ok": True, "video": video_path, "stdout": resp.get('stdout', '')})
-    else:
-        send_discord_message(f"❌ TikTok scheduler upload failed: {os.path.basename(video_path)}")
-        return JSONResponse(status_code=500, content={
-            "ok": False,
-            "error": "upload failed",
-            "rc": resp.get('rc'),
-            "stdout": resp.get('stdout', ''),
-            "stderr": resp.get('stderr', ''),
-        })
+    try:
+        # Run in a thread to avoid blocking the event loop
+        proc = await asyncio.to_thread(subprocess.run, cmd, capture_output=True, text=True)
+        result = {"returncode": proc.returncode, "stdout": proc.stdout, "stderr": proc.stderr}
+        if proc.returncode != 0:
+            return JSONResponse(status_code=500, content=result)
+        return JSONResponse(status_code=200, content=result)
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
 
 # Background worker: process TikTok upload schedule file periodically
 POLL_TIKTOK_QUEUE_SECONDS = 60
 
-
-@app.get('/api/tiktok_failed_uploads')
-async def api_tiktok_failed_uploads(limit: int = Query(50, description='Maximum number of failed uploads to return')):
-    """Get list of failed TikTok uploads from history.
-    
-    Returns:
-        {
-            "ok": True,
-            "failed_uploads": [
-                {
-                    "item": {...},  # original queue entry
-                    "status": 500,
-                    "error": "...",
-                    "processed_at": timestamp,
-                    "history_index": 123  # index in history array for reference
-                }
-            ],
-            "total": 45
-        }
-    """
-    try:
-        history_file = os.path.join(CACHE_DIR, 'tiktok_upload_history.json')
-        if not os.path.exists(history_file):
-            return {"ok": True, "failed_uploads": [], "total": 0}
-        
-        try:
-            with open(history_file, 'r', encoding='utf8') as fh:
-                hist = json.load(fh)
-        except Exception:
-            hist = []
-        
-        # Filter failed uploads (status != 200)
-        failed = []
-        for idx, entry in enumerate(hist):
-            try:
-                status = entry.get('status', 500)
-                if status != 200:
-                    entry_copy = entry.copy()
-                    entry_copy['history_index'] = idx
-                    failed.append(entry_copy)
-            except Exception:
-                continue
-        
-        # Sort by processed_at descending (most recent first)
-        try:
-            failed.sort(key=lambda x: x.get('processed_at', 0), reverse=True)
-        except Exception:
-            pass
-        
-        # Limit results
-        limited = failed[:limit] if limit > 0 else failed
-        
-        return {
-            "ok": True,
-            "failed_uploads": limited,
-            "total": len(failed)
-        }
-    except Exception as e:
-        return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
-
-
-@app.post('/api/tiktok_retry_upload')
-async def api_tiktok_retry_upload(
-    history_indices: list[int] = Body(..., description='List of history indices to retry'),
-    delay_hours: float = Body(0, description='Delay before upload in hours (optional)')
-):
-    """Retry failed TikTok uploads by adding them back to the queue.
-    
-    Args:
-        history_indices: List of history_index values from /api/tiktok_failed_uploads response
-        delay_hours: Optional delay in hours before scheduling upload
-    
-    Returns:
-        {
-            "ok": True,
-            "requeued": 3,
-            "skipped": 1,
-            "errors": ["video not found: ..."]
-        }
-    """
-    try:
-        history_file = os.path.join(CACHE_DIR, 'tiktok_upload_history.json')
-        schedule_file = os.path.join(CACHE_DIR, 'tiktok_upload_queue.json')
-        
-        if not os.path.exists(history_file):
-            return JSONResponse(status_code=404, content={"ok": False, "error": "history file not found"})
-        
-        # Load history
-        try:
-            with open(history_file, 'r', encoding='utf8') as fh:
-                hist = json.load(fh)
-        except Exception:
-            return JSONResponse(status_code=500, content={"ok": False, "error": "failed to load history"})
-        
-        # Load existing queue
-        existing_queue = []
-        try:
-            if os.path.exists(schedule_file):
-                with open(schedule_file, 'r', encoding='utf8') as fh:
-                    existing_queue = json.load(fh)
-        except Exception:
-            existing_queue = []
-        
-        # Calculate scheduled_at time
-        base_time = time.time()
-        scheduled_at = int(base_time + (delay_hours * 3600))
-        
-        requeued = 0
-        skipped = 0
-        errors = []
-        
-        for idx in history_indices:
-            try:
-                if idx < 0 or idx >= len(hist):
-                    errors.append(f"Invalid index: {idx}")
-                    skipped += 1
-                    continue
-                
-                hist_entry = hist[idx]
-                item = hist_entry.get('item', {})
-                
-                if not item:
-                    errors.append(f"Index {idx}: no item data")
-                    skipped += 1
-                    continue
-                
-                # Verify video still exists
-                video_path = item.get('video_path', '')
-                if video_path:
-                    # Try to resolve relative path
-                    full_path = os.path.join(OUTPUT_DIR, video_path) if not os.path.isabs(video_path) else video_path
-                    if not os.path.exists(full_path):
-                        errors.append(f"Video not found: {video_path}")
-                        skipped += 1
-                        continue
-                
-                # Create new queue entry
-                new_entry = {
-                    'scheduled_at': scheduled_at,
-                    'video_path': video_path,
-                    'title': item.get('title', ''),
-                    'tags': item.get('tags', []),
-                    'cookies': item.get('cookies'),
-                    'created_at': int(time.time()),
-                    'task_id': item.get('task_id'),
-                    'retry_from_history': idx,
-                }
-                
-                existing_queue.append(new_entry)
-                requeued += 1
-                send_discord_message(f"🔄 Đã thêm lại vào queue: {os.path.basename(video_path)}")
-                
-            except Exception as e:
-                errors.append(f"Index {idx}: {str(e)}")
-                skipped += 1
-        
-        # Save updated queue
-        try:
-            with open(schedule_file, 'w', encoding='utf8') as fh:
-                json.dump(existing_queue, fh, ensure_ascii=False, indent=2)
-        except Exception as e:
-            return JSONResponse(status_code=500, content={
-                "ok": False,
-                "error": f"Failed to save queue: {e}",
-                "requeued": 0,
-                "skipped": len(history_indices)
-            })
-        
-        return {
-            "ok": True,
-            "requeued": requeued,
-            "skipped": skipped,
-            "errors": errors
-        }
-        
-    except Exception as e:
-        return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
-
-
 async def _process_tiktok_queue_once():
-    """Process TikTok upload queue independently.
-    
-    This worker only processes entries from tiktok_upload_queue.json.
-    It does NOT automatically discover tasks from tasks_map.
-    Queue entries must be added explicitly via API or other mechanisms.
-    """
     schedule_file = os.path.join(CACHE_DIR, 'tiktok_upload_queue.json')
     history_file = os.path.join(CACHE_DIR, 'tiktok_upload_history.json')
     try:
@@ -986,6 +742,84 @@ async def _process_tiktok_queue_once():
                 items = json.load(fh)
         except Exception:
             items = []
+        # Ensure we also auto-enqueue any completed tasks that requested TikTok upload
+        try:
+            tasks_map = load_tasks()
+            # build set of already scheduled task_ids
+            scheduled_ids = set()
+            for it in items:
+                try:
+                    if it and isinstance(it, dict) and it.get('task_id'):
+                        scheduled_ids.add(str(it.get('task_id')))
+                except Exception:
+                    pass
+
+            # check history to avoid re-adding processed items
+            try:
+                if os.path.exists(history_file):
+                    with open(history_file, 'r', encoding='utf8') as hf:
+                        hist = json.load(hf) or []
+                        for h in hist:
+                            try:
+                                tid = h.get('item', {}).get('task_id') if isinstance(h.get('item'), dict) else None
+                                if tid:
+                                    scheduled_ids.add(str(tid))
+                            except Exception:
+                                pass
+            except Exception:
+                pass
+
+            now_ts = int(time.time())
+            for tid, t in tasks_map.items():
+                try:
+                    if not t or not isinstance(t, dict):
+                        continue
+                    if str(tid) in scheduled_ids:
+                        continue
+                    if not t.get('is_upload_tiktok'):
+                        continue
+                    # only schedule after task is completed and has a video path
+                    if t.get('status') != 'completed':
+                        continue
+                    # determine video path to upload
+                    video_path = t.get('video_path') or (t.get('video_file') and (t.get('video_file')[0] if isinstance(t.get('video_file'), (list, tuple)) and t.get('video_file') else None))
+                    if not video_path:
+                        continue
+                    # build schedule entry
+                    sched_hours = int(t.get('upload_duration_hours')) if t.get('upload_duration_hours') else 0
+                    scheduled_at = now_ts + max(0, sched_hours) * 3600
+                    tags = t.get('tiktok_tags') or []
+                    # normalize tags to list
+                    if isinstance(tags, str) and tags:
+                        try:
+                            if tags.strip().startswith('[') and tags.strip().endswith(']'):
+                                tags = json.loads(tags)
+                            else:
+                                tags = [x.strip().lstrip('#') for x in tags.split(',') if x.strip()]
+                        except Exception:
+                            tags = [x.strip().lstrip('#') for x in str(tags).split(',') if x.strip()]
+                    entry = {
+                        'task_id': str(tid),
+                        'video_path': video_path,
+                        'title': t.get('title') or '',
+                        'tags': tags,
+                        'cookies': t.get('tiktok_cookies') or t.get('cookies') or None,
+                        'scheduled_at': int(scheduled_at),
+                        'enqueued_at': now_ts
+                    }
+                    items.append(entry)
+                    scheduled_ids.add(str(tid))
+                except Exception:
+                    continue
+            # persist updated schedule file immediately so worker can pick them up
+            try:
+                with open(schedule_file, 'w', encoding='utf8') as fh:
+                    json.dump(items, fh, ensure_ascii=False, indent=2)
+            except Exception:
+                pass
+        except Exception:
+            # best-effort only
+            pass
         now_ts = int(time.time())
         remaining = []
         processed = []
@@ -1003,8 +837,8 @@ async def _process_tiktok_queue_once():
                 # convert tags to comma string
                 tags_str = ','.join(tags) if isinstance(tags, (list, tuple)) else (str(tags) if tags else '')
                 try:
-                    # call internal scheduler handler
-                    res = await scheduler_tiktok_upload(video_path=video_path, title=title, tags=tags_str, cookies=cookies)
+                    # call internal tiktok_upload handler
+                    res = await node_tiktok_upload(video_path=video_path, title=title, tags=tags_str, cookies=cookies)
                     # normalize response
                     if isinstance(res, JSONResponse):
                         body = res.body.decode() if hasattr(res, 'body') and isinstance(res.body, (bytes, bytearray)) else None
@@ -1061,87 +895,6 @@ async def _startup_tiktok_queue_worker():
         logger.info('TikTok queue worker started')
     except Exception:
         logger.exception('Failed to start TikTok queue worker')
-
-
-def _add_videos_to_tiktok_queue(task_id: str, video_paths: list[str], task_info: dict):
-    """Helper to add completed video(s) to TikTok upload queue.
-    
-    Args:
-        task_id: Task identifier
-        video_paths: List of video file paths to upload
-        task_info: Task metadata dict containing is_upload_tiktok, upload_duration_hours, tiktok_tags, tiktok_cookies
-    """
-    try:
-        if not task_info.get('is_upload_tiktok'):
-            return
-        
-        schedule_file = os.path.join(CACHE_DIR, 'tiktok_upload_queue.json')
-        history_file = os.path.join(CACHE_DIR, 'tiktok_upload_history.json')
-        
-        # Load existing schedule
-        existing_sched = []
-        try:
-            if os.path.exists(schedule_file):
-                with open(schedule_file, 'r', encoding='utf8') as fh:
-                    existing_sched = json.load(fh)
-        except Exception:
-            existing_sched = []
-        
-        # Determine base scheduling time
-        base_time = time.time()
-        spacing_hours = float(task_info.get('upload_duration_hours') or 0)
-        spacing_sec = spacing_hours * 3600
-        
-        # Find last scheduled time to avoid conflicts
-        last_time = base_time
-        try:
-            if existing_sched:
-                last_time = max(item.get('scheduled_at', base_time) for item in existing_sched)
-                if last_time < base_time:
-                    last_time = base_time
-        except Exception:
-            last_time = base_time
-        
-        # Parse tags
-        tags_list = []
-        try:
-            tiktok_tags = task_info.get('tiktok_tags')
-            if tiktok_tags:
-                if isinstance(tiktok_tags, list):
-                    tags_list = [str(t).strip().lstrip('#') for t in tiktok_tags if t]
-                elif isinstance(tiktok_tags, str):
-                    tags_list = [t.strip().lstrip('#') for t in re.split(r'[,;\n]+', tiktok_tags) if t.strip()]
-        except Exception:
-            tags_list = []
-        
-        # Add each video to queue with incrementing scheduled time
-        for idx, video_path in enumerate(video_paths):
-            if not video_path or not os.path.exists(video_path):
-                continue
-            
-            scheduled_at = last_time + (idx * spacing_sec)
-            
-            entry = {
-                'scheduled_at': int(scheduled_at),
-                'video_path': to_project_relative_posix(video_path),
-                'title': task_info.get('title', '') or os.path.splitext(os.path.basename(video_path))[0],
-                'tags': tags_list,
-                'cookies': task_info.get('tiktok_cookies') or task_info.get('cookies') or None,
-                'created_at': int(time.time()),
-                'task_id': task_id,
-            }
-            existing_sched.append(entry)
-            send_discord_message(f"📅 Đã thêm vào TikTok queue: {os.path.basename(video_path)} (lên lịch sau {spacing_hours*idx:.1f}h)")
-        
-        # Save updated schedule
-        try:
-            with open(schedule_file, 'w', encoding='utf8') as fh:
-                json.dump(existing_sched, fh, ensure_ascii=False, indent=2)
-        except Exception as e:
-            send_discord_message(f"⚠️ Lỗi lưu TikTok queue: {e}")
-    
-    except Exception as e:
-        send_discord_message(f"⚠️ Lỗi thêm vào TikTok queue: {e}")
 
 # ============================== DEPRECATED - Uses AudioSegment ==============================
 # def create_audio_chunk_fpt(part: str, part_file: str, api_key: str, voice="banmai"):
@@ -5389,12 +5142,6 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
             tasks[task_id] = t
             save_tasks(tasks)
             
-            # Add to TikTok upload queue if requested
-            try:
-                _add_videos_to_tiktok_queue(task_id, output_parts, t)
-            except Exception as e:
-                _report_and_ignore(e, "add to tiktok queue")
-            
             # Cleanup temp files. We DO NOT keep generated split audio parts; only
             # preserve original per‑TTS parts. If split parts were generated from
             # a processed master during this run, remove them and the processed master.
@@ -5644,12 +5391,6 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
             tasks[task_id] = t
             save_tasks(tasks)
             
-            # Add to TikTok upload queue if requested
-            try:
-                _add_videos_to_tiktok_queue(task_id, output_parts, t)
-            except Exception as e:
-                _report_and_ignore(e, "add to tiktok queue")
-            
             # Cleanup temp files
             for f in temp_files:
                 try:
@@ -5884,12 +5625,6 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
             tasks = load_tasks()
             tasks[task_id] = t
             save_tasks(tasks)
-            
-            # Add to TikTok upload queue if requested
-            try:
-                _add_videos_to_tiktok_queue(task_id, output_parts, t)
-            except Exception as e:
-                _report_and_ignore(e, "add to tiktok queue")
             
             # Cleanup
             for f in temp_files:
@@ -8968,17 +8703,6 @@ async def render_tiktok_large_video_unified(
             # default: include_summary true -> type 4, else type 6
             task_type = 4 if include_summary else 6
 
-    # Parse tiktok_tags before creating task_info
-    parsed_tags = None
-    if isinstance(tiktok_tags, str) and tiktok_tags:
-        try:
-            if (tiktok_tags.strip().startswith('[') and tiktok_tags.strip().endswith(']')):
-                parsed_tags = json.loads(tiktok_tags)
-            else:
-                parsed_tags = [t.strip().lstrip('#') for t in tiktok_tags.split(',') if t.strip()]
-        except Exception:
-            parsed_tags = [t.strip().lstrip('#') for t in tiktok_tags.split(',') if t.strip()]
-
     tasks = load_tasks()
     task_info = {
         "task_id": request_id,
@@ -9001,7 +8725,7 @@ async def render_tiktok_large_video_unified(
         # TikTok upload metadata
         "is_upload_tiktok": bool(is_upload_tiktok),
         "upload_duration_hours": int(upload_duration_hours) if upload_duration_hours else None,
-        "tiktok_tags": parsed_tags,
+        "tiktok_tags": None,
         "tiktok_cookies": str(cookies) if cookies else None,
         "output_dir": task_output_dir
     }
@@ -9036,10 +8760,20 @@ async def render_tiktok_large_video_unified(
         "start_from_part": start_from_part,
         "output_dir": task_output_dir,
     }
-    # include tiktok scheduling fields in payload (reuse parsed_tags from above)
+    # include tiktok scheduling fields in payload
     payload['is_upload_tiktok'] = bool(is_upload_tiktok)
     payload['upload_duration_hours'] = int(upload_duration_hours) if upload_duration_hours else None
-    payload['tiktok_tags'] = parsed_tags
+    # normalize tags into list if provided
+    if isinstance(tiktok_tags, str) and tiktok_tags:
+        try:
+            if (tiktok_tags.strip().startswith('[') and tiktok_tags.strip().endswith(']')):
+                payload['tiktok_tags'] = json.loads(tiktok_tags)
+            else:
+                payload['tiktok_tags'] = [t.strip().lstrip('#') for t in tiktok_tags.split(',') if t.strip()]
+        except Exception:
+            payload['tiktok_tags'] = [t.strip().lstrip('#') for t in tiktok_tags.split(',') if t.strip()]
+    else:
+        payload['tiktok_tags'] = None
     payload['tiktok_cookies'] = str(cookies) if cookies else None
     if ai_backend == 'gemini':
         payload['use_gemini'] = True
@@ -10470,7 +10204,6 @@ async def process_series(
                         except Exception:
                             pass
                     else:
-                        # Group NOT split: schedule the whole group_out file
                         final_files.append(group_out)
                         # Announce the concatenated group file (Drive upload removed)
                         try:
@@ -13410,11 +13143,9 @@ def api_tiktok_upload(
     run_in_background: bool = Query(False, description="(ignored) run in background")
 ):
     from tiktok_uploader import TikTokUploader
-    """Manual TikTok upload endpoint - completely independent from scheduler.
+    """Upload a local video to TikTok by invoking the Node.js uploader in `tiktokupload/upload.js`.
 
-    This endpoint runs the Python Playwright uploader in a separate thread.
-    Does NOT interact with tiktok_upload_queue.json or task scheduling system.
-    Use this for direct, immediate uploads without scheduling.
+    The endpoint creates a task record and runs the Node script inside `tiktokupload`.
     """
     try:
         # resolve video path to an absolute path inside the project or OUTPUT_DIR

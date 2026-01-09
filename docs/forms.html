@@ -83,6 +83,13 @@
               <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalDownloadBgaudio">Tải audio vào bgaudio</button>
             </div>
           </div>
+
+          <div class="col-12 col-md-6">
+            <div class="card p-3 text-center">
+              <h3 class="mb-3">TikTok Upload Failed</h3>
+              <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalTikTokFailed">Xem upload thất bại</button>
+            </div>
+          </div>
         </section>
       </div>
     </main>
@@ -270,6 +277,31 @@
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
               <button id="downloadBgaudioSubmitBtn" type="button" class="btn btn-success">Tải xuống</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="modalTikTokFailed" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">TikTok Upload Thất Bại</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <button id="loadFailedBtn" type="button" class="btn btn-primary">🔄 Tải danh sách</button>
+                <button id="retrySelectedBtn" type="button" class="btn btn-success" disabled>✅ Retry đã chọn</button>
+                <button id="retryAllBtn" type="button" class="btn btn-warning" disabled>🔁 Retry tất cả</button>
+                <label class="ms-3">Delay (giờ): <input id="retryDelayInput" type="number" step="0.5" value="0" min="0" style="width:80px"></label>
+              </div>
+              <div id="failedUploadsContainer">
+                <p class="text-muted">Nhấn "Tải danh sách" để xem các upload thất bại.</p>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
             </div>
           </div>
         </div>
@@ -597,6 +629,130 @@
           }
         })
       })
+
+      // TikTok Failed Uploads Management
+      let failedUploadsData = [];
+
+      document.getElementById('loadFailedBtn')?.addEventListener('click', async ()=>{
+        const btn = document.getElementById('loadFailedBtn');
+        const container = document.getElementById('failedUploadsContainer');
+        if(btn) btn.disabled = true;
+        try{
+          const res = await fetch(apiUrl('/api/tiktok_failed_uploads?limit=100'));
+          if(!res.ok) throw new Error('Failed to fetch');
+          const data = await res.json();
+          failedUploadsData = data.failed_uploads || [];
+          
+          if(failedUploadsData.length === 0){
+            container.innerHTML = '<p class="text-success">✅ Không có upload thất bại nào!</p>';
+            document.getElementById('retrySelectedBtn').disabled = true;
+            document.getElementById('retryAllBtn').disabled = true;
+            return;
+          }
+
+          // Render table
+          let html = '<p class="mb-2">Tổng: <strong>' + data.total + '</strong> upload thất bại</p>';
+          html += '<div class="table-responsive"><table class="table table-sm table-bordered table-hover">';
+          html += '<thead><tr><th><input type="checkbox" id="selectAllCheckbox"></th><th>Video</th><th>Title</th><th>Tags</th><th>Error</th><th>Status</th><th>Time</th></tr></thead><tbody>';
+          
+          failedUploadsData.forEach((entry, idx)=>{
+            const item = entry.item || {};
+            const videoPath = item.video_path || '';
+            const videoName = videoPath.split('/').pop() || videoPath;
+            const title = item.title || 'N/A';
+            const tags = (item.tags || []).join(', ') || 'N/A';
+            const error = entry.error || 'Unknown error';
+            const status = entry.status || 500;
+            const time = entry.processed_at ? new Date(entry.processed_at * 1000).toLocaleString('vi-VN') : 'N/A';
+            const historyIdx = entry.history_index;
+            
+            html += '<tr>';
+            html += '<td><input type="checkbox" class="upload-checkbox" data-index="'+historyIdx+'"></td>';
+            html += '<td title="'+videoPath+'">'+videoName+'</td>';
+            html += '<td>'+title+'</td>';
+            html += '<td>'+tags+'</td>';
+            html += '<td><small class="text-danger">'+error+'</small></td>';
+            html += '<td><span class="badge bg-danger">'+status+'</span></td>';
+            html += '<td><small>'+time+'</small></td>';
+            html += '</tr>';
+          });
+          
+          html += '</tbody></table></div>';
+          container.innerHTML = html;
+          
+          document.getElementById('retrySelectedBtn').disabled = false;
+          document.getElementById('retryAllBtn').disabled = false;
+
+          // Handle select all checkbox
+          document.getElementById('selectAllCheckbox')?.addEventListener('change', (e)=>{
+            document.querySelectorAll('.upload-checkbox').forEach(cb => cb.checked = e.target.checked);
+          });
+
+        }catch(err){
+          container.innerHTML = '<p class="text-danger">❌ Lỗi: ' + String(err) + '</p>';
+        }
+        if(btn) btn.disabled = false;
+      });
+
+      document.getElementById('retrySelectedBtn')?.addEventListener('click', async ()=>{
+        const selected = Array.from(document.querySelectorAll('.upload-checkbox:checked')).map(cb => parseInt(cb.dataset.index));
+        if(selected.length === 0){
+          alert('Vui lòng chọn ít nhất một upload để retry!');
+          return;
+        }
+        await retryUploads(selected);
+      });
+
+      document.getElementById('retryAllBtn')?.addEventListener('click', async ()=>{
+        if(!confirm('Bạn có chắc muốn retry TẤT CẢ ' + failedUploadsData.length + ' upload thất bại?')) return;
+        const allIndices = failedUploadsData.map(e => e.history_index);
+        await retryUploads(allIndices);
+      });
+
+      async function retryUploads(indices){
+        const btn1 = document.getElementById('retrySelectedBtn');
+        const btn2 = document.getElementById('retryAllBtn');
+        const delayInput = document.getElementById('retryDelayInput');
+        const delay = delayInput ? parseFloat(delayInput.value) || 0 : 0;
+
+        if(btn1) btn1.disabled = true;
+        if(btn2) btn2.disabled = true;
+
+        try{
+          const res = await fetch(apiUrl('/api/tiktok_retry_upload'), {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+              history_indices: indices,
+              delay_hours: delay
+            })
+          });
+          
+          const data = await res.json();
+          
+          if(res.ok){
+            showResp({
+              ok: true,
+              message: '✅ Retry thành công!',
+              requeued: data.requeued,
+              skipped: data.skipped,
+              errors: data.errors
+            });
+            alert('✅ Đã thêm ' + data.requeued + ' video vào queue!\nBỏ qua: ' + data.skipped);
+            // Reload failed list
+            document.getElementById('loadFailedBtn')?.click();
+          } else {
+            showResp({ok: false, error: data.error || 'Retry failed'});
+            alert('❌ Lỗi: ' + (data.error || 'Unknown error'));
+          }
+        }catch(err){
+          showResp({ok: false, error: String(err)});
+          alert('❌ Lỗi: ' + String(err));
+        }
+
+        if(btn1) btn1.disabled = false;
+        if(btn2) btn2.disabled = false;
+      }
     </script>
   </body>
 </html>

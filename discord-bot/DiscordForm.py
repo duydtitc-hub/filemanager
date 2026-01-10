@@ -458,7 +458,7 @@ class ProcessSeriesForm(discord.ui.Modal, title="📥 Process Series"):
 
         API = "http://tts-audio:8000/process_series"
         try:
-            r = requests.post(API, params=params, timeout=30)
+            r = requests.get(API, params=params, timeout=30)
             r.raise_for_status()
             try:
                 data = r.json()

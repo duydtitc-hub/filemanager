@@ -10006,7 +10006,7 @@ def burn_and_mix_narration(src_video: str, ass_path: str | None, narr_file: str,
     except Exception:
         return False
 
-@app.post('/process_series')
+@app.get('/process_series')
 async def process_series(
     start_url: str = Query(..., description='URL tập 1 của series (ví dụ: https://v.qq.com/x/cover/dat-cid/data-vid.html)'),
     title: str = Query('', description='Tiêu đề tổng thể (tùy chọn)'),

@@ -3,6 +3,17 @@
 // Leave empty for same-origin (default).
 function apiUrl(path){ return (window.APP_HOST? window.APP_HOST.replace(/\/$/, '') : '') + path }
 
+// Helper to trigger browser native download
+function triggerNativeDownload(url) {
+  const a = document.createElement('a')
+  a.href = url
+  a.download = ''
+  a.style.display = 'none'
+  document.body.appendChild(a)
+  a.click()
+  setTimeout(() => document.body.removeChild(a), 100)
+}
+
 // Encode each path segment but preserve '/' separators so nested paths work
 function fileUrlFor(rel){
   if(!rel) return apiUrl('/files/')
@@ -792,35 +803,14 @@ function openPlayer(rel, name, type){
     e.preventDefault()
     triggerNativeDownload(dl.href)
   }
-  // Add "Save to Photos" button for video on iOS (uses Web Share API or fallback)
+  // Remove old iOS-specific buttons if they exist
   try{
     const existingSaveBtn = qs('#modalSaveToPhotos')
     if(existingSaveBtn) existingSaveBtn.remove()
     const existingOpenBtn = qs('#modalOpenInSafari')
     if(existingOpenBtn) existingOpenBtn.remove()
   }catch(e){}
-  if(type === 'video'){
-    const saveBtn = document.createElement('button')
-    saveBtn.id = 'modalSaveToPhotos'
-    saveBtn.className = 'btn-save-photos'
-    saveBtn.textContent = 'Lưu vào Photos'
-    saveBtn.onclick = async (ev)=>{
-      ev.stopPropagation(); saveBtn.disabled = true; const ok = await saveToPhotos(rel, name); saveBtn.disabled = false; if(ok) {/* optional success UI */}
-    }
-    // place button next to download anchor if present
-    try{ dl.parentNode && dl.parentNode.insertBefore(saveBtn, dl.nextSibling) }catch(e){ media.appendChild(saveBtn) }
-    // Add "Open in Safari" button to open inline preview in a new tab (helpful on iOS)
-    const openBtn = document.createElement('button')
-    openBtn.id = 'modalOpenInSafari'
-    openBtn.className = 'btn-open-safari'
-    openBtn.textContent = 'Mở trong Safari'
-    openBtn.onclick = (ev)=>{
-      ev.stopPropagation()
-      const url = filePreviewUrlFor(rel)
-      window.open(url, '_blank')
-    }
-    try{ dl.parentNode && dl.parentNode.insertBefore(openBtn, saveBtn.nextSibling) }catch(e){ media.appendChild(openBtn) }
-  }
+  // Safari and Photos buttons removed as requested by user
   modal.setAttribute('aria-hidden','false')
 }
 

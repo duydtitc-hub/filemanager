@@ -36,19 +36,43 @@ class TikTokUploader:
 
     def start(self):
         self._pw = sync_playwright().start()
-        self._browser = self._pw.chromium.launch(headless=self.headless,  args=[
-            "--no-sandbox",
-          
-        ])
+
+        self._browser = self._pw.chromium.launch(
+            headless=self.headless,
+            args=[
+                "--no-sandbox",
+                "--disable-blink-features=AutomationControlled",
+                "--disable-dev-shm-usage",
+                "--disable-infobars",
+                "--disable-extensions",
+                "--start-maximized",
+            ]
+        )
+
+        user_agent = (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/121.0.0.0 Safari/537.36"
+        )
+
         self._context = self._browser.new_context(
-            viewport={"width": 1280, "height": 800},
+            viewport={"width": 1366, "height": 768},
+            user_agent=user_agent,
             locale="vi-VN",
             timezone_id="Asia/Ho_Chi_Minh",
+            permissions=["geolocation", "notifications"],
+            geolocation={"latitude": 10.8231, "longitude": 106.6297},
             extra_http_headers={
                 "Accept-Language": "vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7"
             }
         )
-       
+
+        self._context.add_init_script("""
+        Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+        Object.defineProperty(navigator, 'plugins', { get: () => [1,2,3,4,5] });
+        Object.defineProperty(navigator, 'languages', { get: () => ['vi-VN','vi','en-US','en'] });
+        """)
+
         self._page = self._context.new_page()
 
     def stop(self):
@@ -536,7 +560,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     tags = args.tags.split(',') if args.tags else []
-    uploader = TikTokUploader(headless=not args.no_headless)
+    uploader = TikTokUploader(headless=True)
     try:
         ok = False
         try:

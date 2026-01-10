@@ -1000,6 +1000,15 @@ async def _process_tiktok_queue_once():
                 title = item.get('title') or ''
                 tags = item.get('tags') or []
                 cookies = item.get('cookies') or None
+                is_retry = bool(item.get('retry_from_history'))
+                
+                # Send notification when starting upload
+                video_name = os.path.basename(video_path) if video_path else 'unknown'
+                if is_retry:
+                    send_discord_message(f"🔄 TikTok retry upload: {video_name}")
+                else:
+                    send_discord_message(f"📤 TikTok scheduled upload: {video_name}")
+                
                 # convert tags to comma string
                 tags_str = ','.join(tags) if isinstance(tags, (list, tuple)) else (str(tags) if tags else '')
                 try:
@@ -1009,12 +1018,41 @@ async def _process_tiktok_queue_once():
                     if isinstance(res, JSONResponse):
                         body = res.body.decode() if hasattr(res, 'body') and isinstance(res.body, (bytes, bytearray)) else None
                         status = res.status_code
+                        # Parse body to extract detailed error info
+                        error_detail = None
+                        if status != 200 and body:
+                            try:
+                                body_json = json.loads(body)
+                                # Build detailed error message from response
+                                error_parts = []
+                                if body_json.get('error'):
+                                    error_parts.append(str(body_json['error']))
+                                if body_json.get('stderr'):
+                                    stderr = str(body_json['stderr']).strip()
+                                    if stderr:
+                                        error_parts.append(f"stderr: {stderr}")
+                                if body_json.get('rc'):
+                                    error_parts.append(f"exit_code: {body_json['rc']}")
+                                error_detail = ' | '.join(error_parts) if error_parts else 'Upload failed'
+                            except Exception:
+                                error_detail = 'Upload failed (parse error)'
                     else:
                         body = None
                         status = 200
-                    processed.append({'item': item, 'status': status, 'response': body, 'processed_at': now_ts})
+                        error_detail = None
+                    
+                    # Store with detailed error
+                    hist_entry = {
+                        'item': item,
+                        'status': status,
+                        'response': body,
+                        'processed_at': now_ts
+                    }
+                    if error_detail:
+                        hist_entry['error'] = error_detail
+                    processed.append(hist_entry)
                 except Exception as e:
-                    processed.append({'item': item, 'status': 500, 'error': str(e), 'processed_at': now_ts})
+                    processed.append({'item': item, 'status': 500, 'error': f'Exception: {str(e)}', 'processed_at': now_ts})
             else:
                 remaining.append(item)
 
@@ -1115,16 +1153,26 @@ def _add_videos_to_tiktok_queue(task_id: str, video_paths: list[str], task_info:
             tags_list = []
         
         # Add each video to queue with incrementing scheduled time
+        total_parts = len(video_paths)
+        base_title = task_info.get('title', '')
+        
         for idx, video_path in enumerate(video_paths):
             if not video_path or not os.path.exists(video_path):
                 continue
             
             scheduled_at = last_time + (idx * spacing_sec)
             
+            # Build title matching the overlay format
+            if total_parts == 1:
+                video_title = f"[FULL] {base_title.upper()}" if base_title else os.path.splitext(os.path.basename(video_path))[0]
+            else:
+                part_number = idx + 1
+                video_title = f"{base_title.upper()} - PHẦN {part_number}/{total_parts}" if base_title else os.path.splitext(os.path.basename(video_path))[0]
+            
             entry = {
                 'scheduled_at': int(scheduled_at),
                 'video_path': to_project_relative_posix(video_path),
-                'title': task_info.get('title', '') or os.path.splitext(os.path.basename(video_path))[0],
+                'title': video_title,
                 'tags': tags_list,
                 'cookies': task_info.get('tiktok_cookies') or task_info.get('cookies') or None,
                 'created_at': int(time.time()),

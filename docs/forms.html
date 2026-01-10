@@ -661,7 +661,23 @@
             const videoName = videoPath.split('/').pop() || videoPath;
             const title = item.title || 'N/A';
             const tags = (item.tags || []).join(', ') || 'N/A';
-            const error = entry.error || 'Unknown error';
+            
+            // Extract detailed error
+            let error = entry.error || '';
+            if (!error && entry.response) {
+              try {
+                const respData = JSON.parse(entry.response);
+                const errParts = [];
+                if (respData.error) errParts.push(respData.error);
+                if (respData.stderr) errParts.push('stderr: ' + respData.stderr);
+                if (respData.rc) errParts.push('exit_code: ' + respData.rc);
+                error = errParts.join(' | ') || 'Upload failed';
+              } catch(e) {
+                error = 'Upload failed (no details)';
+              }
+            }
+            if (!error) error = 'Unknown error';
+            
             const status = entry.status || 500;
             const time = entry.processed_at ? new Date(entry.processed_at * 1000).toLocaleString('vi-VN') : 'N/A';
             const historyIdx = entry.history_index;
@@ -671,7 +687,7 @@
             html += '<td title="'+videoPath+'">'+videoName+'</td>';
             html += '<td>'+title+'</td>';
             html += '<td>'+tags+'</td>';
-            html += '<td><small class="text-danger">'+error+'</small></td>';
+            html += '<td><small class="text-danger" style="word-break:break-word">'+error+'</small></td>';
             html += '<td><span class="badge bg-danger">'+status+'</span></td>';
             html += '<td><small>'+time+'</small></td>';
             html += '</tr>';

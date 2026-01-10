@@ -1127,7 +1127,21 @@ def _add_videos_to_tiktok_queue(task_id: str, video_paths: list[str], task_info:
         
         # Determine base scheduling time
         base_time = time.time()
-        spacing_hours = float(task_info.get('upload_duration_hours') or 0)
+        # upload_duration_hours is optional; parse safely
+        spacing_hours = 0
+        try:
+            _uh = task_info.get('upload_duration_hours')
+            if _uh is None:
+                spacing_hours = 0
+            elif isinstance(_uh, (int, float)):
+                spacing_hours = float(_uh)
+            elif isinstance(_uh, str):
+                spacing_hours = float(_uh.strip()) if _uh.strip() != '' else 0
+            else:
+                # attempt to read .default (FastAPI Query) or coerce to float
+                spacing_hours = float(getattr(_uh, 'default', 0) or 0)
+        except Exception:
+            spacing_hours = 0
         spacing_sec = spacing_hours * 3600
         
         # Find last scheduled time to avoid conflicts
@@ -10028,6 +10042,25 @@ async def process_series(
     if not request_id:
         request_id = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
 
+    # helper: safely parse optional float-like values (guards against FastAPI Query objects)
+    def _parse_optional_float(v):
+        try:
+            if v is None:
+                return None
+            if isinstance(v, (int, float)):
+                return float(v)
+            if isinstance(v, str):
+                s = v.strip()
+                return float(s) if s != '' else None
+            # FastAPI's Query objects expose a .default attribute; try that
+            default_val = getattr(v, 'default', None)
+            if default_val is not None:
+                return float(default_val)
+            # fallback to attempting string conversion
+            return float(str(v))
+        except Exception:
+            return None
+
     # If requested, enqueue into TASK_QUEUE and return immediately. This makes process_series
     # queue-able and manageable by the central worker loop.
     if use_queue:
@@ -10054,7 +10087,7 @@ async def process_series(
             "narration_rate_dynamic": narration_rate_dynamic,
             "narration_apply_fx": narration_apply_fx,
             "is_upload_tiktok": bool(is_upload_tiktok),
-            "upload_duration_hours": float(upload_duration_hours) if upload_duration_hours is not None else None,
+            "upload_duration_hours": _parse_optional_float(upload_duration_hours),
             "tiktok_tags": str(tiktok_tags) if tiktok_tags else None,
             "tiktok_cookies": str(cookies) if cookies else None,
         }
@@ -10080,7 +10113,7 @@ async def process_series(
             "narration_rate_dynamic": narration_rate_dynamic,
             "narration_apply_fx": narration_apply_fx,
             "is_upload_tiktok": bool(is_upload_tiktok),
-            "upload_duration_hours": float(upload_duration_hours) if upload_duration_hours is not None else None,
+            "upload_duration_hours": _parse_optional_float(upload_duration_hours),
             "tiktok_tags": str(tiktok_tags) if tiktok_tags else None,
             "tiktok_cookies": str(cookies) if cookies else None,
         }
@@ -10145,7 +10178,7 @@ async def process_series(
                 "narration_apply_fx": narration_apply_fx
                 ,"render_full": render_full,
                 "is_upload_tiktok": bool(is_upload_tiktok),
-                "upload_duration_hours": float(upload_duration_hours) if upload_duration_hours is not None else None,
+                "upload_duration_hours": _parse_optional_float(upload_duration_hours),
                 "tiktok_tags": str(tiktok_tags) if tiktok_tags else None,
                 "tiktok_cookies": str(cookies) if cookies else None
             }
@@ -10484,7 +10517,8 @@ async def process_series(
                                 except Exception:
                                     existing_sched = []
                                 base_time = time.time()
-                                spacing = float(upload_duration_hours) * 3600 if upload_duration_hours else 0
+                                _spacing_val = _parse_optional_float(upload_duration_hours)
+                                spacing = (_spacing_val * 3600) if _spacing_val else 0
                                 last_time = None
                                 if existing_sched:
                                     try:
@@ -10552,7 +10586,8 @@ async def process_series(
 
                                     # Determine base time for this run: now or last scheduled time + spacing
                                     base_time = time.time()
-                                    spacing = float(upload_duration_hours) * 3600 if upload_duration_hours else 0
+                                    _spacing_val = _parse_optional_float(upload_duration_hours)
+                                    spacing = (_spacing_val * 3600) if _spacing_val else 0
                                     # find last scheduled time in existing_sched for this run if present
                                     last_time = None
                                     if existing_sched:

@@ -539,12 +539,21 @@
           }
         }catch(e){ }
 
-        const b = { start_url: f.start_url.value.trim(), titles: f.titles.value.trim(), max_episodes: f.max_episodes.value ? Number(f.max_episodes.value) : undefined, render_mode: f.render_mode.value.trim(), voice: (f.voice ? f.voice.value : ''), is_upload_tiktok: f.is_upload_tiktok && f.is_upload_tiktok.checked ? 'true' : 'false', tiktok_tags: _tiktok_tags, cookies: f.cookies && f.cookies.value ? f.cookies.value.trim() : undefined, upload_duration_hours: f.upload_duration_hours && f.upload_duration_hours.value ? Number(f.upload_duration_hours.value) : undefined };
+        const b = {
+          start_url: f.start_url.value.trim(),
+          titles: f.titles.value.trim(),
+          max_episodes: f.max_episodes.value ? Number(f.max_episodes.value) : undefined,
+          render_mode: f.render_mode.value.trim(),
+          voice: (f.voice ? f.voice.value : ''),
+          is_upload_tiktok: !!(f.is_upload_tiktok && f.is_upload_tiktok.checked),
+          tiktok_tags: _tiktok_tags,
+          cookies: f.cookies && f.cookies.value ? f.cookies.value.trim() : undefined,
+          upload_duration_hours: f.upload_duration_hours && f.upload_duration_hours.value ? Number(f.upload_duration_hours.value) : undefined
+        };
+
         let btn = f.querySelector('button[type=submit]') || document.getElementById('processSeriesSubmitBtn');
         if(btn) btn.disabled = true;
 
-        const qs = Object.keys(b).filter(k=>b[k]!==undefined && b[k]!=='').map(k=>encodeURIComponent(k)+"="+encodeURIComponent(b[k])).join('&')
-        const getUrl = apiUrl('/process_series') + (qs?('?'+qs):'')
         try{
           // Persist any new tags before submitting
           try{
@@ -554,15 +563,10 @@
             }
           }catch(err){ /* ignore persist errors */ }
 
-          let res = await fetch(getUrl, { method: 'GET' })
-          let text = await res.text()
-          try{ const j = JSON.parse(text); if(res.ok){ showResp({ok: res.ok, data: j}); if(btn) btn.disabled = false; return } }
-          catch(e){ /* continue to fallback */ }
-
           const postResp = await postJson('/process_series', b)
           showResp(postResp)
         }catch(err){
-          try{ const postResp = await postJson('/process_series', b); showResp(postResp) }catch(e){ showResp({ok:false, data: String(e)}) }
+          showResp({ok:false, data: String(err)})
         } finally { if(btn) btn.disabled = false }
       });
 

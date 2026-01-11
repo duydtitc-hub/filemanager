@@ -60,6 +60,20 @@
             </div>
           </div>
 
+          <div class="col-12 col-md-6">
+            <div class="card p-3 text-center">
+              <h3 class="mb-3">Process Playlist (YTDL)</h3>
+              <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalProcessPlaylist">Mở form Playlist YTDL</button>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <div class="card p-3 text-center">
+              <h3 class="mb-3">Process Video (YTDL)</h3>
+              <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalProcessVideo">Mở form Single Video YTDL</button>
+            </div>
+          </div>
+
           <div class="col-12">
             <div class="card p-3 mb-3">
               <h3 class="mb-2">Live Tasks</h3>
@@ -217,11 +231,89 @@
                 </select>
               </div>
               <div class="mb-2"><label>Upload window (hours)</label><input type="number" name="upload_duration_hours" value="2" min="1"></div>
+              <div class="mb-2"><label>Background Audio</label><input type="text" name="bg_choice" placeholder="Tên file nhạc nền (optional)"></div>
             </form>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
             <button id="processSeriesSubmitBtn" type="button" class="btn btn-primary">Bắt đầu</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="modalProcessPlaylist" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Process Playlist (YTDL)</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="processPlaylistForm" class="tool-form">
+              <label>Playlist URL</label>
+              <input type="text" name="playlist_url" placeholder="YouTube/Facebook playlist URL" required>
+              <label>Tiêu đề</label>
+              <input type="text" name="title" placeholder="Tiêu đề series">
+              <label>Max episodes (số group/tập)</label>
+              <input type="number" name="max_episodes" placeholder="Để trống = tất cả" min="1">
+              <div class="mb-2"><label><input type="checkbox" name="render_full"> Render FULL (ghép tất cả thành 1 video)</label></div>
+              <div class="mb-2"><label><input type="checkbox" name="add_narration" checked> Thêm thuyết minh</label></div>
+              <div class="mb-2"><label><input type="checkbox" name="with_subtitles" checked> Burn phụ đề</label></div>
+              <label>Giọng TTS</label>
+              <select name="narration_voice" class="form-select">
+                <option value="vi-VN-Standard-C">vi-VN-Standard-C</option>
+                <option value="vi-VN-Standard-A">vi-VN-Standard-A</option>
+                <option value="vi-VN-Standard-B">vi-VN-Standard-B</option>
+                <option value="vi-VN-Standard-D">vi-VN-Standard-D</option>
+              </select>
+              <label>Âm lượng thuyết minh (dB)</label>
+              <input type="number" name="narration_volume_db" value="8" step="0.5">
+              <div class="mb-2"><label><input type="checkbox" name="narration_replace_audio"> Thay audio gốc</label></div>
+              <label>Background Audio</label>
+              <input type="text" name="bg_choice" placeholder="Tên file nhạc nền (optional)">
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button id="processPlaylistSubmitBtn" type="button" class="btn btn-primary">Bắt đầu</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="modalProcessVideo" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Process Video (YTDL)</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="processVideoForm" class="tool-form">
+              <label>Video URL</label>
+              <input type="text" name="video_url" placeholder="YouTube/Facebook video URL" required>
+              <label>Tiêu đề</label>
+              <input type="text" name="title" placeholder="Tiêu đề video">
+              <div class="mb-2"><label><input type="checkbox" name="add_narration" checked> Thêm thuyết minh</label></div>
+              <div class="mb-2"><label><input type="checkbox" name="with_subtitles" checked> Burn phụ đề</label></div>
+              <label>Giọng TTS</label>
+              <select name="narration_voice" class="form-select">
+                <option value="vi-VN-Standard-C">vi-VN-Standard-C</option>
+                <option value="vi-VN-Standard-A">vi-VN-Standard-A</option>
+                <option value="vi-VN-Standard-B">vi-VN-Standard-B</option>
+                <option value="vi-VN-Standard-D">vi-VN-Standard-D</option>
+              </select>
+              <label>Âm lượng thuyết minh (dB)</label>
+              <input type="number" name="narration_volume_db" value="8" step="0.5">
+              <div class="mb-2"><label><input type="checkbox" name="narration_replace_audio"> Thay audio gốc</label></div>
+              <label>Background Audio</label>
+              <input type="text" name="bg_choice" placeholder="Tên file nhạc nền (optional)">
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button id="processVideoSubmitBtn" type="button" class="btn btn-primary">Bắt đầu</button>
           </div>
         </div>
       </div>
@@ -539,7 +631,7 @@
           }
         }catch(e){ }
 
-        const b = { start_url: f.start_url.value.trim(), titles: f.titles.value.trim(), max_episodes: f.max_episodes.value ? Number(f.max_episodes.value) : undefined, render_mode: f.render_mode.value.trim(), voice: (f.voice ? f.voice.value : ''), is_upload_tiktok: f.is_upload_tiktok && f.is_upload_tiktok.checked ? 'true' : 'false', tiktok_tags: _tiktok_tags, cookies: f.cookies && f.cookies.value ? f.cookies.value.trim() : undefined, upload_duration_hours: f.upload_duration_hours && f.upload_duration_hours.value ? Number(f.upload_duration_hours.value) : undefined };
+        const b = { start_url: f.start_url.value.trim(), titles: f.titles.value.trim(), max_episodes: f.max_episodes.value ? Number(f.max_episodes.value) : undefined, render_mode: f.render_mode.value.trim(), voice: (f.voice ? f.voice.value : ''), is_upload_tiktok: f.is_upload_tiktok && f.is_upload_tiktok.checked ? 'true' : 'false', tiktok_tags: _tiktok_tags, cookies: f.cookies && f.cookies.value ? f.cookies.value.trim() : undefined, upload_duration_hours: f.upload_duration_hours && f.upload_duration_hours.value ? Number(f.upload_duration_hours.value) : undefined, bg_choice: f.bg_choice && f.bg_choice.value ? f.bg_choice.value.trim() : undefined };
         let btn = f.querySelector('button[type=submit]') || document.getElementById('processSeriesSubmitBtn');
         if(btn) btn.disabled = true;
 
@@ -576,6 +668,68 @@
           components_nums: f.components_nums && f.components_nums.value ? f.components_nums.value.trim() : undefined,
           episode_numbers: f.episode_numbers && f.episode_numbers.value ? f.episode_numbers.value.trim() : undefined,
         };
+
+      // Process Playlist YTDL form
+      document.getElementById('processPlaylistForm')?.addEventListener('submit', async (e)=>{
+        e.preventDefault(); const f = e.target;
+        const params = {
+          playlist_url: f.playlist_url.value.trim(),
+          title: f.title.value.trim(),
+          max_episodes: f.max_episodes && f.max_episodes.value ? Number(f.max_episodes.value) : undefined,
+          render_full: f.render_full && f.render_full.checked ? 'true' : 'false',
+          add_narration: f.add_narration && f.add_narration.checked ? 'true' : 'false',
+          with_subtitles: f.with_subtitles && f.with_subtitles.checked ? 'true' : 'false',
+          narration_voice: f.narration_voice && f.narration_voice.value ? f.narration_voice.value : 'vi-VN-Standard-C',
+          narration_volume_db: f.narration_volume_db && f.narration_volume_db.value ? Number(f.narration_volume_db.value) : 8.0,
+          narration_replace_audio: f.narration_replace_audio && f.narration_replace_audio.checked ? 'true' : 'false',
+          bg_choice: f.bg_choice && f.bg_choice.value ? f.bg_choice.value.trim() : undefined,
+        };
+        let btn = f.querySelector('button[type=submit]') || document.getElementById('processPlaylistSubmitBtn');
+        if(btn) btn.disabled = true;
+
+        const qs = Object.keys(params).filter(k=>params[k]!==undefined && params[k]!=='').map(k=>encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join('&');
+        const getUrl = apiUrl('/process_playlist_ytdl') + (qs?('?'+qs):'');
+        try{
+          let res = await fetch(getUrl, { method: 'GET' });
+          let text = await res.text();
+          try{ const j = JSON.parse(text); if(res.ok){ showResp({ok: res.ok, data: j}); if(btn) btn.disabled = false; return } }
+          catch(e){ /* continue to fallback */ }
+          const postResp = await postJson('/process_playlist_ytdl', params);
+          showResp(postResp);
+        }catch(err){
+          try{ const postResp = await postJson('/process_playlist_ytdl', params); showResp(postResp); }catch(e){ showResp({ok:false, data: String(e)}); }
+        } finally { if(btn) btn.disabled = false; }
+      });
+
+      // Process Video YTDL form
+      document.getElementById('processVideoForm')?.addEventListener('submit', async (e)=>{
+        e.preventDefault(); const f = e.target;
+        const params = {
+          video_url: f.video_url.value.trim(),
+          title: f.title.value.trim(),
+          add_narration: f.add_narration && f.add_narration.checked ? 'true' : 'false',
+          with_subtitles: f.with_subtitles && f.with_subtitles.checked ? 'true' : 'false',
+          narration_voice: f.narration_voice && f.narration_voice.value ? f.narration_voice.value : 'vi-VN-Standard-C',
+          narration_volume_db: f.narration_volume_db && f.narration_volume_db.value ? Number(f.narration_volume_db.value) : 8.0,
+          narration_replace_audio: f.narration_replace_audio && f.narration_replace_audio.checked ? 'true' : 'false',
+          bg_choice: f.bg_choice && f.bg_choice.value ? f.bg_choice.value.trim() : undefined,
+        };
+        let btn = f.querySelector('button[type=submit]') || document.getElementById('processVideoSubmitBtn');
+        if(btn) btn.disabled = true;
+
+        const qs = Object.keys(params).filter(k=>params[k]!==undefined && params[k]!=='').map(k=>encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join('&');
+        const getUrl = apiUrl('/process_video_ytdl') + (qs?('?'+qs):'');
+        try{
+          let res = await fetch(getUrl, { method: 'GET' });
+          let text = await res.text();
+          try{ const j = JSON.parse(text); if(res.ok){ showResp({ok: res.ok, data: j}); if(btn) btn.disabled = false; return } }
+          catch(e){ /* continue to fallback */ }
+          const postResp = await postJson('/process_video_ytdl', params);
+          showResp(postResp);
+        }catch(err){
+          try{ const postResp = await postJson('/process_video_ytdl', params); showResp(postResp); }catch(e){ showResp({ok:false, data: String(e)}); }
+        } finally { if(btn) btn.disabled = false; }
+      });
         // build querystring
         const qs = Object.keys(params).filter(k=>params[k]!=null && params[k]!=="").map(k=>encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join('&')
         const url = apiUrl('/delete_episode_assets') + (qs?('?'+qs):'')
@@ -613,6 +767,8 @@
         ['videoTaskSubmitBtn','videoTaskForm','modalVideoTask'],
         ['clearCacheSubmitBtn','clearCacheForm','modalClearCache'],
         ['processSeriesSubmitBtn','processSeriesForm','modalProcessSeries'],
+        ['processPlaylistSubmitBtn','processPlaylistForm','modalProcessPlaylist'],
+        ['processVideoSubmitBtn','processVideoForm','modalProcessVideo'],
         ['deleteEpisodeSubmitBtn','deleteEpisodeForm','modalDeleteEpisode'],
         ['downloadBgaudioSubmitBtn','downloadBgaudioForm','modalDownloadBgaudio']
       ];

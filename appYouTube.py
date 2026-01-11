@@ -24,7 +24,7 @@ import random
 from urllib.parse import urljoin
 import shutil
 from urllib.parse import quote, quote_plus
-from appTest import upload_bytes_to_drive
+from appTest import uploadOneDrive
 from DiscordMethod import send_discord_message
 from GetTruyen import get_novel_text_laophatgia,get_novel_text_vivutruyen
 from googleapiclient.discovery import build
@@ -1391,7 +1391,7 @@ def concat_and_add_audio(video_paths, audio_path, output_path="final.mp4", Title
     list_output = split_video_by_time_with_title(output_path, Title, "/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf")
     for o in list_output:
         try:
-            upload_bytes_to_drive(o)
+            uploadOneDrive(o)
             send_discord_message(f"✅ Xuất video hoàn tất: {o}")
         except Exception:
             send_discord_message("⚠️ Upload không thành công")

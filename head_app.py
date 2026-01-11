@@ -49,7 +49,7 @@ import random
 import shutil
 from urllib.parse import urljoin
 from urllib.parse import quote, quote_plus
-from appTest import upload_bytes_to_drive
+from appTest import uploadOneDrive
 from DiscordMethod import send_discord_message
 from srt_translate import translate_srt_file
 from GetTruyen import get_novel_text_laophatgia, get_novel_text_vivutruyen, get_novel_text, crawl_chapters_until_disabled, get_wattpad_novel
@@ -3321,7 +3321,7 @@ def concat_crop_audio_with_titles(video_paths, audio_path, output_path="final.mp
         output_files.append(part_path)
 
         try:
-            upload_bytes_to_drive(part_path)
+            uploadOneDrive(part_path)
             send_discord_message(f"✅ Xuất video hoàn tất: {part_path}")
         except Exception:
             send_discord_message("⚠️ Upload không thành công")
@@ -3415,7 +3415,7 @@ def concat_and_add_audio(video_paths, audio_path, output_path="final.mp4", Title
     list_output = split_video_by_hour_with_title(output_path, Title,"/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf")
     for o in list_output:
         try:
-            upload_bytes_to_drive(o)
+            uploadOneDrive(o, Title)
             send_discord_message(f"✅ Xuất video hoàn tất: {o}")
         except Exception:
             send_discord_message("⚠️ Upload không thành công")
@@ -4164,7 +4164,7 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
             for fpath in split_list:
                 try:
                     send_discord_message("[%s] 📤 Uploading to Drive: %s", task_id, fpath)
-                    uploaded = await loop.run_in_executor(executor, upload_bytes_to_drive, fpath)
+                    uploaded = await loop.run_in_executor(executor, uploadOneDrive, fpath, Title_fb)
                     link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
                     t = load_tasks().get(task_id, {})
                     t.setdefault('video_file', []).append(link or uploaded.get('name'))
@@ -4412,7 +4412,7 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
                         send_discord_message("🎥 Xem video:" + view_link)
                         send_discord_message("⬇️ Tải video:" + download_link)
                         try:
-                            uploaded = upload_bytes_to_drive(tiktok_video)
+                            uploaded = uploadOneDrive(tiktok_video, title_slug if 'title_slug' in locals() else None)
                             link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
                             if link:
                                 # send_discord_message("📤 Drive:" + link)
@@ -4911,7 +4911,7 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
                 for fpath in split_list:
                     try:
                         send_discord_message("[%s] 📤 Uploading to Drive: %s", task_id, fpath)
-                        uploaded = await loop.run_in_executor(executor, upload_bytes_to_drive, fpath)
+                        uploaded = await loop.run_in_executor(executor, uploadOneDrive, fpath, Title_fb)
                         link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
                         t = load_tasks().get(task_id, {})
                         t.setdefault('video_file', []).append(link or uploaded.get('name'))
@@ -5096,7 +5096,7 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
                     # Upload lên Drive
                     try:
                         send_discord_message("[%s] 📤 Upload part %d lên Drive...", task_id, part_num)
-                        uploaded = await loop.run_in_executor(executor, upload_bytes_to_drive, rendered_part)
+                        uploaded = await loop.run_in_executor(executor, uploadOneDrive, rendered_part, Title)
                         
                         link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
                         # video_files.append(link or uploaded.get('name'))
@@ -5345,7 +5345,7 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
                     # Upload lên Drive
                     try:
                         send_discord_message("[%s] 📤 Upload part %d lên Drive...", task_id, part_num)
-                        uploaded = await loop.run_in_executor(executor, upload_bytes_to_drive, rendered_part)
+                        uploaded = await loop.run_in_executor(executor, uploadOneDrive, rendered_part, Title)
                     
                         link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
                         # video_files.append(link or uploaded.get('name'))
@@ -5581,7 +5581,7 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
                     
                     try:
                         send_discord_message("[%s] 📤 Upload part %d lên Drive...", task_id, part_num)
-                        uploaded = await loop.run_in_executor(executor, upload_bytes_to_drive, rendered_part)
+                        uploaded = await loop.run_in_executor(executor, uploadOneDrive, rendered_part, Title)
                   
                         link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
                         # video_files.append(link or uploaded.get('name'))
@@ -6074,7 +6074,7 @@ async def process_facebook_task(task_id: str, fb_url: str, Title: str = "", avoi
         for fpath in split_list:
             try:
                 send_discord_message("[%s] 📤 Uploading to Drive: %s", task_id, fpath)
-                uploaded = await loop.run_in_executor(executor, upload_bytes_to_drive, fpath)
+                uploaded = await loop.run_in_executor(executor, uploadOneDrive, fpath, Title)
                 link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
                 t = load_tasks().get(task_id, {})
                 t.setdefault('video_file', []).append(link or uploaded.get('name'))
@@ -9498,7 +9498,7 @@ async def create_video_from_story(
 
                 # Upload best-effort
                 try:
-                    uploaded = await loop.run_in_executor(executor, upload_bytes_to_drive, rendered_part)
+                    uploaded = await loop.run_in_executor(executor, uploadOneDrive, rendered_part, title_use)
                     link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
                     video_links.append(link or rendered_part)
                 except Exception:
@@ -12505,8 +12505,8 @@ async def process_series_episodes(
                                     download_link = "https://sandbox.travel.com.vn/api/download-video?download=1&video_name=" + quote_plus(rel)
                                     send_discord_message(f"🎥 Xem video (nhóm {g_idx} phần {p+1}):" + view_link)
                                     send_discord_message(f"⬇️ Tải video (nhóm {g_idx} phần {p+1}):" + download_link)
-                                    try:
-                                        uploaded = upload_bytes_to_drive(outp)
+                                        try:
+                                        uploaded = uploadOneDrive(outp, base_title_val)
                                         if isinstance(uploaded, dict):
                                             link = uploaded.get('webViewLink') or uploaded.get('downloadLink') or uploaded.get('id')
                                             if link:
@@ -12529,7 +12529,7 @@ async def process_series_episodes(
                                 send_discord_message(f"🎥 Xem video (nhóm {g_idx}):" + view_link)
                                 send_discord_message(f"⬇️ Tải video (nhóm {g_idx}):" + download_link)
                                 try:
-                                    uploaded = upload_bytes_to_drive(group_out)
+                                    uploaded = uploadOneDrive(group_out, base_title_val)
                                     if isinstance(uploaded, dict):
                                         link = uploaded.get('webViewLink') or uploaded.get('downloadLink') or uploaded.get('id')
                                         if link:

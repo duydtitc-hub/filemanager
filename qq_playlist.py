@@ -38,7 +38,7 @@ def get_episode_links(url: str, headless: bool = True, slow_mo: int = 0, timeout
                 playlist.append(ep)
 
     # Attempt multiple times to reduce flakiness (network, anti-bot, slow JS)
-    attempts = 3
+    attempts = 5
     for attempt in range(attempts):
         try:
             with sync_playwright() as p:

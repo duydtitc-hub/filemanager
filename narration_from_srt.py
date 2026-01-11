@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 import uuid
 import math
-from typing import List, Tuple, Dict, Any
+from typing import List, Tuple, Dict, Any, Callable
 
 import pysubs2
 
@@ -60,6 +60,23 @@ def apply_voice_fx(in_path: str, out_path: str) -> str:
         out_path
     ]
     print( "Applying voice FX:", " ".join(cmd))
+    subprocess.run(cmd, check=True, capture_output=True)
+    return out_path
+
+
+def gemini_voice_fx(in_path: str, out_path: str) -> str:
+    """Apply Gemini-style narration voice FX chain.
+    Chain: asetrate=44100*0.6, aresample=44100, atempo=1.4, highpass=80Hz, lowpass=8kHz, 
+           bass +6dB @120Hz, treble -6dB @6kHz, dynaudnorm, volume=6dB
+    """
+    fx = "asetrate=44100*0.7,aresample=44100,atempo=1.4,highpass=f=80,lowpass=f=8000,bass=g=6:f=120,treble=g=-6:f=6000,dynaudnorm=f=150:g=15,volume=6dB"
+    cmd = [
+        "ffmpeg", "-y", "-i", in_path,
+        "-af", fx,
+        "-c:a", "flac",
+        out_path
+    ]
+    print("Applying Gemini voice FX:", " ".join(cmd))
     subprocess.run(cmd, check=True, capture_output=True)
     return out_path
 
@@ -201,10 +218,12 @@ def concat_audio(parts: List[str], out_path: str) -> str:
     return out_path
 
 
-def build_narration_from_srt(srt_path: str, out_audio: str, voice_name: str = "vi-VN-Standard-C", speaking_rate: float = 1.0, lead: float = 0.3, start_only: bool = False, trim: bool = False, trim_threshold_db: int = -40, rate_mode: int = 0, apply_fx: bool = False, tmp_subdir: str | None = None) -> str:
+def build_narration_from_srt(srt_path: str, out_audio: str, voice_name: str = "vi-VN-Standard-C", speaking_rate: float = 1.0, lead: float = 0.3, start_only: bool = False, trim: bool = False, trim_threshold_db: int = -40, rate_mode: int = 0, apply_fx: bool = False, tmp_subdir: str | None = None, voice_fx_func: Callable[[str, str], str] | None = None) -> str:
     subs = pysubs2.load(srt_path, encoding="utf-8")
     # Ensure chronological order to avoid early playback when SRT lines are out-of-order
     subs.events.sort(key=lambda ev: ev.start)
+    # Use provided voice FX function or default to apply_voice_fx
+    fx_func = voice_fx_func if voice_fx_func is not None else apply_voice_fx
     # Normalize to FLAC 48k stereo pieces
     # Place temp files under BASE_DIR/temp_narr/<tmp_subdir> if provided
     tmpdir = os.path.join(BASE_DIR, "temp_narr", tmp_subdir) if tmp_subdir else os.path.join(BASE_DIR, "temp_narr")
@@ -265,7 +284,7 @@ def build_narration_from_srt(srt_path: str, out_audio: str, voice_name: str = "v
             natural_src = src_wav
             if apply_fx:
                 natural_fx = os.path.join(tmpdir, f"{srt_base}_natfx_{line_idx}.flac")
-                natural_src = apply_voice_fx(src_wav, natural_fx)
+                natural_src = fx_func(src_wav, natural_fx)
             natural = os.path.join(tmpdir, f"{srt_base}_nat_{line_idx}.flac")
             # Convert to FLAC (no time-stretch)
             subprocess.run(["ffmpeg", "-y", "-i", natural_src, "-c:a", "flac", natural], check=True, capture_output=True)
@@ -276,7 +295,7 @@ def build_narration_from_srt(srt_path: str, out_audio: str, voice_name: str = "v
             fit_src = src_wav
             if apply_fx:
                 fit_fx = os.path.join(tmpdir, f"{srt_base}_fitfx_{line_idx}.flac")
-                fit_src = apply_voice_fx(src_wav, fit_fx)
+                fit_src = fx_func(src_wav, fit_fx)
             fitted = os.path.join(tmpdir, f"{srt_base}_fit_{line_idx}.flac")
             fit_audio_to_slot(fit_src, slot, fitted)
             parts.append(fitted)
@@ -289,11 +308,13 @@ def build_narration_from_srt(srt_path: str, out_audio: str, voice_name: str = "v
     return final_audio
 
 
-def build_narration_schedule(srt_path: str, out_audio: str, voice_name: str = "vi-VN-Standard-C", speaking_rate: float = 1.0, lead: float = 0.3, meta_out: str | None = None, trim: bool = False, trim_threshold_db: int = -40, rate_mode: int = 0, apply_fx: bool = False, tmp_subdir: str | None = None, no_overlap: bool = True) -> Tuple[str, str]:
+def build_narration_schedule(srt_path: str, out_audio: str, voice_name: str = "vi-VN-Standard-C", speaking_rate: float = 1.0, lead: float = 0.3, meta_out: str | None = None, trim: bool = False, trim_threshold_db: int = -40, rate_mode: int = 0, apply_fx: bool = False, tmp_subdir: str | None = None, no_overlap: bool = True, voice_fx_func: Callable[[str, str], str] | None = None) -> Tuple[str, str]:
     """Generate per-line audio, then mix by scheduling each clip at its start time using adelay.
     Returns (final_audio_path, metadata_json_path)."""
     subs = pysubs2.load(srt_path, encoding="utf-8")
     subs.events.sort(key=lambda ev: ev.start)
+    # Use provided voice FX function or default to apply_voice_fx
+    fx_func = voice_fx_func if voice_fx_func is not None else apply_voice_fx
     # Place temp files under BASE_DIR/temp_narr_sched/<tmp_subdir> if provided
     tmpdir = os.path.join(BASE_DIR, "temp_narr_sched", tmp_subdir) if tmp_subdir else os.path.join(BASE_DIR, "temp_narr_sched")
     os.makedirs(tmpdir, exist_ok=True)
@@ -353,7 +374,7 @@ def build_narration_schedule(srt_path: str, out_audio: str, voice_name: str = "v
         slot_src = src_wav
         if apply_fx:
             slot_fx = os.path.join(fx_dir, f"{srt_base}_fx_{piece_idx}.flac")
-            slot_src = apply_voice_fx(src_wav, slot_fx)
+            slot_src = fx_func(src_wav, slot_fx)
         piece = os.path.join(piece_dir, f"{srt_base}_piece_{piece_idx}.flac")
         # For scheduled narration we prefer to keep the natural TTS duration
         # to avoid cutting a sentence when the subtitle slot ends. Convert

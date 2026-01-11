@@ -49,7 +49,7 @@ import random
 import shutil
 from urllib.parse import urljoin
 from urllib.parse import quote, quote_plus
-from appTest import upload_bytes_to_drive
+from appTest import uploadOneDrive
 from DiscordMethod import send_discord_message
 from srt_translate import translate_srt_file
 from GetTruyen import get_novel_text_laophatgia, get_novel_text_vivutruyen, get_novel_text, crawl_chapters_until_disabled, get_wattpad_novel
@@ -1091,15 +1091,6 @@ async def _tiktok_queue_worker_loop():
         await asyncio.sleep(POLL_TIKTOK_QUEUE_SECONDS)
 
 
-@app.on_event('startup')
-async def _startup_tiktok_queue_worker():
-    # start background worker
-    try:
-        asyncio.create_task(_tiktok_queue_worker_loop())
-        logger.info('TikTok queue worker started')
-    except Exception:
-        logger.exception('Failed to start TikTok queue worker')
-
 
 def _add_videos_to_tiktok_queue(task_id: str, video_paths: list[str], task_info: dict):
     """Helper to add completed video(s) to TikTok upload queue.
@@ -1110,7 +1101,19 @@ def _add_videos_to_tiktok_queue(task_id: str, video_paths: list[str], task_info:
         task_info: Task metadata dict containing is_upload_tiktok, upload_duration_hours, tiktok_tags, tiktok_cookies
     """
     try:
-        if not task_info.get('is_upload_tiktok'):
+        # Coerce is_upload_tiktok to a strict boolean. Some persisted task records
+        # may contain string values like 'False' which are truthy in Python.
+        raw_flag = task_info.get('is_upload_tiktok')
+        is_upload = False
+        try:
+            if isinstance(raw_flag, str):
+                is_upload = raw_flag.strip().lower() in ('1', 'true', 'yes', 'y')
+            else:
+                is_upload = bool(raw_flag)
+        except Exception:
+            is_upload = False
+
+        if not is_upload:
             return
         
         schedule_file = os.path.join(CACHE_DIR, 'tiktok_upload_queue.json')
@@ -1127,21 +1130,10 @@ def _add_videos_to_tiktok_queue(task_id: str, video_paths: list[str], task_info:
         
         # Determine base scheduling time
         base_time = time.time()
-        # upload_duration_hours is optional; parse safely
-        spacing_hours = 0
         try:
-            _uh = task_info.get('upload_duration_hours')
-            if _uh is None:
-                spacing_hours = 0
-            elif isinstance(_uh, (int, float)):
-                spacing_hours = float(_uh)
-            elif isinstance(_uh, str):
-                spacing_hours = float(_uh.strip()) if _uh.strip() != '' else 0
-            else:
-                # attempt to read .default (FastAPI Query) or coerce to float
-                spacing_hours = float(getattr(_uh, 'default', 0) or 0)
+            spacing_hours = float(task_info.get('upload_duration_hours') or 0)
         except Exception:
-            spacing_hours = 0
+            spacing_hours = 0.0
         spacing_sec = spacing_hours * 3600
         
         # Find last scheduled time to avoid conflicts
@@ -1167,26 +1159,16 @@ def _add_videos_to_tiktok_queue(task_id: str, video_paths: list[str], task_info:
             tags_list = []
         
         # Add each video to queue with incrementing scheduled time
-        total_parts = len(video_paths)
-        base_title = task_info.get('title', '')
-        
         for idx, video_path in enumerate(video_paths):
             if not video_path or not os.path.exists(video_path):
                 continue
             
             scheduled_at = last_time + (idx * spacing_sec)
             
-            # Build title matching the overlay format
-            if total_parts == 1:
-                video_title = f"[FULL] {base_title.upper()}" if base_title else os.path.splitext(os.path.basename(video_path))[0]
-            else:
-                part_number = idx + 1
-                video_title = f"{base_title.upper()} - PHẦN {part_number}/{total_parts}" if base_title else os.path.splitext(os.path.basename(video_path))[0]
-            
             entry = {
                 'scheduled_at': int(scheduled_at),
                 'video_path': to_project_relative_posix(video_path),
-                'title': video_title,
+                'title': task_info.get('title', '') or os.path.splitext(os.path.basename(video_path))[0],
                 'tags': tags_list,
                 'cookies': task_info.get('tiktok_cookies') or task_info.get('cookies') or None,
                 'created_at': int(time.time()),
@@ -3630,7 +3612,7 @@ def concat_crop_audio_with_titles(video_paths, audio_path, output_path="final.mp
         output_files.append(part_path)
 
         try:
-            upload_bytes_to_drive(part_path)
+            uploadOneDrive(part_path)
             send_discord_message(f"✅ Xuất video hoàn tất: {part_path}")
         except Exception:
             send_discord_message("⚠️ Upload không thành công")
@@ -3724,7 +3706,7 @@ def concat_and_add_audio(video_paths, audio_path, output_path="final.mp4", Title
     list_output = split_video_by_hour_with_title(output_path, Title,"/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf")
     for o in list_output:
         try:
-            upload_bytes_to_drive(o)
+            uploadOneDrive(o, Title)
             send_discord_message(f"✅ Xuất video hoàn tất: {o}")
         except Exception:
             send_discord_message("⚠️ Upload không thành công")
@@ -3766,7 +3748,7 @@ def split_video_by_hour_with_title(input_path, base_title=None, font_path="times
                 title_text = f"[FULL] {base_title}"
             else:
                 title_text = f"{base_title} - P.{i+1}"
-            wrapped_text = wrap_text(title_text, max_chars_per_line=40)
+            wrapped_text = wrap_text(title_text, max_chars_per_line=35)
             pad_h = 40
             drawtext = (
                 f"drawtext=fontfile='{font_path}':text='{wrapped_text}':"
@@ -4216,11 +4198,72 @@ async def queue_worker(worker_id: int):
                         narration_enabled=item.get('narration_enabled', None),
                         narration_rate_dynamic=item.get('narration_rate_dynamic', 0),
                         narration_apply_fx=item.get('narration_apply_fx', 1),
+                        bg_choice=item.get('bg_choice'),
                         request_id=task_id,
                         use_queue=False
                     )
                 except Exception as e:
                     logger.exception("Worker-%s failed running process_series for %s: %s", worker_id, task_id, e)
+                    tasks = load_tasks()
+                    t = tasks.get(task_id, {})
+                    t["status"] = 'error'
+                    t["error"] = str(e)
+                    t["progress"] = 0
+                    tasks[task_id] = t
+                    save_tasks(tasks)
+                continue
+            # YTDL Video tasks (type=9) — route into `process_video_ytdl` logic
+            if (isinstance(task_type, int) and task_type == 9) or (isinstance(task_type, str) and str(task_type).lower() == "ytdl_video"):
+                send_discord_message(f"👷 Worker-{worker_id} handling ytdl_video task {task_id}")
+                try:
+                    await process_video_ytdl(
+                        video_url=item.get('video_url', ''),
+                        title=item.get('title', ''),
+                        run_in_background=False,
+                        add_narration=item.get('add_narration', True),
+                        with_subtitles=item.get('with_subtitles', True),
+                        narration_voice=item.get('narration_voice', 'vi-VN-Standard-C'),
+                        narration_replace_audio=item.get('narration_replace_audio', False),
+                        narration_volume_db=item.get('narration_volume_db', 8.0),
+                        narration_rate_dynamic=item.get('narration_rate_dynamic', 0),
+                        narration_apply_fx=item.get('narration_apply_fx', 1),
+                        bg_choice=item.get('bg_choice'),
+                        request_id=task_id,
+                        use_queue=False
+                    )
+                except Exception as e:
+                    logger.exception("Worker-%s failed running process_video_ytdl for %s: %s", worker_id, task_id, e)
+                    tasks = load_tasks()
+                    t = tasks.get(task_id, {})
+                    t["status"] = 'error'
+                    t["error"] = str(e)
+                    t["progress"] = 0
+                    tasks[task_id] = t
+                    save_tasks(tasks)
+                continue
+            # YTDL Playlist tasks (type=10) — route into `process_playlist_ytdl` logic
+            if (isinstance(task_type, int) and task_type == 10) or (isinstance(task_type, str) and str(task_type).lower() == "playlist_ytdl"):
+                send_discord_message(f"👷 Worker-{worker_id} handling playlist_ytdl task {task_id}")
+                try:
+                    await process_playlist_ytdl(
+                        playlist_url=item.get('playlist_url', ''),
+                        title=item.get('title', ''),
+                        max_episodes=item.get('max_episodes'),
+                        run_in_background=False,
+                        add_narration=item.get('add_narration', True),
+                        with_subtitles=item.get('with_subtitles', True),
+                        render_full=item.get('render_full', False),
+                        narration_voice=item.get('narration_voice', 'vi-VN-Standard-C'),
+                        narration_replace_audio=item.get('narration_replace_audio', False),
+                        narration_volume_db=item.get('narration_volume_db', 8.0),
+                        narration_rate_dynamic=item.get('narration_rate_dynamic', 0),
+                        narration_apply_fx=item.get('narration_apply_fx', 1),
+                        bg_choice=item.get('bg_choice'),
+                        request_id=task_id,
+                        use_queue=False
+                    )
+                except Exception as e:
+                    logger.exception("Worker-%s failed running process_playlist_ytdl for %s: %s", worker_id, task_id, e)
                     tasks = load_tasks()
                     t = tasks.get(task_id, {})
                     t["status"] = 'error'
@@ -4473,7 +4516,7 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
             for fpath in split_list:
                 try:
                     send_discord_message("[%s] 📤 Uploading to Drive: %s", task_id, fpath)
-                    uploaded = await loop.run_in_executor(executor, upload_bytes_to_drive, fpath)
+                    uploaded = await loop.run_in_executor(executor, uploadOneDrive, fpath, Title_fb)
                     link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
                     t = load_tasks().get(task_id, {})
                     t.setdefault('video_file', []).append(link or uploaded.get('name'))
@@ -4721,7 +4764,7 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
                         send_discord_message("🎥 Xem video:" + view_link)
                         send_discord_message("⬇️ Tải video:" + download_link)
                         try:
-                            uploaded = upload_bytes_to_drive(tiktok_video)
+                            uploaded = uploadOneDrive(tiktok_video, title_slug if 'title_slug' in locals() else None)
                             link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
                             if link:
                                 # send_discord_message("📤 Drive:" + link)
@@ -5220,7 +5263,7 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
                 for fpath in split_list:
                     try:
                         send_discord_message("[%s] 📤 Uploading to Drive: %s", task_id, fpath)
-                        uploaded = await loop.run_in_executor(executor, upload_bytes_to_drive, fpath)
+                        uploaded = await loop.run_in_executor(executor, uploadOneDrive, fpath, Title_fb)
                         link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
                         t = load_tasks().get(task_id, {})
                         t.setdefault('video_file', []).append(link or uploaded.get('name'))
@@ -5405,7 +5448,7 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
                     # Upload lên Drive
                     try:
                         send_discord_message("[%s] 📤 Upload part %d lên Drive...", task_id, part_num)
-                        uploaded = await loop.run_in_executor(executor, upload_bytes_to_drive, rendered_part)
+                        uploaded = await loop.run_in_executor(executor, uploadOneDrive, rendered_part, Title)
                         
                         link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
                         # video_files.append(link or uploaded.get('name'))
@@ -5660,7 +5703,7 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
                     # Upload lên Drive
                     try:
                         send_discord_message("[%s] 📤 Upload part %d lên Drive...", task_id, part_num)
-                        uploaded = await loop.run_in_executor(executor, upload_bytes_to_drive, rendered_part)
+                        uploaded = await loop.run_in_executor(executor, uploadOneDrive, rendered_part, Title)
                     
                         link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
                         # video_files.append(link or uploaded.get('name'))
@@ -5902,7 +5945,7 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
                     
                     try:
                         send_discord_message("[%s] 📤 Upload part %d lên Drive...", task_id, part_num)
-                        uploaded = await loop.run_in_executor(executor, upload_bytes_to_drive, rendered_part)
+                        uploaded = await loop.run_in_executor(executor, uploadOneDrive, rendered_part, Title)
                   
                         link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
                         # video_files.append(link or uploaded.get('name'))
@@ -6401,7 +6444,7 @@ async def process_facebook_task(task_id: str, fb_url: str, Title: str = "", avoi
         for fpath in split_list:
             try:
                 send_discord_message("[%s] 📤 Uploading to Drive: %s", task_id, fpath)
-                uploaded = await loop.run_in_executor(executor, upload_bytes_to_drive, fpath)
+                uploaded = await loop.run_in_executor(executor, uploadOneDrive, fpath, Title)
                 link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
                 t = load_tasks().get(task_id, {})
                 t.setdefault('video_file', []).append(link or uploaded.get('name'))
@@ -9826,7 +9869,7 @@ async def create_video_from_story(
 
                 # Upload best-effort
                 try:
-                    uploaded = await loop.run_in_executor(executor, upload_bytes_to_drive, rendered_part)
+                    uploaded = await loop.run_in_executor(executor, uploadOneDrive, rendered_part, title_use)
                     link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
                     video_links.append(link or rendered_part)
                 except Exception:
@@ -9940,6 +9983,231 @@ def _ffmpeg_sub_filter(ass_path: str) -> str:
         return f"subtitles='{subtitle_input_escaped}'"
 
 
+def process_single_video_pipeline(
+    video_path: str,
+    output_dir: str,
+    base_name: str,
+    *,
+    add_narration: bool = True,
+    with_subtitles: bool = True,
+    narration_voice: str = 'vi-VN-Standard-C',
+    narration_replace_audio: bool = False,
+    narration_volume_db: float = 8.0,
+    narration_rate_dynamic: int = 0,
+    narration_apply_fx: int = 1,
+    voice_fx_func = None,
+    progress_callback: callable = None,
+    skip_transcribe: bool = False,
+    skip_translate: bool = False,
+    skip_narration: bool = False,
+    skip_render: bool = False
+) -> dict:
+    """Helper function to process a single video through the full pipeline.
+    
+    Pipeline steps:
+    1. Transcribe video to SRT (if not skip_transcribe)
+    2. Translate SRT to Vietnamese (if not skip_translate)
+    3. Create narration from Vietnamese SRT (if add_narration and not skip_narration)
+    4. Render final video with subtitles/narration (if not skip_render)
+    
+    Args:
+        video_path: Path to input video file
+        output_dir: Directory for output files
+        base_name: Base name for output files (without extension)
+        add_narration: Whether to create and add narration
+        with_subtitles: Whether to burn subtitles into video
+        narration_voice: Google TTS voice name
+        narration_replace_audio: Replace original audio with narration
+        narration_volume_db: Narration volume (dB)
+        narration_rate_dynamic: Use dynamic speaking rate (0 or 1)
+        narration_apply_fx: Apply audio effects to narration (0 or 1)
+        progress_callback: Optional callback function(step_name: str, progress: int)
+        skip_transcribe: Skip transcription if raw SRT already exists
+        skip_translate: Skip translation if Vietnamese SRT already exists
+        skip_narration: Skip narration creation if FLAC already exists
+        skip_render: Skip rendering if final video already exists
+    
+    Returns:
+        dict with keys:
+            - raw_srt: Path to raw/Chinese SRT
+            - vi_srt: Path to Vietnamese SRT
+            - nar_flac: Path to narration FLAC (if add_narration)
+            - ass_path: Path to ASS file (if with_subtitles)
+            - final_video: Path to rendered final video
+            - reused: dict indicating which artifacts were reused
+    """
+    import subprocess, shutil
+    
+    def _progress(step: str, pct: int):
+        if progress_callback:
+            try:
+                progress_callback(step, pct)
+            except Exception:
+                pass
+    
+    # Define artifact paths
+    raw_srt = os.path.join(output_dir, f"{base_name}.srt")
+    vi_srt = os.path.join(output_dir, f"{base_name}.vi.srt")
+    nar_flac = os.path.join(output_dir, f"{base_name}.nar.flac")
+    ass_path = os.path.join(output_dir, f"{base_name}.vi.ass")
+    final_video = os.path.join(output_dir, f"{base_name}_final.mp4")
+    
+    reused = {}
+    
+    # Step 1: Transcribe
+    if skip_transcribe or os.path.exists(raw_srt):
+        if os.path.exists(raw_srt):
+            send_discord_message(f"♻️ Phụ đề gốc đã tồn tại: {raw_srt}")
+            reused['raw_srt'] = True
+        srt_path = raw_srt
+    else:
+        send_discord_message(f"🎤 Bắt đầu tạo phụ đề (transcribe)...")
+        _progress('transcribe', 30)
+        
+        import convert_stt
+        srt_path = convert_stt.transcribe(video_path)
+        if not srt_path or not os.path.exists(srt_path):
+            raise RuntimeError("Transcription failed")
+        
+        # Move to output directory with proper name
+        if srt_path != raw_srt:
+            shutil.move(srt_path, raw_srt)
+            srt_path = raw_srt
+        send_discord_message(f"✅ Đã tạo phụ đề: {raw_srt}")
+    
+    # Step 2: Translate
+    if skip_translate or os.path.exists(vi_srt):
+        if os.path.exists(vi_srt):
+            send_discord_message(f"♻️ Phụ đề tiếng Việt đã tồn tại: {vi_srt}")
+            reused['vi_srt'] = True
+    else:
+        send_discord_message(f"🌐 Bắt đầu dịch phụ đề sang tiếng Việt...")
+        _progress('translate', 50)
+        
+        try:
+            from srt_translate import translate_srt_file
+            translate_srt_file(raw_srt, vi_srt, src_lang='zh-CN', dest_lang='vi', use_gemini=False)
+            if not os.path.exists(vi_srt):
+                raise RuntimeError("Translation failed")
+            send_discord_message(f"✅ Đã dịch phụ đề: {vi_srt}")
+        except Exception as e:
+            send_discord_message(f"⚠️ Lỗi dịch phụ đề, sử dụng bản gốc: {e}")
+            vi_srt = raw_srt
+    
+    # Step 3: Create narration if requested
+    nar_audio_path = None
+    if add_narration:
+        if skip_narration or os.path.exists(nar_flac):
+            if os.path.exists(nar_flac):
+                send_discord_message(f"♻️ Thuyết minh đã tồn tại: {nar_flac}")
+                reused['nar_flac'] = True
+            nar_audio_path = nar_flac
+        else:
+            send_discord_message(f"🎙️ Bắt đầu tạo thuyết minh...")
+            _progress('narration', 60)
+            
+            # Generate narration audio
+            tts_pieces_dir = os.path.join(output_dir, "tts_pieces")
+            try:
+                os.makedirs(tts_pieces_dir, exist_ok=True)
+            except Exception:
+                tts_pieces_dir = output_dir
+            
+            import narration_from_srt
+            nar_audio, _meta = narration_from_srt.build_narration_schedule(
+                vi_srt, nar_flac,
+                voice_name=narration_voice,
+                speaking_rate=1.0,
+                lead=0.0,
+                meta_out=os.path.join(output_dir, f"{base_name}.schedule.json"),
+                trim=False,
+                rate_mode=narration_rate_dynamic,
+                apply_fx=bool(narration_apply_fx),
+                tmp_subdir=tts_pieces_dir,
+                voice_fx_func=voice_fx_func
+            )
+            nar_audio_path = nar_flac
+            send_discord_message(f"✅ Đã tạo thuyết minh: {nar_flac}")
+    
+    # Step 4: Prepare ASS file if subtitles requested
+    ass_file = None
+    if with_subtitles:
+        if os.path.exists(ass_path):
+            send_discord_message(f"♻️ ASS đã tồn tại: {ass_path}")
+            reused['ass_path'] = True
+            ass_file = ass_path
+        else:
+            try:
+                from convert_srt_to_ass import convert as convert_srt_to_ass_convert
+                convert_srt_to_ass_convert(vi_srt, ass_path, 30, 11, "Noto Sans", 20, 150)
+                ass_file = ass_path
+            except Exception:
+                # Fallback to ffmpeg conversion
+                subprocess.run(["ffmpeg", "-y", "-i", vi_srt, ass_path], check=True)
+                ass_file = ass_path
+    
+    # Step 5: Render final video
+    if skip_render or os.path.exists(final_video):
+        if os.path.exists(final_video):
+            send_discord_message(f"♻️ Video final đã tồn tại: {final_video}")
+            reused['final_video'] = True
+    else:
+        send_discord_message(f"🎬 Bắt đầu render video...")
+        _progress('render', 80)
+        
+        if add_narration and nar_audio_path:
+            # Render with narration
+            try:
+                burn_and_mix_narration(
+                    video_path, ass_file, nar_audio_path, final_video,
+                    replace_audio=narration_replace_audio,
+                    narration_volume_db=narration_volume_db,
+                    shift_sec=0.7,
+                    with_subtitles=with_subtitles
+                )
+            except Exception:
+                # Fallback to basic mix
+                import narration_from_srt
+                narration_from_srt.mix_narration_into_video(
+                    video_path, nar_audio_path, final_video,
+                    narration_volume_db=narration_volume_db if narration_volume_db is not None else 8.0,
+                    replace_audio=narration_replace_audio,
+                    extend_video=True,
+                    shift_sec=0.7,
+                    video_volume_db=-3.0
+                )
+        else:
+            # No narration: burn subtitles or copy
+            if with_subtitles and ass_file:
+                try:
+                    from pathlib import Path
+                    p = Path(ass_file).resolve().as_posix()
+                    p = p.replace(":", r"\:")
+                    sub_filter = f"subtitles=filename='{p}'"
+                except Exception:
+                    subtitle_input_escaped = ass_file.replace("'", "\\'").replace(":", r"\:")
+                    sub_filter = f"subtitles='{subtitle_input_escaped}'"
+                
+                cmd = ["ffmpeg", "-y", "-i", video_path, "-vf", sub_filter]
+                cmd.extend(_preferred_video_encode_args())
+                cmd.extend(["-c:a", "copy", final_video])
+                subprocess.run(cmd, check=True)
+            else:
+                # No subtitles, no narration: just copy
+                shutil.copy2(video_path, final_video)
+        
+        send_discord_message(f"✅ Đã render video: {final_video}")
+    
+    return {
+        'raw_srt': raw_srt,
+        'vi_srt': vi_srt,
+        'nar_flac': nar_flac if add_narration else None,
+        'ass_path': ass_file,
+        'final_video': final_video,
+        'reused': reused
+    }
+
+
 def burn_and_mix_narration(src_video: str, ass_path: str | None, narr_file: str, out_path: str, *, replace_audio: bool = False, narration_volume_db: float | None = None, shift_sec: float = 0.7, with_subtitles: bool = True) -> bool:
     """Attempt a single-pass ffmpeg that optionally burns ASS subtitles and mixes a narration FLAC.
     Returns True on success, False on failure (on failure it will attempt the old Python mixer as a fallback).
@@ -10020,8 +10288,9 @@ async def process_series(
     narration_volume_db: float = Query(-4.0, description='Âm lượng thuyết minh khi trộn (dB)'),
     narration_enabled: bool | None = Query(None, description='Bật/tắt việc tạo TTS thuyết minh (ưu tiên tham số này nếu được truyền)'),
     narration_rate_dynamic: int = Query(0, description='1: dùng tốc độ nói động (1.28–1.40), 0: cố định 1.0'),
-    narration_apply_fx: int = Query(1, description='1: áp EQ/tone/time filter cho giọng thuyết minh')
-    , request_id: str | None = Query(None, description='(internal) reuse existing task_id'),
+    narration_apply_fx: int = Query(1, description='1: áp EQ/tone/time filter cho giọng thuyết minh'),
+    bg_choice: str | None = Query(None, description='Tên file nhạc nền (optional, áp dụng cho group/full video)'),
+    request_id: str | None = Query(None, description='(internal) reuse existing task_id'),
     # TikTok upload scheduling
     is_upload_tiktok: bool = Query(False, description='If True schedule rendered groups for TikTok upload'),
     upload_duration_hours: float | None = Query(None, description='Spacing (hours) between scheduled uploads when `is_upload_tiktok` is true'),
@@ -10038,28 +10307,29 @@ async def process_series(
     - Otherwise parts are named "{title} P1.mp4", "{title} Phần 2.mp4", etc.
     """
     narration_volume_db = 8.0
+    # Helper to safely coerce upload spacing values which may be a raw value
+    # or a FastAPI `Query` param object when called programmatically.
+    def _coerce_hours(val):
+        try:
+            if val is None:
+                return None
+            if isinstance(val, (int, float)):
+                return float(val)
+            if isinstance(val, str):
+                return float(val)
+            # FastAPI Query param object: use its default if present
+            if hasattr(val, 'default'):
+                d = getattr(val, 'default', None)
+                if d is None:
+                    return None
+                return float(d)
+            # Fallback: try direct float cast
+            return float(val)
+        except Exception:
+            return None
     # allow caller (queue worker) to provide a request_id so the queued task keeps the same id
     if not request_id:
         request_id = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
-
-    # helper: safely parse optional float-like values (guards against FastAPI Query objects)
-    def _parse_optional_float(v):
-        try:
-            if v is None:
-                return None
-            if isinstance(v, (int, float)):
-                return float(v)
-            if isinstance(v, str):
-                s = v.strip()
-                return float(s) if s != '' else None
-            # FastAPI's Query objects expose a .default attribute; try that
-            default_val = getattr(v, 'default', None)
-            if default_val is not None:
-                return float(default_val)
-            # fallback to attempting string conversion
-            return float(str(v))
-        except Exception:
-            return None
 
     # If requested, enqueue into TASK_QUEUE and return immediately. This makes process_series
     # queue-able and manageable by the central worker loop.
@@ -10086,8 +10356,9 @@ async def process_series(
             "narration_volume_db": narration_volume_db,
             "narration_rate_dynamic": narration_rate_dynamic,
             "narration_apply_fx": narration_apply_fx,
+            "bg_choice": bg_choice,
             "is_upload_tiktok": bool(is_upload_tiktok),
-            "upload_duration_hours": _parse_optional_float(upload_duration_hours),
+            "upload_duration_hours": _coerce_hours(upload_duration_hours),
             "tiktok_tags": str(tiktok_tags) if tiktok_tags else None,
             "tiktok_cookies": str(cookies) if cookies else None,
         }
@@ -10112,8 +10383,9 @@ async def process_series(
             "narration_enabled": narration_enabled,
             "narration_rate_dynamic": narration_rate_dynamic,
             "narration_apply_fx": narration_apply_fx,
+            "bg_choice": bg_choice,
             "is_upload_tiktok": bool(is_upload_tiktok),
-            "upload_duration_hours": _parse_optional_float(upload_duration_hours),
+            "upload_duration_hours": _coerce_hours(upload_duration_hours),
             "tiktok_tags": str(tiktok_tags) if tiktok_tags else None,
             "tiktok_cookies": str(cookies) if cookies else None,
         }
@@ -10175,10 +10447,11 @@ async def process_series(
                 "narration_replace_audio": narration_replace_audio,
                 "narration_volume_db": narration_volume_db,
                 "narration_rate_dynamic": narration_rate_dynamic,
-                "narration_apply_fx": narration_apply_fx
-                ,"render_full": render_full,
+                "narration_apply_fx": narration_apply_fx,
+                "bg_choice": bg_choice,
+                "render_full": render_full,
                 "is_upload_tiktok": bool(is_upload_tiktok),
-                "upload_duration_hours": _parse_optional_float(upload_duration_hours),
+                "upload_duration_hours": _coerce_hours(upload_duration_hours),
                 "tiktok_tags": str(tiktok_tags) if tiktok_tags else None,
                 "tiktok_cookies": str(cookies) if cookies else None
             }
@@ -10195,14 +10468,14 @@ async def process_series(
                 send_discord_message("🧭 Dùng Playwright (headless) để lấy danh sách tập...")
                 # Try up to 3 times with higher timeout/slow_mo to handle slow JS or anti-bot
                 playlist_eps = []
-                for attempt in range(3):
+                for attempt in range(5):
                     try:
-                        send_discord_message(f"🔁 Lấy danh sách tập (try {attempt+1}/3)")
+                        send_discord_message(f"🔁 Lấy danh sách tập (try {attempt+1}/5)")
                         playlist_eps = get_episode_links(current_url, headless=True, slow_mo=300, timeout_ms=120000)
                         if playlist_eps:
                             break
                     except Exception as e_attempt:
-                        send_discord_message(f"⚠️ get_episode_links thất bại (try {attempt+1}/3): {e_attempt}")
+                        send_discord_message(f"⚠️ get_episode_links thất bại (try {attempt+1}/5): {e_attempt}")
                         time.sleep(1 + attempt*2)
                 if not playlist_eps:
                     send_discord_message("ℹ️ Playwright không trả về tập nào, fallback regex")
@@ -10457,9 +10730,9 @@ async def process_series(
                                 if has_multiple_groups and last_group_idx == g_idx:
                                     title_text += " - Cuối"
                             title_text = title_text.replace(":", "\\:").replace("'", "\\'")
-                            wrapped_text = wrap_text(title_text, max_chars_per_line=40)
+                            wrapped_text = wrap_text(title_text, max_chars_per_line=35)
                             drawtext = (
-                                f"drawtext=fontfile='{font_path_try}':text='{wrapped_text}':"
+                                f"drawtext=fontfile='{font_path_try}':text_align=center:text='{wrapped_text}':"
                                 f"fontcolor=white:fontsize=42:box=1:boxcolor=black@0.6:boxborderw=20:"
                                 f"x=(w-text_w)/2:y=(h-text_h)/2:enable='between(t,0,3)'"
                             )
@@ -10477,6 +10750,48 @@ async def process_series(
                                     os.remove(tmp_title)
                             except Exception:
                                 pass
+
+                    # Mix background audio if provided (in 1 render pass)
+                    if bg_choice:
+                        try:
+                            send_discord_message(f"🎵 Đang thêm nhạc nền cho nhóm {g_idx}...")
+                            
+                            # Find background audio file
+                            discord_bot_bgaudio = os.path.join(BASE_DIR, "discord-bot", "bgaudio")
+                            if os.path.isdir(discord_bot_bgaudio):
+                                bgaudio_dir = discord_bot_bgaudio
+                            else:
+                                bgaudio_dir = os.path.join(OUTPUT_DIR, "bgaudio")
+                            
+                            bg_file = os.path.join(bgaudio_dir, os.path.basename(bg_choice))
+                            if os.path.exists(bg_file):
+                                tmp_with_bg = group_out + ".with_bg.mp4"
+                                
+                                # Mix background audio: loop bg, lower volume, mix with original audio
+                                filter_complex = (
+                                    "[1:a]aloop=loop=-1:size=2e+09,volume=-14dB[bg];"
+                                    "[0:a][bg]amix=inputs=2:duration=first:dropout_transition=0[a]"
+                                )
+                                
+                                cmd_bg = [
+                                    "ffmpeg", "-y",
+                                    "-i", group_out,  # [0] video with audio
+                                    "-i", bg_file,     # [1] background audio
+                                    "-filter_complex", filter_complex,
+                                    "-map", "0:v",     # video from input 0
+                                    "-map", "[a]",     # mixed audio
+                                    "-c:v", "copy",    # copy video codec
+                                    "-c:a", "aac", "-b:a", "128k",
+                                    tmp_with_bg
+                                ]
+                                
+                                subprocess.run(cmd_bg, check=True, capture_output=True)
+                                os.replace(tmp_with_bg, group_out)
+                                send_discord_message(f"✅ Đã thêm nhạc nền: {os.path.basename(bg_file)}")
+                            else:
+                                send_discord_message(f"⚠️ Không tìm thấy nhạc nền: {bg_file}")
+                        except Exception as e:
+                            send_discord_message(f"⚠️ Lỗi khi thêm nhạc nền: {e}")
 
                     # If group file exceeds 3600s, split into parts (no re-encode)
                     try:
@@ -10497,6 +10812,8 @@ async def process_series(
                                 if os.path.exists(outp):
                                     try:
                                         rel = to_project_relative_posix(outp)
+                                        uploaded = uploadOneDrive(outp,base_title_val)
+                                        link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
                                         view_link = "https://sandbox.travel.com.vn/api/download-video?video_name=" + quote_plus(rel)
                                         download_link = "https://sandbox.travel.com.vn/api/download-video?download=1&video_name=" + quote_plus(rel)
                                         send_discord_message(f"🎥 Xem video (nhóm {g_idx} phần {p+1}):" + view_link)
@@ -10517,8 +10834,7 @@ async def process_series(
                                 except Exception:
                                     existing_sched = []
                                 base_time = time.time()
-                                _spacing_val = _parse_optional_float(upload_duration_hours)
-                                spacing = (_spacing_val * 3600) if _spacing_val else 0
+                                spacing = (_coerce_hours(upload_duration_hours) or 0) * 3600
                                 last_time = None
                                 if existing_sched:
                                     try:
@@ -10559,6 +10875,8 @@ async def process_series(
                             if os.path.exists(group_out):
                                 try:
                                     rel = to_project_relative_posix(group_out)
+                                    uploaded = uploadOneDrive(group_out,base_title_val)
+                                    link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
                                     view_link = "https://sandbox.travel.com.vn/api/download-video?video_name=" + quote_plus(rel)
                                     download_link = "https://sandbox.travel.com.vn/api/download-video?download=1&video_name=" + quote_plus(rel)
                                     send_discord_message(f"🎥 Xem video (nhóm {g_idx}):" + view_link)
@@ -10586,8 +10904,7 @@ async def process_series(
 
                                     # Determine base time for this run: now or last scheduled time + spacing
                                     base_time = time.time()
-                                    _spacing_val = _parse_optional_float(upload_duration_hours)
-                                    spacing = (_spacing_val * 3600) if _spacing_val else 0
+                                    spacing = (_coerce_hours(upload_duration_hours) or 0) * 3600
                                     # find last scheduled time in existing_sched for this run if present
                                     last_time = None
                                     if existing_sched:
@@ -10757,6 +11074,14 @@ async def process_series(
                                         downloaded.append(dl_video)
                                     try:
                                         tasks_local = load_tasks()
+                                        # Ensure task record exists to avoid KeyError (may be removed externally)
+                                        if request_id not in tasks_local:
+                                            tasks_local.setdefault(request_id, {
+                                                "task_id": request_id,
+                                                "status": "pending",
+                                                "created_at": time.time(),
+                                            })
+
                                         tasks_local[request_id]['progress'] = 20 + int((len(srt_files) / len(unique)) * 40)
                                         tasks_local[request_id].setdefault('video_file', [])
                                         tasks_local[request_id]['video_file'] = downloaded
@@ -11150,6 +11475,7 @@ async def process_series(
                                     # Immediately publish sandbox links and try upload to Drive for this episode
                                     try:
                                         rel = to_project_relative_posix(ep_narr_out)
+                                       
                                         view_link = "https://sandbox.travel.com.vn/api/download-video?video_name=" + quote_plus(rel)
                                         download_link = "https://sandbox.travel.com.vn/api/download-video?download=1&video_name=" + quote_plus(rel)
                                         send_discord_message(f"🎥 Xem video tập {i} :" + view_link)
@@ -12348,6 +12674,7 @@ async def process_series_episodes(
                                     # Immediately publish sandbox links and try upload to Drive for this episode
                                     try:
                                         rel = to_project_relative_posix(ep_narr_out)
+                                       
                                         view_link = "https://sandbox.travel.com.vn/api/download-video?video_name=" + quote_plus(rel)
                                         download_link = "https://sandbox.travel.com.vn/api/download-video?download=1&video_name=" + quote_plus(rel)
                                         send_discord_message(f"🎥 Xem video tập {i} :" + view_link)
@@ -12814,7 +13141,7 @@ async def process_series_episodes(
                         title_text = title_text.replace(":", "\\:").replace("'", "\\'")
                         wrapped_text = wrap_text(title_text, max_chars_per_line=40)
                         drawtext = (
-                            f"drawtext=fontfile='{font_path_try}':text='{wrapped_text}':"
+                            f"drawtext=fontfile='{font_path_try}':text_align=center:text='{wrapped_text}':"
                             f"fontcolor=white:fontsize=42:box=1:boxcolor=black@0.6:boxborderw=20:"
                             f"x=(w-text_w)/2:y=(h-text_h)/2:enable='between(t,0,3)'"
                         )
@@ -12856,7 +13183,7 @@ async def process_series_episodes(
                                     send_discord_message(f"🎥 Xem video (nhóm {g_idx} phần {p+1}):" + view_link)
                                     send_discord_message(f"⬇️ Tải video (nhóm {g_idx} phần {p+1}):" + download_link)
                                     try:
-                                        uploaded = upload_bytes_to_drive(outp)
+                                        uploaded = uploadOneDrive(outp, title)
                                         if isinstance(uploaded, dict):
                                             link = uploaded.get('webViewLink') or uploaded.get('downloadLink') or uploaded.get('id')
                                             if link:
@@ -12879,7 +13206,7 @@ async def process_series_episodes(
                                 send_discord_message(f"🎥 Xem video (nhóm {g_idx}):" + view_link)
                                 send_discord_message(f"⬇️ Tải video (nhóm {g_idx}):" + download_link)
                                 try:
-                                    uploaded = upload_bytes_to_drive(group_out)
+                                    uploaded = uploadOneDrive(group_out, title)
                                     if isinstance(uploaded, dict):
                                         link = uploaded.get('webViewLink') or uploaded.get('downloadLink') or uploaded.get('id')
                                         if link:
@@ -13165,6 +13492,1001 @@ def delete_episode_assets(
     })
 
 
+# Endpoint: Download video using yt-dlp, create subtitles, translate, narrate, and render with [FULL] title overlay
+@app.get('/process_video_ytdl')
+async def process_video_ytdl(
+    video_url: str = Query(..., description='URL video cần tải (hỗ trợ YouTube, Facebook, v.v.)'),
+    title: str = Query('', description='Tiêu đề video (dùng cho tên thư mục và overlay)'),
+    run_in_background: bool = Query(True, description='Nếu True thì chạy nền và trả về ngay'),
+    add_narration: bool = Query(True, description='Nếu True, tạo thuyết minh từ phụ đề và trộn vào video'),
+    with_subtitles: bool = Query(True, description='Nếu True thì burn phụ đề vào video; nếu False chỉ thêm thuyết minh'),
+    narration_voice: str = Query('vi-VN-Standard-C', description='Giọng Google TTS'),
+    narration_replace_audio: bool = Query(False, description='Thay hoàn toàn audio gốc bằng thuyết minh'),
+    narration_volume_db: float = Query(8.0, description='Âm lượng thuyết minh khi trộn (dB)'),
+    narration_rate_dynamic: int = Query(0, description='1: dùng tốc độ nói động (1.28–1.40), 0: cố định 1.0'),
+    narration_apply_fx: int = Query(1, description='1: áp EQ/tone/time filter cho giọng thuyết minh'),
+    bg_choice: str | None = Query(None, description='Tên file nhạc nền (optional)'),
+    request_id: str | None = Query(None, description='(internal) reuse existing task_id'),
+    use_queue: bool = Query(True, description='If True enqueue the job into TASK_QUEUE instead of running inline')
+):
+    """Download a video using yt-dlp, create subtitles, translate them, create narration,
+    and render with [FULL] title overlay. Saves to folder safename(title).
+    
+    Flow:
+    1. Download video using yt-dlp
+    2. Create subtitles (transcribe with Whisper)
+    3. Translate subtitles to Vietnamese
+    4. Create narration from Vietnamese subtitles
+    5. Render video with [FULL] title overlay
+    6. Save to folder named safename(title)
+    """
+    if not request_id:
+        request_id = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+    
+    # If requested, enqueue into TASK_QUEUE and return immediately
+    if use_queue:
+        try:
+            tasks_local = load_tasks()
+        except Exception:
+            tasks_local = {}
+        
+        tasks_local[request_id] = {
+            "task_id": request_id,
+            "status": "pending",
+            "progress": 0,
+            "video_path": "",
+            "video_file": [],
+            "title": title,
+            "request_urls": [video_url],
+            "created_at": time.time(),
+            "type": 9,  # New type for ytdl single video processing
+            "task_type": "ytdl_video",
+            "skip_queue": False,
+            "add_narration": bool(add_narration),
+            "narration_voice": narration_voice,
+            "narration_replace_audio": narration_replace_audio,
+            "narration_volume_db": narration_volume_db,
+            "narration_rate_dynamic": narration_rate_dynamic,
+            "narration_apply_fx": narration_apply_fx,
+            "bg_choice": bg_choice,
+            "with_subtitles": with_subtitles
+        }
+        try:
+            save_tasks(tasks_local)
+        except Exception:
+            pass
+        
+        payload = {
+            "task_id": request_id,
+            "type": 9,
+            "video_url": video_url,
+            "title": title,
+            "add_narration": bool(add_narration),
+            "with_subtitles": bool(with_subtitles),
+            "narration_voice": narration_voice,
+            "narration_replace_audio": narration_replace_audio,
+            "narration_volume_db": narration_volume_db,
+            "narration_rate_dynamic": narration_rate_dynamic,
+            "narration_apply_fx": narration_apply_fx,
+            "bg_choice": bg_choice,
+        }
+        try:
+            await enqueue_task(payload)
+        except Exception:
+            tasks_local = load_tasks()
+            tasks_local[request_id]['status'] = 'error'
+            tasks_local[request_id]['error'] = 'failed to enqueue'
+            save_tasks(tasks_local)
+            return JSONResponse(status_code=500, content={"error": "enqueue failed"})
+        
+        send_discord_message(f"📨 Đã xếp ytdl video task vào hàng chờ: {request_id}")
+        return JSONResponse(status_code=202, content={"task_id": request_id, "started": True})
+    
+    def _worker():
+        import subprocess, time, os, json
+        try:
+            send_discord_message(f"🔁 process_video_ytdl start: {video_url} (task {request_id})")
+            
+            # Create task entry
+            try:
+                tasks_local = load_tasks()
+            except Exception:
+                tasks_local = {}
+            
+            tasks_local[request_id] = {
+                "task_id": request_id,
+                "status": "running",
+                "progress": 5,
+                "video_path": "",
+                "video_file": [],
+                "title": title,
+                "request_urls": [video_url],
+                "created_at": time.time(),
+                "type": 9,
+                "task_type": "ytdl_video",
+                "skip_queue": True,
+                "add_narration": add_narration,
+                "narration_voice": narration_voice,
+                "narration_replace_audio": narration_replace_audio,
+                "narration_volume_db": narration_volume_db,
+                "narration_rate_dynamic": narration_rate_dynamic,
+                "narration_apply_fx": narration_apply_fx,
+                "bg_choice": bg_choice,
+                "with_subtitles": with_subtitles
+            }
+            try:
+                save_tasks(tasks_local)
+            except Exception as e:
+                _report_and_ignore(e, "ignored")
+            
+            # Determine safe folder name from title
+            try:
+                base_title_val = safe_filename(title) if title else url_hash(video_url)[:8]
+            except Exception:
+                base_title_val = url_hash(video_url)[:8]
+            
+            # Create output folder
+            try:
+                run_dir = os.path.join(OUTPUT_DIR, base_title_val)
+                os.makedirs(run_dir, exist_ok=True)
+            except Exception:
+                run_dir = OUTPUT_DIR
+            
+            send_discord_message(f"📁 Thư mục lưu: {run_dir}")
+            
+            # Define all artifact paths
+            dl_video = os.path.join(run_dir, f"{base_title_val}_download.mp4")
+            raw_srt = os.path.join(run_dir, f"{base_title_val}.srt")
+            vi_srt = os.path.join(run_dir, f"{base_title_val}.vi.srt")
+            nar_out_flac = os.path.join(run_dir, f"{base_title_val}.nar.flac")
+            final_video = os.path.join(run_dir, f"{base_title_val}_final.mp4")
+            
+            # Check if final video already exists
+            if os.path.exists(final_video):
+                send_discord_message(f"♻️ Video final đã tồn tại: {final_video}")
+                try:
+                    # Upload and announce
+                    uploaded = uploadOneDrive(final_video, base_title_val)
+                    link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
+                    if link:
+                        send_discord_message(f"☁️ OneDrive: {link}")
+                except Exception as e:
+                    send_discord_message(f"⚠️ Upload OneDrive thất bại: {e}")
+                
+                try:
+                    rel = to_project_relative_posix(final_video)
+                    view_link = "https://sandbox.travel.com.vn/api/download-video?video_name=" + quote_plus(rel)
+                    download_link = "https://sandbox.travel.com.vn/api/download-video?download=1&video_name=" + quote_plus(rel)
+                    send_discord_message(f"🎥 Xem video: {view_link}")
+                    send_discord_message(f"⬇️ Tải video: {download_link}")
+                except Exception as e:
+                    _report_and_ignore(e, "ignored")
+                
+                # Update task completion
+                try:
+                    tasks_local = load_tasks()
+                    if request_id not in tasks_local:
+                        tasks_local[request_id] = {"task_id": request_id, "created_at": time.time()}
+                    tasks_local[request_id]['status'] = 'completed'
+                    tasks_local[request_id]['progress'] = 100
+                    tasks_local[request_id]['video_path'] = final_video
+                    tasks_local[request_id]['video_file'] = [final_video]
+                    save_tasks(tasks_local)
+                except Exception as e:
+                    _report_and_ignore(e, "ignored")
+                
+                send_discord_message(f"✅ process_video_ytdl hoàn tất (reuse): {request_id}")
+                return
+            
+            # Step 1: Download video using yt-dlp
+            if os.path.exists(dl_video):
+                send_discord_message(f"♻️ Video đã tải sẵn: {dl_video}")
+                downloaded = dl_video
+            else:
+                send_discord_message(f"⬇️ Bắt đầu tải video từ: {video_url}")
+                
+                try:
+                    tasks_local = load_tasks()
+                    if request_id not in tasks_local:
+                        tasks_local[request_id] = {"task_id": request_id, "status": "running", "created_at": time.time()}
+                    tasks_local[request_id]['progress'] = 10
+                    tasks_local[request_id]['status'] = 'running'
+                    save_tasks(tasks_local)
+                except Exception as e:
+                    _report_and_ignore(e, "ignored")
+                
+                try:
+                    import convert_stt
+                    downloaded = convert_stt.download_video(video_url, dl_video)
+                    if not downloaded or not os.path.exists(downloaded):
+                        raise RuntimeError(f"Download failed: {video_url}")
+                    send_discord_message(f"✅ Đã tải video: {downloaded}")
+                except Exception as e:
+                    send_discord_message(f"❌ Lỗi tải video: {e}")
+                    tasks_local = load_tasks()
+                    tasks_local[request_id]['status'] = 'error'
+                    tasks_local[request_id]['error'] = f'Download failed: {str(e)}'
+                    save_tasks(tasks_local)
+                    return
+            
+            # Step 2-5: Process video through full pipeline using helper
+            def progress_callback(step: str, pct: int):
+                try:
+                    tasks_local = load_tasks()
+                    if request_id not in tasks_local:
+                        tasks_local[request_id] = {"task_id": request_id, "status": "running", "created_at": time.time()}
+                    tasks_local[request_id]['progress'] = pct
+                    save_tasks(tasks_local)
+                except Exception as e:
+                    _report_and_ignore(e, "ignored")
+            
+            try:
+                import narration_from_srt
+                result = process_single_video_pipeline(
+                    video_path=downloaded,
+                    output_dir=run_dir,
+                    base_name=base_title_val,
+                    add_narration=add_narration,
+                    with_subtitles=with_subtitles,
+                    narration_voice=narration_voice,
+                    narration_replace_audio=narration_replace_audio,
+                    narration_volume_db=narration_volume_db,
+                    narration_rate_dynamic=narration_rate_dynamic,
+                    narration_apply_fx=narration_apply_fx,
+                    voice_fx_func=narration_from_srt.gemini_voice_fx,
+                    progress_callback=progress_callback
+                )
+                final_video = result['final_video']
+            except Exception as e:
+                send_discord_message(f"❌ Lỗi xử lý video: {e}")
+                tasks_local = load_tasks()
+                tasks_local[request_id]['status'] = 'error'
+                tasks_local[request_id]['error'] = f'Pipeline failed: {str(e)}'
+                save_tasks(tasks_local)
+                return
+            
+            # Add [FULL] title overlay
+            if title:
+                send_discord_message(f"✨ Thêm tiêu đề overlay [FULL]...")
+                
+                try:
+                    tasks_local = load_tasks()
+                    if request_id not in tasks_local:
+                        tasks_local[request_id] = {"task_id": request_id, "status": "running", "created_at": time.time()}
+                    tasks_local[request_id]['progress'] = 90
+                    save_tasks(tasks_local)
+                except Exception as e:
+                    _report_and_ignore(e, "ignored")
+                
+                try:
+                    font_path_try = "/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf"
+                    if not os.path.exists(font_path_try):
+                        font_path_try = "C:\\Windows\\Fonts\\arial.ttf" if os.name == "nt" else "times.ttf"
+                    
+                    title_text = f"[FULL] {title}"
+                    title_text = title_text.replace(":", "\\:").replace("'", "\\'")
+                    wrapped_text = wrap_text(title_text, max_chars_per_line=35)
+                    
+                    drawtext = (
+                        f"drawtext=fontfile='{font_path_try}':text_align=center:text='{wrapped_text}':"
+                        f"fontcolor=white:fontsize=42:box=1:boxcolor=black@0.6:boxborderw=20:"
+                        f"x=(w-text_w)/2:y=(h-text_h)/2:enable='between(t,0,3)'"
+                    )
+                    
+                    tmp_title = final_video + ".title.mp4"
+                    cmd_title = ["ffmpeg", "-y", "-i", final_video, "-vf", drawtext]
+                    cmd_title.extend(_preferred_video_encode_args())
+                    cmd_title.extend(["-c:a", "copy", tmp_title])
+                    subprocess.run(cmd_title, check=True)
+                    os.replace(tmp_title, final_video)
+                    send_discord_message(f"✅ Đã thêm tiêu đề overlay")
+                except Exception as e:
+                    send_discord_message(f"⚠️ Không thể thêm tiêu đề overlay: {e}")
+            
+            # Mix background audio if provided (in 1 render pass)
+            if bg_choice:
+                try:
+                    send_discord_message(f"🎵 Đang thêm nhạc nền vào video...")
+                    
+                    # Find background audio file
+                    discord_bot_bgaudio = os.path.join(BASE_DIR, "discord-bot", "bgaudio")
+                    if os.path.isdir(discord_bot_bgaudio):
+                        bgaudio_dir = discord_bot_bgaudio
+                    else:
+                        bgaudio_dir = os.path.join(OUTPUT_DIR, "bgaudio")
+                    
+                    bg_file = os.path.join(bgaudio_dir, os.path.basename(bg_choice))
+                    if os.path.exists(bg_file):
+                        tmp_with_bg = final_video + ".with_bg.mp4"
+                        
+                        # Mix background audio: loop bg, lower volume, mix with original audio
+                        filter_complex = (
+                            "[1:a]aloop=loop=-1:size=2e+09,volume=-14dB[bg];"
+                            "[0:a][bg]amix=inputs=2:duration=first:dropout_transition=0[a]"
+                        )
+                        
+                        cmd_bg = [
+                            "ffmpeg", "-y",
+                            "-i", final_video,  # [0] video with audio
+                            "-i", bg_file,       # [1] background audio
+                            "-filter_complex", filter_complex,
+                            "-map", "0:v",       # video from input 0
+                            "-map", "[a]",       # mixed audio
+                            "-c:v", "copy",      # copy video codec
+                            "-c:a", "aac", "-b:a", "128k",
+                            tmp_with_bg
+                        ]
+                        
+                        subprocess.run(cmd_bg, check=True, capture_output=True)
+                        os.replace(tmp_with_bg, final_video)
+                        send_discord_message(f"✅ Đã thêm nhạc nền: {os.path.basename(bg_file)}")
+                    else:
+                        send_discord_message(f"⚠️ Không tìm thấy nhạc nền: {bg_file}")
+                except Exception as e:
+                    send_discord_message(f"⚠️ Lỗi khi thêm nhạc nền: {e}")
+            
+            # Upload to OneDrive and announce
+            send_discord_message(f"☁️ Đang upload lên OneDrive...")
+            
+            try:
+                tasks_local = load_tasks()
+                if request_id not in tasks_local:
+                    tasks_local[request_id] = {"task_id": request_id, "status": "running", "created_at": time.time()}
+                tasks_local[request_id]['progress'] = 95
+                save_tasks(tasks_local)
+            except Exception as e:
+                _report_and_ignore(e, "ignored")
+            
+            try:
+                uploaded = uploadOneDrive(final_video, base_title_val)
+                link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
+                if link:
+                    send_discord_message(f"☁️ OneDrive: {link}")
+            except Exception as e:
+                send_discord_message(f"⚠️ Upload OneDrive thất bại: {e}")
+            
+            # Announce completion
+            try:
+                rel = to_project_relative_posix(final_video)
+                view_link = "https://sandbox.travel.com.vn/api/download-video?video_name=" + quote_plus(rel)
+                download_link = "https://sandbox.travel.com.vn/api/download-video?download=1&video_name=" + quote_plus(rel)
+                send_discord_message(f"🎥 Xem video: {view_link}")
+                send_discord_message(f"⬇️ Tải video: {download_link}")
+            except Exception as e:
+                _report_and_ignore(e, "ignored")
+            
+            # Update task completion
+            try:
+                tasks_local = load_tasks()
+                if request_id not in tasks_local:
+                    tasks_local[request_id] = {"task_id": request_id, "created_at": time.time()}
+                tasks_local[request_id]['status'] = 'completed'
+                tasks_local[request_id]['progress'] = 100
+                tasks_local[request_id]['video_path'] = final_video
+                tasks_local[request_id]['video_file'] = [final_video]
+                save_tasks(tasks_local)
+            except Exception as e:
+                _report_and_ignore(e, "ignored")
+            
+            send_discord_message(f"✅ process_video_ytdl hoàn tất: {request_id}")
+            
+        except Exception as e:
+            import traceback
+            error_msg = f"❌ process_video_ytdl error: {e}\n{traceback.format_exc()}"
+            send_discord_message(error_msg)
+            try:
+                tasks_local = load_tasks()
+                if request_id in tasks_local:
+                    tasks_local[request_id]['status'] = 'error'
+                    tasks_local[request_id]['error'] = str(e)
+                    save_tasks(tasks_local)
+            except Exception:
+                pass
+    
+    # Run inline
+    if run_in_background:
+        loop = asyncio.get_event_loop()
+        tracked = create_tracked_task(request_id, loop.run_in_executor(executor, _worker))
+        return JSONResponse(status_code=202, content={"task_id": request_id, "started": True})
+    else:
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(executor, _worker)
+        return JSONResponse(status_code=200, content={"task_id": request_id, "completed": True})
+
+
+# Endpoint: Download playlist using yt-dlp, process each video with episode numbers
+@app.get('/process_playlist_ytdl')
+async def process_playlist_ytdl(
+    playlist_url: str = Query(..., description='URL playlist cần tải (YouTube, Facebook playlist, v.v.)'),
+    title: str = Query('', description='Tiêu đề series (dùng cho tên thư mục và overlay)'),
+    max_episodes: int | None = Query(None, description='Số GROUP/TẬP tối đa sẽ xử lý (mỗi group = 4 video)'),
+    run_in_background: bool = Query(True, description='Nếu True thì chạy nền và trả về ngay'),
+    add_narration: bool = Query(True, description='Nếu True, tạo thuyết minh từ phụ đề và trộn vào video'),
+    with_subtitles: bool = Query(True, description='Nếu True thì burn phụ đề vào video; nếu False chỉ thêm thuyết minh'),
+    render_full: bool = Query(False, description='Nếu True, ghép tất cả video thành 1 video [FULL] thay vì chia group'),
+    narration_voice: str = Query('vi-VN-Standard-C', description='Giọng Google TTS'),
+    narration_replace_audio: bool = Query(False, description='Thay hoàn toàn audio gốc bằng thuyết minh'),
+    narration_volume_db: float = Query(8.0, description='Âm lượng thuyết minh khi trộn (dB)'),
+    narration_rate_dynamic: int = Query(0, description='1: dùng tốc độ nói động (1.28–1.40), 0: cố định 1.0'),
+    narration_apply_fx: int = Query(1, description='1: áp EQ/tone/time filter cho giọng thuyết minh'),
+    bg_choice: str | None = Query(None, description='Tên file nhạc nền (optional, áp dụng cho mỗi group/tập hoặc FULL video)'),
+    request_id: str | None = Query(None, description='(internal) reuse existing task_id'),
+    use_queue: bool = Query(True, description='If True enqueue the job into TASK_QUEUE instead of running inline')
+):
+    """Download a playlist using yt-dlp, group 4 videos into 1 episode or create FULL video.
+    Similar to process_series but downloads from YouTube playlist.
+    
+    Flow:
+    1. Extract video URLs from playlist using yt-dlp
+    2. Group videos: 4 videos = 1 group/episode (Tập 1, Tập 2, ...) OR all videos → 1 FULL video
+    3. For each video: download → transcribe → translate → narrate → render
+    4. Concatenate videos with overlay ("Tập X" or "[FULL] Title")
+    5. Apply background audio to each group or FULL video (if provided)
+    6. Save to folder named safename(title)
+    """
+    if not request_id:
+        request_id = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+    
+    # If requested, enqueue into TASK_QUEUE and return immediately
+    if use_queue:
+        try:
+            tasks_local = load_tasks()
+        except Exception:
+            tasks_local = {}
+        
+        tasks_local[request_id] = {
+            "task_id": request_id,
+            "status": "pending",
+            "progress": 0,
+            "video_path": "",
+            "video_file": [],
+            "title": title,
+            "request_urls": [playlist_url],
+            "created_at": time.time(),
+            "type": 10,  # New type for playlist ytdl processing
+            "task_type": "playlist_ytdl",
+            "skip_queue": False,
+            "add_narration": bool(add_narration),
+            "narration_voice": narration_voice,
+            "narration_replace_audio": narration_replace_audio,
+            "narration_volume_db": narration_volume_db,
+            "narration_rate_dynamic": narration_rate_dynamic,
+            "narration_apply_fx": narration_apply_fx,
+            "bg_choice": bg_choice,
+            "with_subtitles": with_subtitles,
+            "render_full": render_full,
+            "max_episodes": max_episodes
+        }
+        try:
+            save_tasks(tasks_local)
+        except Exception:
+            pass
+        
+        payload = {
+            "task_id": request_id,
+            "type": 10,
+            "playlist_url": playlist_url,
+            "title": title,
+            "max_episodes": max_episodes,
+            "add_narration": bool(add_narration),
+            "with_subtitles": bool(with_subtitles),
+            "render_full": render_full,
+            "narration_voice": narration_voice,
+            "narration_replace_audio": narration_replace_audio,
+            "narration_volume_db": narration_volume_db,
+            "narration_rate_dynamic": narration_rate_dynamic,
+            "narration_apply_fx": narration_apply_fx,
+            "bg_choice": bg_choice,
+        }
+        try:
+            await enqueue_task(payload)
+        except Exception:
+            tasks_local = load_tasks()
+            tasks_local[request_id]['status'] = 'error'
+            tasks_local[request_id]['error'] = 'failed to enqueue'
+            save_tasks(tasks_local)
+            return JSONResponse(status_code=500, content={"error": "enqueue failed"})
+        
+        send_discord_message(f"📨 Đã xếp playlist ytdl task vào hàng chờ: {request_id}")
+        return JSONResponse(status_code=202, content={"task_id": request_id, "started": True})
+    
+    def _worker():
+        import subprocess, time, os, json, math
+        try:
+            send_discord_message(f"🔁 process_playlist_ytdl start: {playlist_url} (task {request_id})")
+            
+            # Create task entry
+            try:
+                tasks_local = load_tasks()
+            except Exception:
+                tasks_local = {}
+            
+            tasks_local[request_id] = {
+                "task_id": request_id,
+                "status": "running",
+                "progress": 5,
+                "video_path": "",
+                "video_file": [],
+                "title": title,
+                "request_urls": [playlist_url],
+                "created_at": time.time(),
+                "type": 10,
+                "task_type": "playlist_ytdl",
+                "skip_queue": True,
+                "add_narration": add_narration,
+                "narration_voice": narration_voice,
+                "narration_replace_audio": narration_replace_audio,
+                "narration_volume_db": narration_volume_db,
+                "narration_rate_dynamic": narration_rate_dynamic,
+                "narration_apply_fx": narration_apply_fx,
+                "with_subtitles": with_subtitles,
+                "bg_choice": bg_choice,
+                "render_full": render_full,
+                "max_episodes": max_episodes
+            }
+            try:
+                save_tasks(tasks_local)
+            except Exception as e:
+                _report_and_ignore(e, "ignored")
+            
+            # Determine safe folder name from title
+            try:
+                base_title_val = safe_filename(title) if title else url_hash(playlist_url)[:8]
+            except Exception:
+                base_title_val = url_hash(playlist_url)[:8]
+            
+            # Create output folder and finalvideo subfolder
+            try:
+                run_dir = os.path.join(OUTPUT_DIR, base_title_val)
+                os.makedirs(run_dir, exist_ok=True)
+                final_dir = os.path.join(run_dir, "finalvideo")
+                os.makedirs(final_dir, exist_ok=True)
+            except Exception:
+                run_dir = OUTPUT_DIR
+                final_dir = run_dir
+            
+            send_discord_message(f"📁 Thư mục lưu: {run_dir}")
+            
+            # Step 1: Extract video URLs from playlist using yt-dlp
+            send_discord_message(f"📋 Lấy danh sách video từ playlist...")
+            try:
+                from yt_dlp import YoutubeDL
+                ydl_opts = {
+                    'quiet': True,
+                    'no_warnings': True,
+                    'extract_flat': 'in_playlist',
+                    'force_generic_extractor': False,
+                }
+                
+                with YoutubeDL(ydl_opts) as ydl:
+                    playlist_info = ydl.extract_info(playlist_url, download=False)
+                    
+                    if 'entries' in playlist_info:
+                        video_urls = []
+                        for entry in playlist_info['entries']:
+                            if entry:
+                                url = entry.get('url') or entry.get('webpage_url') or f"https://www.youtube.com/watch?v={entry.get('id')}"
+                                video_urls.append(url)
+                    else:
+                        # Single video, not a playlist
+                        video_urls = [playlist_url]
+                
+                send_discord_message(f"✅ Tìm thấy {len(video_urls)} video trong playlist")
+                
+            except Exception as e:
+                send_discord_message(f"❌ Lỗi lấy playlist: {e}")
+                tasks_local = load_tasks()
+                tasks_local[request_id]['status'] = 'error'
+                tasks_local[request_id]['error'] = f'Playlist extraction failed: {str(e)}'
+                save_tasks(tasks_local)
+                return
+            
+            if not video_urls:
+                send_discord_message(f"⚠️ Không tìm thấy video nào trong playlist")
+                tasks_local = load_tasks()
+                tasks_local[request_id]['status'] = 'error'
+                tasks_local[request_id]['error'] = 'No videos found in playlist'
+                save_tasks(tasks_local)
+                return
+            
+            # Step 2: Group videos (4 videos = 1 group/episode) OR render full
+            total_videos = len(video_urls)
+            
+            # Build video_index -> group_index map
+            video_to_group = {}  # video_idx (1-based) -> group_idx (1-based)
+            group_map = {}  # group_idx -> [video_idx, ...]
+            
+            if render_full:
+                # FULL mode: all videos in 1 group
+                group_map[1] = list(range(1, total_videos + 1))
+                for v in range(1, total_videos + 1):
+                    video_to_group[v] = 1
+                send_discord_message(f"📊 Chế độ FULL: ghép tất cả {total_videos} video thành 1 video")
+            else:
+                # Normal mode: group by 4 videos
+                group_size = 4
+                g_idx = 1
+                v_idx = 1
+                while v_idx <= total_videos:
+                    end_v = min(v_idx + group_size - 1, total_videos)
+                    group_videos = list(range(v_idx, end_v + 1))
+                    group_map[g_idx] = group_videos
+                    for v in group_videos:
+                        video_to_group[v] = g_idx
+                    g_idx += 1
+                    v_idx += group_size
+                
+                # If max_episodes provided, limit groups (not individual videos)
+                if max_episodes and max_episodes > 0:
+                    limited_groups = {k: v for k, v in group_map.items() if k <= max_episodes}
+                    group_map = limited_groups
+                    # Update video URLs to only include videos in limited groups
+                    videos_in_groups = []
+                    for grp_videos in group_map.values():
+                        videos_in_groups.extend(grp_videos)
+                    video_urls = [video_urls[i-1] for i in sorted(videos_in_groups)]
+                    send_discord_message(f"📊 Giới hạn {max_episodes} group → xử lý {len(video_urls)} video")
+                
+                total_groups = len(group_map)
+                send_discord_message(f"📊 Chia thành {total_groups} group (mỗi group = 1 tập, 4 video/group)")
+            
+            # Storage for processed videos per index
+            video_outputs = {}  # video_idx -> final_video_path
+            
+            # Step 3: Process each video (download → transcribe → translate → narrate)
+            for v_idx, video_url in enumerate(video_urls, start=1):
+                send_discord_message(f"🎬 [{v_idx}/{len(video_urls)}] Xử lý video: {video_url}")
+                
+                # Artifact paths for this video
+                video_label = f"{base_title_val}_V{v_idx}"
+                dl_video = os.path.join(run_dir, f"{video_label}_download.mp4")
+                final_video = os.path.join(run_dir, f"{video_label}_processed.mp4")
+                
+                # Update progress
+                try:
+                    tasks_local = load_tasks()
+                    if request_id not in tasks_local:
+                        tasks_local[request_id] = {"task_id": request_id, "status": "running", "created_at": time.time()}
+                    tasks_local[request_id]['progress'] = 10 + int((v_idx - 1) / len(video_urls) * 60)
+                    save_tasks(tasks_local)
+                except Exception as e:
+                    _report_and_ignore(e, "ignored")
+                
+                # Check if final video already exists
+                if os.path.exists(final_video):
+                    send_discord_message(f"♻️ Video {v_idx} đã xử lý sẵn: {final_video}")
+                    video_outputs[v_idx] = final_video
+                    continue
+                
+                # Download video
+                if os.path.exists(dl_video):
+                    send_discord_message(f"♻️ Video {v_idx} đã tải sẵn: {dl_video}")
+                else:
+                    send_discord_message(f"⬇️ Tải video {v_idx}...")
+                    try:
+                        downloaded = convert_stt.download_video(video_url, dl_video)
+                        if not downloaded or not os.path.exists(downloaded):
+                            raise RuntimeError(f"Download failed: {video_url}")
+                        send_discord_message(f"✅ Đã tải video {v_idx}")
+                    except Exception as e:
+                        send_discord_message(f"⚠️ Lỗi tải video {v_idx}: {e}, bỏ qua video này")
+                        continue
+                
+                # Progress callback
+                def progress_callback(step: str, pct: int):
+                    try:
+                        tasks_local = load_tasks()
+                        if request_id in tasks_local:
+                            base_progress = 10 + int((v_idx - 1) / len(video_urls) * 60)
+                            video_contribution = int(pct * 0.6 / len(video_urls))
+                            tasks_local[request_id]['progress'] = min(70, base_progress + video_contribution)
+                            save_tasks(tasks_local)
+                    except Exception:
+                        pass
+                
+                # Process pipeline (transcribe → translate → narrate → render)
+                try:
+                    import narration_from_srt
+                    result = process_single_video_pipeline(
+                        video_path=dl_video,
+                        output_dir=run_dir,
+                        base_name=video_label,
+                        add_narration=add_narration,
+                        with_subtitles=with_subtitles,
+                        narration_voice=narration_voice,
+                        narration_replace_audio=narration_replace_audio,
+                        narration_volume_db=narration_volume_db,
+                        narration_rate_dynamic=narration_rate_dynamic,
+                        narration_apply_fx=narration_apply_fx,
+                        voice_fx_func=narration_from_srt.gemini_voice_fx,
+                        progress_callback=progress_callback
+                    )
+                    
+                    final_video = result['final_video']
+                    video_outputs[v_idx] = final_video
+                    send_discord_message(f"✅ Hoàn tất xử lý video {v_idx}")
+                    
+                except Exception as e:
+                    send_discord_message(f"⚠️ Lỗi xử lý pipeline video {v_idx}: {e}, bỏ qua video này")
+                    continue
+            
+            # Helper: check if group output exists
+            def _group_output_exists(g_idx: int) -> bool:
+                prefixes = [
+                    os.path.join(run_dir, f"{base_title_val}_Tap_{g_idx}"),
+                    os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx}"),
+                ]
+                patterns = []
+                for pref in prefixes:
+                    patterns.append(pref + ".mp4")
+                    patterns.append(pref + "_P*.mp4")
+                for pat in patterns:
+                    try:
+                        import glob
+                        for p in glob.glob(pat):
+                            if os.path.isfile(p):
+                                return True
+                    except Exception:
+                        continue
+                return False
+            
+            # Helper: check if videos are concat-compatible
+            def _can_concat_copy(files: list) -> bool:
+                try:
+                    def get_info(p):
+                        cmd = ['ffprobe', '-v', 'error', '-print_format', 'json', '-show_streams', p]
+                        proc = subprocess.run(cmd, capture_output=True, text=True)
+                        if proc.returncode != 0:
+                            return None
+                        return json.loads(proc.stdout)
+                    
+                    base_info = None
+                    for p in files:
+                        info = get_info(p)
+                        if not info or 'streams' not in info:
+                            return False
+                        v = next((s for s in info['streams'] if s.get('codec_type') == 'video'), None)
+                        a = next((s for s in info['streams'] if s.get('codec_type') == 'audio'), None)
+                        if not v:
+                            return False
+                        if base_info is None:
+                            base_info = (v.get('codec_name'), int(v.get('width', 0)), int(v.get('height', 0)), v.get('pix_fmt'))
+                            base_audio = (a.get('codec_name') if a else None, int(a.get('sample_rate')) if a and a.get('sample_rate') else None, int(a.get('channels')) if a and a.get('channels') else None)
+                        else:
+                            cur_v = (v.get('codec_name'), int(v.get('width', 0)), int(v.get('height', 0)), v.get('pix_fmt'))
+                            cur_a = (a.get('codec_name') if a else None, int(a.get('sample_rate')) if a and a.get('sample_rate') else None, int(a.get('channels')) if a and a.get('channels') else None)
+                            if cur_v != base_info:
+                                return False
+                            if base_audio[1] and cur_a[1] and base_audio[1] != cur_a[1]:
+                                return False
+                            if base_audio[2] and cur_a[2] and base_audio[2] != cur_a[2]:
+                                return False
+                    return True
+                except Exception:
+                    return False
+            
+            # Helper: check encoder availability
+            def _has_encoder(enc_name: str) -> bool:
+                try:
+                    p = subprocess.run(['ffmpeg', '-hide_banner', '-encoders'], capture_output=True, text=True)
+                    return enc_name in p.stdout
+                except Exception:
+                    return False
+            
+            # Step 4: Concatenate groups (4 videos → 1 group/episode)
+            final_groups = []
+            
+            for g_idx in sorted(group_map.keys()):
+                # Skip if group already exists
+                if _group_output_exists(g_idx):
+                    send_discord_message(f"♻️ Group {g_idx} đã tồn tại, bỏ qua")
+                    try:
+                        existing = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx}.mp4")
+                        if os.path.exists(existing):
+                            final_groups.append(existing)
+                    except Exception:
+                        pass
+                    continue
+                
+                # Collect videos for this group
+                video_indices = group_map[g_idx]
+                group_videos = []
+                for v_idx in video_indices:
+                    if v_idx in video_outputs:
+                        group_videos.append(video_outputs[v_idx])
+                
+                if not group_videos:
+                    send_discord_message(f"⚠️ Group {g_idx} không có video nào, bỏ qua")
+                    continue
+                
+                if render_full:
+                    send_discord_message(f"🎬 Ghép {len(group_videos)} video thành 1 video FULL...")
+                else:
+                    send_discord_message(f"🎬 Ghép {len(group_videos)} video thành Group {g_idx} (Tập {g_idx})...")
+                
+                # Concatenate videos - use _FULL filename for render_full mode
+                if render_full:
+                    group_out = os.path.join(final_dir, f"{base_title_val}_FULL.mp4")
+                else:
+                    group_out = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx}.mp4")
+                try:
+                    if _can_concat_copy(group_videos):
+                        concat_list = os.path.join(run_dir, f"concat_G{g_idx}.txt")
+                        with open(concat_list, 'w', encoding='utf-8') as f:
+                            for p in group_videos:
+                                f.write(f"file '{os.path.abspath(p)}'\n")
+                        subprocess.run(['ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', concat_list, '-c', 'copy', group_out], check=True)
+                    else:
+                        enc = 'libx265' if _has_encoder('libx265') else 'libx264'
+                        if enc == 'libx265':
+                            v_args = ['-c:v', 'libx265', '-preset', 'slow', '-crf', '24', '-pix_fmt', 'yuv420p', '-tag:v', 'hvc1']
+                        else:
+                            v_args = ['-c:v', 'libx264', '-preset', 'slow', '-crf', '20', '-pix_fmt', 'yuv420p']
+                        a_args = ['-c:a', 'aac', '-b:a', '128k']
+                        ff_args = ['ffmpeg', '-y']
+                        for p in group_videos:
+                            ff_args.extend(['-i', p])
+                        concat_filter = f"concat=n={len(group_videos)}:v=1:a=1"
+                        ff_args.extend(['-filter_complex', concat_filter, '-vsync', 'vfr'])
+                        ff_args.extend(v_args)
+                        ff_args.extend(a_args)
+                        ff_args.append(group_out)
+                        subprocess.run(ff_args, check=True)
+                except Exception as e:
+                    send_discord_message(f"⚠️ Lỗi ghép group {g_idx}: {e}")
+                    continue
+                
+                # Add title overlay "Tập X" or "[FULL] Title"
+                if title:
+                    try:
+                        font_path_try = "/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf"
+                        if not os.path.exists(font_path_try):
+                            font_path_try = "C:\\Windows\\Fonts\\arial.ttf" if os.name == "nt" else "times.ttf"
+                        
+                        if render_full:
+                            title_text = f"[FULL] {title}"
+                        else:
+                            title_text = f"{title} - TẬP {g_idx}"
+                        title_text = title_text.replace(":", "\\:").replace("'", "\\'")
+                        wrapped_text = wrap_text(title_text, max_chars_per_line=35)
+                        
+                        drawtext = (
+                            f"drawtext=fontfile='{font_path_try}':text_align=center:text='{wrapped_text}':"
+                            f"fontcolor=white:fontsize=42:box=1:boxcolor=black@0.6:boxborderw=20:"
+                            f"x=(w-text_w)/2:y=(h-text_h)/2:enable='between(t,0,3)'"
+                        )
+                        
+                        tmp_title = group_out + ".title.mp4"
+                        cmd_title = ["ffmpeg", "-y", "-i", group_out, "-vf", drawtext]
+                        cmd_title.extend(_preferred_video_encode_args())
+                        cmd_title.extend(["-c:a", "copy", tmp_title])
+                        subprocess.run(cmd_title, check=True)
+                        os.replace(tmp_title, group_out)
+                    except Exception as e:
+                        send_discord_message(f"⚠️ Không thể thêm title overlay group {g_idx}: {e}")
+                
+                # Mix background audio if provided
+                if bg_choice:
+                    try:
+                        send_discord_message(f"🎵 Đang thêm nhạc nền cho group {g_idx}...")
+                        
+                        discord_bot_bgaudio = os.path.join(BASE_DIR, "discord-bot", "bgaudio")
+                        if os.path.isdir(discord_bot_bgaudio):
+                            bgaudio_dir = discord_bot_bgaudio
+                        else:
+                            bgaudio_dir = os.path.join(OUTPUT_DIR, "bgaudio")
+                        
+                        bg_file = os.path.join(bgaudio_dir, os.path.basename(bg_choice))
+                        if os.path.exists(bg_file):
+                            tmp_with_bg = group_out + ".with_bg.mp4"
+                            
+                            filter_complex = (
+                                "[1:a]aloop=loop=-1:size=2e+09,volume=-14dB[bg];"
+                                "[0:a][bg]amix=inputs=2:duration=first:dropout_transition=0[a]"
+                            )
+                            
+                            cmd_bg = [
+                                "ffmpeg", "-y",
+                                "-i", group_out,
+                                "-i", bg_file,
+                                "-filter_complex", filter_complex,
+                                "-map", "0:v",
+                                "-map", "[a]",
+                                "-c:v", "copy",
+                                "-c:a", "aac", "-b:a", "128k",
+                                tmp_with_bg
+                            ]
+                            
+                            subprocess.run(cmd_bg, check=True, capture_output=True)
+                            os.replace(tmp_with_bg, group_out)
+                            send_discord_message(f"✅ Đã thêm nhạc nền group {g_idx}: {os.path.basename(bg_file)}")
+                        else:
+                            send_discord_message(f"⚠️ Không tìm thấy nhạc nền: {bg_file}")
+                    except Exception as e:
+                        send_discord_message(f"⚠️ Lỗi khi thêm nhạc nền group {g_idx}: {e}")
+                
+                # Split if >3600s
+                try:
+                    _, _, group_dur = get_media_info(group_out)
+                except Exception:
+                    group_dur = None
+                
+                if group_dur and group_dur > 3600:
+                    parts = math.ceil(group_dur / 3600)
+                    for p in range(parts):
+                        start = p * 3600
+                        outp = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx}_P{p+1}.mp4")
+                        subprocess.run(['ffmpeg', '-y', '-ss', str(start), '-i', group_out, '-t', '3600', '-c', 'copy', outp], check=True)
+                        final_groups.append(outp)
+                    # Announce split parts
+                    for p in range(parts):
+                        outp = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx}_P{p+1}.mp4")
+                        if os.path.exists(outp):
+                            try:
+                                uploaded = uploadOneDrive(outp, base_title_val)
+                                link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
+                                rel = to_project_relative_posix(outp)
+                                view_link = "https://sandbox.travel.com.vn/api/download-video?video_name=" + quote_plus(rel)
+                                download_link = "https://sandbox.travel.com.vn/api/download-video?download=1&video_name=" + quote_plus(rel)
+                                send_discord_message(f"🎥 Xem tập {g_idx} phần {p+1}: {view_link}")
+                                send_discord_message(f"⬇️ Tải tập {g_idx} phần {p+1}: {download_link}")
+                            except Exception as e:
+                                _report_and_ignore(e, "ignored")
+                else:
+                    final_groups.append(group_out)
+                    # Announce group
+                    try:
+                        uploaded = uploadOneDrive(group_out, base_title_val)
+                        link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
+                        rel = to_project_relative_posix(group_out)
+                        view_link = "https://sandbox.travel.com.vn/api/download-video?video_name=" + quote_plus(rel)
+                        download_link = "https://sandbox.travel.com.vn/api/download-video?download=1&video_name=" + quote_plus(rel)
+                        send_discord_message(f"🎥 Xem tập {g_idx}: {view_link}")
+                        send_discord_message(f"⬇️ Tải tập {g_idx}: {download_link}")
+                    except Exception as e:
+                        _report_and_ignore(e, "ignored")
+                
+                send_discord_message(f"✅ Hoàn tất Group {g_idx}")
+            
+            # Update final task status
+            try:
+                tasks_local = load_tasks()
+                if request_id not in tasks_local:
+                    tasks_local[request_id] = {"task_id": request_id, "created_at": time.time()}
+                tasks_local[request_id]['status'] = 'completed'
+                tasks_local[request_id]['progress'] = 100
+                tasks_local[request_id]['video_path'] = final_groups[0] if final_groups else ""
+                tasks_local[request_id]['video_file'] = final_groups
+                save_tasks(tasks_local)
+            except Exception as e:
+                _report_and_ignore(e, "ignored")
+            
+            send_discord_message(f"✅ process_playlist_ytdl hoàn tất: {len(final_groups)} group/tập từ {len(video_urls)} video")
+            
+        except Exception as e:
+            import traceback
+            error_msg = f"❌ process_playlist_ytdl error: {e}\n{traceback.format_exc()}"
+            send_discord_message(error_msg)
+            try:
+                tasks_local = load_tasks()
+                if request_id in tasks_local:
+                    tasks_local[request_id]['status'] = 'error'
+                    tasks_local[request_id]['error'] = str(e)
+                    save_tasks(tasks_local)
+            except Exception:
+                pass
+    
+    # Run inline
+    if run_in_background:
+        loop = asyncio.get_event_loop()
+        tracked = create_tracked_task(request_id, loop.run_in_executor(executor, _worker))
+        return JSONResponse(status_code=202, content={"task_id": request_id, "started": True})
+    else:
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(executor, _worker)
+        return JSONResponse(status_code=200, content={"task_id": request_id, "completed": True})
+
+
 # Endpoint: convert a public video URL to Chinese SRT using yt-dlp + whisper
 @app.post("/convert_stt")
 async def api_convert_stt(
@@ -13341,6 +14663,8 @@ async def api_convert_stt(
             link = ''
             try:
                 rel = to_project_relative_posix(final_out)
+                uploaded = uploadOneDrive(final_out,title)
+                link = uploaded.get('downloadLink') or uploaded.get('webViewLink')
                 view_link = "https://sandbox.travel.com.vn/api/download-video?video_name=" + quote_plus(rel)
                 download_link = "https://sandbox.travel.com.vn/api/download-video?download=1&video_name=" + quote_plus(rel)
                 send_discord_message("🎥 Xem video:" + view_link)

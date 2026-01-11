@@ -9195,6 +9195,65 @@ async def bgaudio_list():
         return JSONResponse(status_code=500, content={"error": str(e)})
 
 
+@app.get('/api/bgaudio_stream')
+async def bgaudio_stream(file: str = Query(..., description='Relative path to bgaudio file')):
+    """Stream a background audio file for preview.
+    
+    Args:
+        file: Relative path to the audio file (e.g., 'discord-bot/bgaudio/song.mp3')
+    
+    Returns:
+        FileResponse: Audio file stream
+    """
+    try:
+        # Security: ensure the file path is within allowed directories
+        allowed_bases = [
+            os.path.join(os.path.dirname(__file__), 'discord-bot', 'bgaudio'),
+            os.path.join(os.path.dirname(__file__), 'outputs', 'bgaudio'),
+        ]
+        
+        # Resolve the requested file path
+        file_path = os.path.normpath(os.path.join(os.getcwd(), file))
+        
+        # Check if file is in allowed directories
+        is_allowed = False
+        for base in allowed_bases:
+            base_norm = os.path.normpath(base)
+            try:
+                if os.path.commonpath([file_path, base_norm]) == base_norm:
+                    is_allowed = True
+                    break
+            except ValueError:
+                # Different drives on Windows
+                continue
+        
+        if not is_allowed:
+            return JSONResponse(status_code=403, content={"error": "Access denied"})
+        
+        if not os.path.isfile(file_path):
+            return JSONResponse(status_code=404, content={"error": "File not found"})
+        
+        # Determine media type
+        ext = os.path.splitext(file_path)[1].lower()
+        media_types = {
+            '.mp3': 'audio/mpeg',
+            '.wav': 'audio/wav',
+            '.m4a': 'audio/mp4',
+            '.ogg': 'audio/ogg',
+            '.flac': 'audio/flac',
+        }
+        media_type = media_types.get(ext, 'application/octet-stream')
+        
+        from fastapi.responses import FileResponse
+        return FileResponse(
+            path=file_path,
+            media_type=media_type,
+            filename=os.path.basename(file_path)
+        )
+        
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
   
 @app.post('/api/download-bgaudio')
 async def download_bgaudio(

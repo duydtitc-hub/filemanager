@@ -100,6 +100,13 @@
 
           <div class="col-12 col-md-6">
             <div class="card p-3 text-center">
+              <h3 class="mb-3">Quản lý BGAudio</h3>
+              <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalBgAudioManager">Xem &amp; nghe thử BGAudio</button>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <div class="card p-3 text-center">
               <h3 class="mb-3">TikTok Upload Failed</h3>
               <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalTikTokFailed">Xem upload thất bại</button>
             </div>
@@ -231,7 +238,12 @@
                 </select>
               </div>
               <div class="mb-2"><label>Upload window (hours)</label><input type="number" name="upload_duration_hours" value="2" min="1"></div>
-              <div class="mb-2"><label>Background Audio</label><input type="text" name="bg_choice" placeholder="Tên file nhạc nền (optional)"></div>
+              <div class="mb-2">
+                <label>Background Audio</label>
+                <select class="form-select" name="bg_choice">
+                  <option value="">-- None --</option>
+                </select>
+              </div>
             </form>
           </div>
           <div class="modal-footer">
@@ -270,8 +282,12 @@
               <label>Âm lượng thuyết minh (dB)</label>
               <input type="number" name="narration_volume_db" value="8" step="0.5">
               <div class="mb-2"><label><input type="checkbox" name="narration_replace_audio"> Thay audio gốc</label></div>
-              <label>Background Audio</label>
-              <input type="text" name="bg_choice" placeholder="Tên file nhạc nền (optional)">
+              <div class="mb-2">
+                <label>Background Audio</label>
+                <select class="form-select" name="bg_choice">
+                  <option value="">-- None --</option>
+                </select>
+              </div>
             </form>
           </div>
           <div class="modal-footer">
@@ -307,8 +323,12 @@
               <label>Âm lượng thuyết minh (dB)</label>
               <input type="number" name="narration_volume_db" value="8" step="0.5">
               <div class="mb-2"><label><input type="checkbox" name="narration_replace_audio"> Thay audio gốc</label></div>
-              <label>Background Audio</label>
-              <input type="text" name="bg_choice" placeholder="Tên file nhạc nền (optional)">
+              <div class="mb-2">
+                <label>Background Audio</label>
+                <select class="form-select" name="bg_choice">
+                  <option value="">-- None --</option>
+                </select>
+              </div>
             </form>
           </div>
           <div class="modal-footer">
@@ -374,6 +394,29 @@
         </div>
       </div>
 
+      <div class="modal fade" id="modalBgAudioManager" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Quản lý BGAudio</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <button id="btnRefreshBgAudio" class="btn btn-sm btn-primary">🔄 Refresh danh sách</button>
+                <span id="bgAudioCount" class="ms-2 text-muted"></span>
+              </div>
+              <div id="bgAudioList" class="list-group">
+                <div class="text-center p-3">Đang tải danh sách...</div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="modal fade" id="modalTikTokFailed" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
           <div class="modal-content">
@@ -429,19 +472,46 @@
             const ext = name.split('.').pop().toLowerCase()
             return ext === 'wav' || ext === 'mp3'
           })
-          const sel = document.querySelector('select[name="bg_choice"]')
-          if(!sel) return
-          sel.innerHTML = ''
-          const opt0 = document.createElement('option')
-          opt0.value = ''
-          opt0.textContent = '-- None --'
-          sel.appendChild(opt0)
-          filtered.forEach(f=>{
-            const o = document.createElement('option')
-            o.value = f.rel_path || f.name
-            const kb = f.size ? Math.round(f.size/1024) + 'KB' : ''
-            o.textContent = (f.name || f.rel_path || '') + (kb ? (' — ' + kb) : '')
-            sel.appendChild(o)
+          // Populate all bg_choice selects
+          const selects = document.querySelectorAll('select[name="bg_choice"]')
+          selects.forEach(sel => {
+            sel.innerHTML = ''
+            const opt0 = document.createElement('option')
+            opt0.value = ''
+            opt0.textContent = '-- None --'
+            sel.appendChild(opt0)
+            filtered.forEach(f=>{
+              const o = document.createElement('option')
+              o.value = f.rel_path || f.name
+              const kb = f.size ? Math.round(f.size/1024) + 'KB' : ''
+              o.textContent = (f.name || f.rel_path || '') + (kb ? (' — ' + kb) : '')
+              sel.appendChild(o)
+            })
+            
+            // Add audio preview player after select if not exists
+            let audioPreview = sel.parentNode.querySelector('.bg-audio-preview')
+            if(!audioPreview){
+              audioPreview = document.createElement('audio')
+              audioPreview.className = 'bg-audio-preview w-100 mt-2'
+              audioPreview.controls = true
+              audioPreview.preload = 'none'
+              audioPreview.style.height = '32px'
+              audioPreview.style.display = 'none'
+              sel.parentNode.appendChild(audioPreview)
+            }
+            
+            // Add change listener to update audio preview
+            sel.addEventListener('change', function(){
+              const selectedFile = this.value
+              if(selectedFile){
+                const audioUrl = apiUrl('/api/bgaudio_stream?file=' + encodeURIComponent(selectedFile))
+                audioPreview.src = audioUrl
+                audioPreview.style.display = 'block'
+              } else {
+                audioPreview.src = ''
+                audioPreview.style.display = 'none'
+              }
+            })
           })
         }catch(e){ console.warn('bgaudio load failed', e) }
       }
@@ -925,6 +995,75 @@
         if(btn1) btn1.disabled = false;
         if(btn2) btn2.disabled = false;
       }
+
+      // BGAudio Manager functionality
+      async function loadBgAudioList(){
+        const listEl = document.getElementById('bgAudioList');
+        const countEl = document.getElementById('bgAudioCount');
+        if(!listEl) return;
+        
+        listEl.innerHTML = '<div class="text-center p-3"><div class="spinner-border spinner-border-sm" role="status"></div> Đang tải...</div>';
+        
+        try{
+          const res = await fetch(apiUrl('/api/bgaudio_list'));
+          if(!res.ok){
+            listEl.innerHTML = '<div class="alert alert-danger">Lỗi tải danh sách: ' + res.status + '</div>';
+            return;
+          }
+          
+          const data = await res.json();
+          const files = (data && data.files) || [];
+          
+          // Filter audio files
+          const audioFiles = files.filter(f => {
+            const name = (f && (f.name || f.rel_path || '')).toString().toLowerCase();
+            return name.endsWith('.wav') || name.endsWith('.mp3') || name.endsWith('.m4a') || name.endsWith('.ogg');
+          });
+          
+          if(countEl) countEl.textContent = '(' + audioFiles.length + ' files)';
+          
+          if(audioFiles.length === 0){
+            listEl.innerHTML = '<div class="alert alert-info">Không có file audio nào.</div>';
+            return;
+          }
+          
+          // Build list with audio players
+          let html = '';
+          audioFiles.forEach((f, idx) => {
+            const name = f.name || f.rel_path || 'unknown';
+            const relPath = f.rel_path || name;
+            const sizeKB = f.size ? Math.round(f.size / 1024) : 0;
+            const audioUrl = apiUrl('/api/bgaudio_stream?file=' + encodeURIComponent(relPath));
+            
+            html += '<div class="list-group-item">';
+            html += '<div class="d-flex justify-content-between align-items-start mb-2">';
+            html += '<div class="fw-bold">' + escapeHtml(name) + '</div>';
+            html += '<span class="badge bg-secondary">' + sizeKB + ' KB</span>';
+            html += '</div>';
+            html += '<audio controls preload="none" class="w-100" style="height:32px">';
+            html += '<source src="' + audioUrl + '" type="audio/' + (name.endsWith('.wav') ? 'wav' : name.endsWith('.mp3') ? 'mpeg' : 'ogg') + '">';
+            html += 'Trình duyệt không hỗ trợ audio.';
+            html += '</audio>';
+            html += '</div>';
+          });
+          
+          listEl.innerHTML = html;
+          
+        }catch(err){
+          listEl.innerHTML = '<div class="alert alert-danger">Lỗi: ' + escapeHtml(String(err)) + '</div>';
+        }
+      }
+      
+      function escapeHtml(text){
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+      
+      // Auto-load bgaudio list when modal is shown
+      document.getElementById('modalBgAudioManager')?.addEventListener('shown.bs.modal', loadBgAudioList);
+      document.getElementById('btnRefreshBgAudio')?.addEventListener('click', loadBgAudioList);
     </script>
   </body>
 </html>
+

@@ -738,6 +738,19 @@
           components_nums: f.components_nums && f.components_nums.value ? f.components_nums.value.trim() : undefined,
           episode_numbers: f.episode_numbers && f.episode_numbers.value ? f.episode_numbers.value.trim() : undefined,
         };
+        // build querystring
+        const qs = Object.keys(params).filter(k=>params[k]!=null && params[k]!="").map(k=>encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join('&')
+        const url = apiUrl('/delete_episode_assets') + (qs?('?'+qs):'')
+        let btn = f.querySelector('button[type=submit]') || document.getElementById('deleteEpisodeSubmitBtn');
+        if(btn) btn.disabled = true;
+        try{
+          const res = await fetch(url, { method: 'DELETE' })
+          const text = await res.text()
+          try{ const j = JSON.parse(text); showResp({ok: res.ok, data: j}) }
+          catch(e){ showResp({ok: res.ok, data: text}) }
+        }catch(err){ showResp({ok:false, data: String(err)}) }
+        if(btn) btn.disabled = false;
+      });
 
       // Process Playlist YTDL form
       document.getElementById('processPlaylistForm')?.addEventListener('submit', async (e)=>{
@@ -799,19 +812,6 @@
         }catch(err){
           try{ const postResp = await postJson('/process_video_ytdl', params); showResp(postResp); }catch(e){ showResp({ok:false, data: String(e)}); }
         } finally { if(btn) btn.disabled = false; }
-      });
-        // build querystring
-        const qs = Object.keys(params).filter(k=>params[k]!=null && params[k]!=="").map(k=>encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join('&')
-        const url = apiUrl('/delete_episode_assets') + (qs?('?'+qs):'')
-        let btn = f.querySelector('button[type=submit]') || document.getElementById('deleteEpisodeSubmitBtn');
-        if(btn) btn.disabled = true;
-        try{
-          const res = await fetch(url, { method: 'DELETE' })
-          const text = await res.text()
-          try{ const j = JSON.parse(text); showResp({ok: res.ok, data: j}) }
-          catch(e){ showResp({ok: res.ok, data: text}) }
-        }catch(err){ showResp({ok:false, data: String(err)}) }
-        if(btn) btn.disabled = false;
       });
 
       // Download BGAudio form handler

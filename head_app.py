@@ -12505,7 +12505,7 @@ async def process_series_episodes(
                                     download_link = "https://sandbox.travel.com.vn/api/download-video?download=1&video_name=" + quote_plus(rel)
                                     send_discord_message(f"🎥 Xem video (nhóm {g_idx} phần {p+1}):" + view_link)
                                     send_discord_message(f"⬇️ Tải video (nhóm {g_idx} phần {p+1}):" + download_link)
-                                        try:
+                                    try:
                                         uploaded = uploadOneDrive(outp, base_title_val)
                                         if isinstance(uploaded, dict):
                                             link = uploaded.get('webViewLink') or uploaded.get('downloadLink') or uploaded.get('id')

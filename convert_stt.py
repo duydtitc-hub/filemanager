@@ -3,9 +3,6 @@ import subprocess
 import importlib
 import traceback
 import whisper
-import re
-import glob
-import unicodedata
 from typing import Optional
 from srt_translate import translate_srt_file
 from DiscordMethod import send_discord_message
@@ -549,76 +546,91 @@ def _normalize_segments(segments):
     return out
 
 def _srt_contains_keywords(path: str) -> bool:
-    """Detect specific Chinese series tag to trigger overwrite.
-    Target phrase: 明镜与点点栏目 (exact Chinese string).
-    We also check a few spacing/punctuation variants just in case.
     """
+    Detect specific Chinese series tag to trigger overwrite.
+    Target phrase: 明镜与点点栏目
+    """
+
+    def sanitize_text(s: str) -> str:
+        # Remove BOM, control chars, zero-width chars
+        s = s.replace("\ufeff", "")
+        return "".join(
+            ch for ch in s
+            if ch.isprintable() or ch in ("\n", "\r", "\t")
+        )
+
     try:
-        with open(path, 'r', encoding='utf-8') as f:
-            content = f.read()
-        text = content or ""
-        send_discord_message("🔍 Kiểm tra từ khóa đặc biệt trong SRT...",content)
-    
-        # Support both with and without the conjunction 与, plus traditional variants and spaced forms
+        with open(path, "r", encoding="utf-8", errors="ignore") as f:
+            raw_content = f.read()
+
+        if not raw_content:
+            return False
+
+        text = sanitize_text(raw_content)
+
+        # ⚠️ Không gửi raw content lên Discord
+        send_discord_message("🔍 Kiểm tra từ khóa đặc biệt trong SRT...", f"File: {path}")
+
+        # ---- Exact keyword variants ----
         targets = [
             "明镜与点点栏目",
             "明镜点点栏目",
             "明镜 與 點點 欄目",
-            "明鏡與點點欄目",  # traditional with 與
-            "明鏡點點欄目",      # traditional without 與
+            "明鏡與點點欄目",
+            "明鏡點點欄目",
             "明镜 与 点点 栏目",
             "明镜  点点  栏目",
         ]
 
-        # If any exact target phrase exists, trigger keyword match
         if any(t in text for t in targets):
             return True
 
-        # Additional rule: if the SRT contains at least 3 characters
-        # from the common like/subscribe phrase, treat as a match.
-        # This covers cases like '请不吝点赞 订阅 转发 打赏支持明镜与点点栏目'.
-        try:
-            phrase = "请不吝点赞 订阅 转发 打赏支持明镜与点点栏目"
-            allowed_chars = set(phrase.replace(" ", ""))
-            # Check each subtitle line individually: if any line contains
-            # at least 3 of the allowed characters, treat as a match.
-            for line in text.splitlines():
-                try:
-                    if sum(1 for ch in line if ch in allowed_chars) >= 4:
-                        send_discord_message("🔍 Phát hiện từ khóa đặc biệt trong dòng phụ đề:", line)
-                        return True
-                except Exception:
-                    continue
-            # Additional heuristics: parse timestamp lines and count segments.
-            # If any segment duration > 15s, or total segments < 30, trigger re-transcribe.
+        # ---- Partial character heuristic (>= 3 chars) ----
+        phrase = "请不吝点赞 订阅 转发 打赏支持明镜与点点栏目"
+        allowed_chars = set(phrase.replace(" ", ""))
+
+        for line in text.splitlines():
             try:
-                import re
-                ts_pattern = re.compile(r"(\d{2}:\d{2}:\d{2}[,\.]\d{1,3})\s*-->\s*(\d{2}:\d{2}:\d{2}[,\.]\d{1,3})")
-                matches = ts_pattern.findall(text)
-                seg_count = len(matches)
-                if seg_count == 0 or seg_count < 15 :
-                    send_discord_message("🔍 Phát hiện số đoạn phụ đề thấp:", seg_count)
+                match_count = sum(1 for ch in line if ch in allowed_chars)
+                if match_count >= 5:
+                    send_discord_message(
+                        "🔍 Phát hiện từ khóa đặc biệt trong dòng phụ đề:",
+                        sanitize_text(line)
+                    )
                     return True
-                for start_s, end_s in matches:
-                    try:
-                        start_sec = _parse_srt_timestamp_to_seconds(start_s)
-                        end_sec = _parse_srt_timestamp_to_seconds(end_s)
-                        if (end_sec - start_sec) > 25.0:
-                            
-                            send_discord_message("🔍 Phát hiện đoạn phụ đề dài hơn 25 giây: ", f"{start_s} --> {end_s}")
-                            return True
-                    except Exception:
-                        # ignore malformed timestamp pair and continue
-                        continue
             except Exception:
-                # if regex or parsing fails, continue without raising
-                pass
-        except Exception:
-            # On any unexpected issue with the extra rule, fall through
-            pass
+                continue
+
+        # ---- Structural SRT heuristics ----
+        import re
+        ts_pattern = re.compile(
+            r"(\d{2}:\d{2}:\d{2}[,\.]\d{1,3})\s*-->\s*(\d{2}:\d{2}:\d{2}[,\.]\d{1,3})"
+        )
+
+        matches = ts_pattern.findall(text)
+        seg_count = len(matches)
+
+        if seg_count == 0 or seg_count < 15:
+            send_discord_message("🔍 Phát hiện số đoạn phụ đề thấp:", str(seg_count))
+            return True
+
+        for start_s, end_s in matches:
+            try:
+                start_sec = _parse_srt_timestamp_to_seconds(start_s)
+                end_sec = _parse_srt_timestamp_to_seconds(end_s)
+                if (end_sec - start_sec) > 25.0:
+                    send_discord_message(
+                        "🔍 Phát hiện đoạn phụ đề dài hơn 25 giây:",
+                        f"{start_s} --> {end_s}"
+                    )
+                    return True
+            except Exception:
+                continue
 
         return False
-    except Exception:
+
+    except Exception as e:
+        send_discord_message("❌ Lỗi khi kiểm tra SRT:", str(e))
         return False
 
 
@@ -653,167 +665,6 @@ def format_ts(t):
 
 
 # ---------------------------------------------------------
-# Helper functions for video splitting and SRT merging
-# ---------------------------------------------------------
-def _get_video_duration(video_path: str) -> float:
-    """Get video duration in seconds using ffprobe."""
-    try:
-        cmd = [
-            "ffprobe", "-v", "error",
-            "-show_entries", "format=duration",
-            "-of", "default=noprint_wrappers=1:nokey=1",
-            video_path
-        ]
-        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        duration = float(result.stdout.strip())
-        return duration
-    except Exception as e:
-        send_discord_message(f"⚠️ Không thể lấy độ dài video: {e}")
-        return 0.0
-
-
-def _split_video_chunks(video_path: str, chunk_duration: int = 300) -> list[str]:
-    """Split video into chunks of specified duration (default 5 minutes = 300 seconds).
-    
-    Returns list of chunk file paths.
-    """
-    duration = _get_video_duration(video_path)
-    if duration <= chunk_duration:
-        return [video_path]
-    
-    base_name = os.path.splitext(video_path)[0]
-    chunk_paths = []
-    num_chunks = int((duration + chunk_duration - 1) // chunk_duration)
-    
-    send_discord_message(f"📹 Video dài {int(duration)}s → chia thành {num_chunks} đoạn {chunk_duration}s...")
-    
-    for i in range(num_chunks):
-        start_time = i * chunk_duration
-        chunk_path = f"{base_name}_chunk_{i+1}.mp4"
-        
-        try:
-            cmd = [
-                "ffmpeg", "-y",
-                "-ss", str(start_time),
-                "-i", video_path,
-                "-t", str(chunk_duration),
-                "-c", "copy",
-                chunk_path
-            ]
-            subprocess.run(cmd, check=True, capture_output=True)
-            chunk_paths.append(chunk_path)
-            send_discord_message(f"✅ Đã tạo chunk {i+1}/{num_chunks}: {os.path.basename(chunk_path)}")
-        except Exception as e:
-            send_discord_message(f"⚠️ Lỗi tạo chunk {i+1}: {e}")
-            # Clean up partial chunks on error
-            for p in chunk_paths:
-                try:
-                    if os.path.exists(p):
-                        os.remove(p)
-                except Exception:
-                    pass
-            raise
-    
-    return chunk_paths
-
-
-def _parse_srt_timestamp_to_seconds(ts: str) -> float:
-    """Convert SRT timestamp (HH:MM:SS,mmm) to seconds."""
-    # "00:00:01,000" -> 1.0
-    parts = ts.replace(',', '.').split(':')
-    h, m, s = float(parts[0]), float(parts[1]), float(parts[2])
-    return h * 3600 + m * 60 + s
-
-
-def _write_srt_segments(output_path: str, segments: list[dict]):
-    """Write list of subtitle segments to SRT file."""
-    with open(output_path, 'w', encoding='utf-8') as f:
-        for idx, seg in enumerate(segments, 1):
-            start_ts = format_ts(seg['start'])
-            end_ts = format_ts(seg['end'])
-            f.write(f"{idx}\n")
-            f.write(f"{start_ts} --> {end_ts}\n")
-            f.write(f"{seg['text']}\n\n")
-
-
-def _merge_srt_files(srt_files: list[tuple[str, str, float]], output_srt: str, output_vi_srt: str):
-    """Merge multiple SRT files into one, adjusting timestamps based on offsets.
-    
-    Args:
-        srt_files: List of tuples (zh_srt_path, vi_srt_path, time_offset_seconds)
-        output_srt: Output path for merged Chinese SRT
-        output_vi_srt: Output path for merged Vietnamese SRT
-    """
-    def parse_srt(path: str) -> list[dict]:
-        """Parse SRT file into list of subtitle dicts."""
-        if not os.path.exists(path):
-            return []
-        
-        segments = []
-        try:
-            with open(path, 'r', encoding='utf-8') as f:
-                content = f.read().strip()
-            
-            blocks = content.split('\n\n')
-            for block in blocks:
-                lines = block.strip().split('\n')
-                if len(lines) >= 3:
-                    try:
-                        # Parse index (line 0)
-                        # Parse timestamp (line 1): "00:00:01,000 --> 00:00:03,000"
-                        ts_line = lines[1]
-                        match = re.match(r'(\d{2}:\d{2}:\d{2},\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2},\d{3})', ts_line)
-                        if match:
-                            start_ts = match.group(1)
-                            end_ts = match.group(2)
-                            text = '\n'.join(lines[2:])
-                            
-                            start_sec = _parse_srt_timestamp_to_seconds(start_ts)
-                            end_sec = _parse_srt_timestamp_to_seconds(end_ts)
-                            
-                            segments.append({
-                                'start': start_sec,
-                                'end': end_sec,
-                                'text': text
-                            })
-                    except Exception:
-                        continue
-        except Exception as e:
-            send_discord_message(f"⚠️ Lỗi parse SRT {path}: {e}")
-        
-        return segments
-    
-    # Merge Chinese SRTs
-    merged_zh = []
-    for zh_path, vi_path, offset in srt_files:
-        segments = parse_srt(zh_path)
-        for seg in segments:
-            merged_zh.append({
-                'start': seg['start'] + offset,
-                'end': seg['end'] + offset,
-                'text': seg['text']
-            })
-    
-    # Merge Vietnamese SRTs
-    merged_vi = []
-    for zh_path, vi_path, offset in srt_files:
-        segments = parse_srt(vi_path)
-        for seg in segments:
-            merged_vi.append({
-                'start': seg['start'] + offset,
-                'end': seg['end'] + offset,
-                'text': seg['text']
-            })
-    
-    # Write merged SRTs
-    _write_srt_segments(output_srt, merged_zh)
-    _write_srt_segments(output_vi_srt, merged_vi)
-    
-    send_discord_message(f"✅ Đã ghép {len(srt_files)} SRT thành: {os.path.basename(output_srt)}")
-    send_discord_message(f"✅ Đã ghép {len(srt_files)} SRT thành: {os.path.basename(output_vi_srt)}")
-
-
-# ---------------------------------------------------------
 # Transcribe using ONLY faster-whisper
 # ---------------------------------------------------------
 def transcribe(video_path, task_id: Optional[str] = None,passwisper:bool = False) -> str:
@@ -821,72 +672,6 @@ def transcribe(video_path, task_id: Optional[str] = None,passwisper:bool = False
     # If SRT already exists for this video, skip re-transcription
     srt_path = video_path.replace(".mp4", ".srt")
     vi_srt = srt_path.replace(".srt", ".vi.srt")
-    
-    # Check if we need to split video for faster transcription
-    # Only split if the final SRT doesn't exist yet
-    video_duration = _get_video_duration(video_path)
-    should_split = video_duration > 300 and not os.path.exists(srt_path)
-    chunk_paths = []
-    
-    if should_split:
-        send_discord_message(f"📹 Video dài {int(video_duration)}s (>{5}m) → chia nhỏ để transcribe nhanh hơn...")
-        try:
-            chunk_paths = _split_video_chunks(video_path, chunk_duration=300)
-            send_discord_message(f"✅ Đã chia thành {len(chunk_paths)} đoạn video")
-            
-            # Transcribe each chunk and collect SRT files
-            chunk_srt_files = []
-            accumulated_offset = 0.0  # Track actual accumulated time
-            
-            for idx, chunk_path in enumerate(chunk_paths):
-                send_discord_message(f"🎙️ Transcribe chunk {idx+1}/{len(chunk_paths)}: {os.path.basename(chunk_path)}")
-                
-                # Recursively call transcribe() for each chunk (will use existing logic)
-                chunk_srt = transcribe(chunk_path, task_id=task_id, passwisper=passwisper)
-                
-                # chunk_srt is actually the Vietnamese SRT path returned by transcribe
-                # We need both Chinese and Vietnamese SRTs for merging
-                chunk_zh_srt = chunk_srt.replace(".vi.srt", ".srt")
-                chunk_vi_srt = chunk_srt
-                
-                # Use accumulated offset instead of fixed idx * 300
-                chunk_srt_files.append((chunk_zh_srt, chunk_vi_srt, accumulated_offset))
-                
-                # Get actual duration of this chunk for next offset
-                chunk_duration = _get_video_duration(chunk_path)
-                accumulated_offset += chunk_duration
-                send_discord_message(f"📊 Chunk {idx+1} duration: {chunk_duration:.2f}s, next offset: {accumulated_offset:.2f}s")
-            
-            # Merge all chunk SRTs into final SRT files
-            send_discord_message(f"🔗 Ghép {len(chunk_srt_files)} SRT chunks thành file hoàn chỉnh...")
-            _merge_srt_files(chunk_srt_files, srt_path, vi_srt)
-            
-            # Clean up chunk files
-            send_discord_message("🧹 Dọn dẹp chunk files...")
-            for chunk_path in chunk_paths:
-                try:
-                    if os.path.exists(chunk_path):
-                        os.remove(chunk_path)
-                    # Also remove chunk SRT files
-                    chunk_base = chunk_path.replace(".mp4", "")
-                    for ext in [".srt", ".vi.srt", ".gemini.wav"]:
-                        chunk_file = chunk_base + ext
-                        if os.path.exists(chunk_file):
-                            os.remove(chunk_file)
-                except Exception as e:
-                    send_discord_message(f"⚠️ Lỗi xóa chunk file: {e}")
-            
-            send_discord_message("✅ Hoàn thành transcribe video dài bằng chunk splitting!")
-            return vi_srt
-            
-        except Exception as e:
-            send_discord_message(f"⚠️ Lỗi khi split/transcribe chunks: {e}")
-            traceback.print_exc()
-            # Fall back to transcribing full video
-            send_discord_message("🔄 Fallback: transcribe toàn bộ video không chia nhỏ...")
-            should_split = False
-            chunk_paths = []
-    
     if os.path.exists(srt_path):
         send_discord_message("ℹ️ Phát hiện phụ đề đã tồn tại:", srt_path)
         # If existing SRT contains special keywords, re-run transcription with Gemini

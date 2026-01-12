@@ -69,7 +69,7 @@ def gemini_voice_fx(in_path: str, out_path: str) -> str:
     Chain: asetrate=44100*0.6, aresample=44100, atempo=1.4, highpass=80Hz, lowpass=8kHz, 
            bass +6dB @120Hz, treble -6dB @6kHz, dynaudnorm, volume=6dB
     """
-    fx = "asetrate=44100*0.7,aresample=44100,atempo=1.4,highpass=f=80,lowpass=f=8000,bass=g=6:f=120,treble=g=-6:f=6000,dynaudnorm=f=150:g=15,volume=6dB"
+    fx = "asetrate=44100*1.2,aresample=44100,atempo=1.55,highpass=f=80,lowpass=f=8000,bass=g=6:f=120,treble=g=-6:f=6000,dynaudnorm=f=150:g=15,volume=6dB"
     cmd = [
         "ffmpeg", "-y", "-i", in_path,
         "-af", fx,

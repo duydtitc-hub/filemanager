@@ -1,3 +1,5 @@
+from subprocess_helper import run_logged_subprocess
+
 import os
 import subprocess
 import importlib
@@ -25,33 +27,33 @@ print("Using model:", MODEL_PATH)
 _WHISPER_MODEL = None
 
 # Faster-Whisper singleton (optional)
-_FASTWHISPER_MODEL = None
+_FASTWHISPER_MODELS: dict[str, object] = {}
 TRANSLATE_ENDPOINT = os.environ.get(
     "SRT_TRANSLATE_ENDPOINT",
     "https://n8n.vietravel.com/webhook/c892de19-3b20-4b32-b9ee-6b6847b0e77a",
 )
 USE_GEMINI_TRANSCRIBE = os.environ.get("USE_GEMINI_TRANSCRIBE", "1") == "1"
-def get_fast_whisper_model():
-    """Return a faster-whisper model instance if available, otherwise None."""
-    global _FASTWHISPER_MODEL
-    if _FASTWHISPER_MODEL is not None:
-        return _FASTWHISPER_MODEL
+def get_fast_whisper_model(model_size: str = "large"):
+    """Return a faster-whisper model instance keyed by size (tiny/large)."""
+    global _FASTWHISPER_MODELS
+    if model_size in _FASTWHISPER_MODELS:
+        return _FASTWHISPER_MODELS[model_size]
     try:
         from faster_whisper import WhisperModel
     except Exception:
+        _FASTWHISPER_MODELS[model_size] = None
         return None
 
-   
-    # detect device
     device = "cpu"
-  
-    
+    model_dir = os.path.join(MODEL_PATH, model_size)
+    if model_size == "large":
+        model_dir = MODEL_PATH
+
     try:
-        _FASTWHISPER_MODEL = WhisperModel(MODEL_PATH, device=device, compute_type="int8")
+        _FASTWHISPER_MODELS[model_size] = WhisperModel(model_dir, device=device, compute_type="int8")
     except Exception:
-        # if initialization fails, leave as None
-        _FASTWHISPER_MODEL = None
-    return _FASTWHISPER_MODEL
+        _FASTWHISPER_MODELS[model_size] = None
+    return _FASTWHISPER_MODELS[model_size]
 def get_whisper_model():
     global _WHISPER_MODEL
     if _WHISPER_MODEL is not None:
@@ -642,13 +644,13 @@ def download_video(url,output_filename="video.mp4"):
     try:
         cmd = [
             "yt-dlp",
-            "-f", "mp4",
-            # "--download-sections", "*00:00:00-00:00:20",
+            "-f", "bv*+ba/b",
+            "--merge-output-format", "mp4",
             "-o", output_path,
             url
         ]
         print("Running command:", " ".join(cmd))
-        subprocess.run(cmd, check=True)
+        run_logged_subprocess(cmd, check=True)
         return output_path
     except Exception as e:
         send_discord_message(f"❌ Lỗi khi tải video: {e}")
@@ -680,7 +682,7 @@ def transcribe(video_path, task_id: Optional[str] = None,passwisper:bool = False
                     send_discord_message("🔁 Phát hiện từ khóa đặc biệt trong SRT → re-transcribe bằng Gemini...")
                     tmp_wav = os.path.splitext(video_path)[0] + ".gemini.wav"
                     try:
-                        subprocess.run(["ffmpeg", "-y", "-i", video_path, "-ar", "16000", "-ac", "1", "-vn", tmp_wav], check=True)
+                        run_logged_subprocess(["ffmpeg", "-y", "-i", video_path, "-ar", "16000", "-ac", "1", "-vn", tmp_wav], check=True)
                         srt_path, vi_srt = _create_srt_from_post_api_with_retries(tmp_wav, output_srt=srt_path, out_vi=vi_srt)
                     finally:
                         try:
@@ -813,7 +815,7 @@ def transcribe(video_path, task_id: Optional[str] = None,passwisper:bool = False
         send_discord_message("⚠️ Không có kết quả từ Faster-Whisper — chuyển sang Gemini STT...")
         tmp_wav = os.path.splitext(video_path)[0] + ".gemini.wav"
         try:
-            subprocess.run(["ffmpeg", "-y", "-i", video_path, "-ar", "16000", "-ac", "1", "-vn", tmp_wav], check=True)
+            run_logged_subprocess(["ffmpeg", "-y", "-i", video_path, "-ar", "16000", "-ac", "1", "-vn", tmp_wav], check=True)
             # create SRT using the external POST transcribe API with retries and keyword checks
             srt_path,vi_srt = _create_srt_from_post_api_with_retries(tmp_wav, output_srt=srt_path, out_vi=vi_srt)
             if srt_path:
@@ -841,7 +843,7 @@ def transcribe(video_path, task_id: Optional[str] = None,passwisper:bool = False
             tmp_wav = os.path.splitext(video_path)[0] + ".gemini.wav"
          
             try:
-                subprocess.run(["ffmpeg", "-y", "-i", video_path, "-ar", "16000", "-ac", "1", "-vn", tmp_wav], check=True)
+                run_logged_subprocess(["ffmpeg", "-y", "-i", video_path, "-ar", "16000", "-ac", "1", "-vn", tmp_wav], check=True)
                 srt_path, vi_srt = _create_srt_from_post_api_with_retries(tmp_wav, output_srt=srt_path, out_vi=vi_srt)
             finally:
                 try:
@@ -944,7 +946,7 @@ def burn_subtitles_tiktok(video_path: str, srt_path: str, output_path: str | Non
 
     # Ensure ffmpeg is available
     try:
-        subprocess.run(["ffmpeg", "-version"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        run_logged_subprocess(["ffmpeg", "-version"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except Exception:
         raise RuntimeError("ffmpeg not found on PATH. Please install ffmpeg.")
 
@@ -957,7 +959,7 @@ def burn_subtitles_tiktok(video_path: str, srt_path: str, output_path: str | Non
     ]
     # If direct conversion fails, we will fallback to using subtitles filter with srt
     try:
-        subprocess.run(cmd_ass, check=True)
+        run_logged_subprocess(cmd_ass, check=True)
     except Exception:
         # ignore; ffmpeg can render SRT directly
         ass_path = srt_path
@@ -989,7 +991,7 @@ def burn_subtitles_tiktok(video_path: str, srt_path: str, output_path: str | Non
         temp_scaled
     ]
 
-    subprocess.run(cmd_scale, check=True)
+    run_logged_subprocess(cmd_scale, check=True)
 
     # Burn subtitles onto temp_scaled using forced style
     cmd_burn = [
@@ -999,7 +1001,7 @@ def burn_subtitles_tiktok(video_path: str, srt_path: str, output_path: str | Non
         output_path
     ]
 
-    subprocess.run(cmd_burn, check=True)
+    run_logged_subprocess(cmd_burn, check=True)
 
     # Cleanup temp
     try:
@@ -1478,6 +1480,5 @@ def contains_at_least_n_chars(s, n=4):
 if __name__ == "__main__":
     wave_file = "Than_cau_ca_giang_lam_Tap_2_download.gemini.wav";
     _create_srt_from_post_api_with_retries(wave_file, output_srt="Than_cau_ca_giang_lam_Tap_2.srt", out_vi="Than_cau_ca_giang_lam_Tap_2.vi.srt")
-
 
 

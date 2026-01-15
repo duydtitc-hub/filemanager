@@ -1,3 +1,5 @@
+from subprocess_helper import run_logged_subprocess
+
 import subprocess
 import tempfile
 import os
@@ -6,7 +8,7 @@ from typing import List, Tuple
 
 
 def _run(cmd: List[str]):
-    res = subprocess.run(cmd, capture_output=True)
+    res = run_logged_subprocess(cmd, capture_output=True)
     return res.returncode, res.stdout.decode(errors='ignore'), res.stderr.decode(errors='ignore')
 
 

@@ -1,3 +1,5 @@
+from subprocess_helper import run_logged_subprocess
+
 import os
 import json
 import subprocess
@@ -9,7 +11,7 @@ from typing import List, Tuple, Dict, Any, Callable
 import pysubs2
 
 from GoogleTTS import text_to_wav
-
+from DiscordMethod import send_discord_message
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def _compute_dynamic_speaking_rate(
@@ -60,7 +62,7 @@ def apply_voice_fx(in_path: str, out_path: str) -> str:
         out_path
     ]
     print( "Applying voice FX:", " ".join(cmd))
-    subprocess.run(cmd, check=True, capture_output=True)
+    run_logged_subprocess(cmd, check=True, capture_output=True)
     return out_path
 
 
@@ -69,7 +71,7 @@ def gemini_voice_fx(in_path: str, out_path: str) -> str:
     Chain: asetrate=44100*0.6, aresample=44100, atempo=1.4, highpass=80Hz, lowpass=8kHz, 
            bass +6dB @120Hz, treble -6dB @6kHz, dynaudnorm, volume=6dB
     """
-    fx = "asetrate=44100*1.2,aresample=44100,atempo=1.55,highpass=f=80,lowpass=f=8000,bass=g=6:f=120,treble=g=-6:f=6000,dynaudnorm=f=150:g=15,volume=6dB"
+    fx = "asetrate=44100*1.3,aresample=44100,atempo=1.18,highpass=f=80,lowpass=f=8000,bass=g=6:f=120,treble=g=-6:f=6000,dynaudnorm=f=150:g=15,volume=6dB"
     cmd = [
         "ffmpeg", "-y", "-i", in_path,
         "-af", fx,
@@ -77,7 +79,7 @@ def gemini_voice_fx(in_path: str, out_path: str) -> str:
         out_path
     ]
     print("Applying Gemini voice FX:", " ".join(cmd))
-    subprocess.run(cmd, check=True, capture_output=True)
+    run_logged_subprocess(cmd, check=True, capture_output=True)
     return out_path
 
 
@@ -93,7 +95,7 @@ def normalize_audio_to_flac(in_path: str, out_path: str, sr: int = 48000, ac: in
         "-c:a", "flac",
         out_path
     ]
-    subprocess.run(cmd, check=True, capture_output=True)
+    run_logged_subprocess(cmd, check=True, capture_output=True)
     return out_path
 def ffprobe_duration(path: str) -> float:
     try:
@@ -117,7 +119,7 @@ def make_silence(duration: float, out_path: str, sr: int = 48000) -> str:
         "-c:a", "flac",
         out_path
     ]
-    subprocess.run(cmd, check=True, capture_output=True)
+    run_logged_subprocess(cmd, check=True, capture_output=True)
     return out_path
 
 
@@ -135,7 +137,7 @@ def trim_silence(in_path: str, out_path: str, threshold_db: int = -40) -> str:
         "-c:a", "flac",
         out_path
     ]
-    subprocess.run(cmd, check=True, capture_output=True)
+    run_logged_subprocess(cmd, check=True, capture_output=True)
     return out_path
 
 
@@ -145,7 +147,7 @@ def fit_audio_to_slot(in_path: str, slot_duration: float, out_path: str) -> str:
     if slot_duration <= 0:
         # Just trim to tiny duration if invalid
         cmd = ["ffmpeg", "-y", "-i", in_path, "-t", "0.001", "-c:a", "flac", out_path]
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_logged_subprocess(cmd, check=True, capture_output=True)
         return out_path
 
     filters = []
@@ -168,7 +170,33 @@ def fit_audio_to_slot(in_path: str, slot_duration: float, out_path: str) -> str:
         "-c:a", "flac",
         out_path
     ]
-    subprocess.run(cmd, check=True, capture_output=True)
+    run_logged_subprocess(cmd, check=True, capture_output=True)
+    return out_path
+
+
+def accelerate_audio(in_path: str, out_path: str, ratio: float, sr: int = 48000, ac: int = 2) -> str:
+    """Adjust the audio tempo (ratio>1 speeds up, ratio<1 slows down)."""
+    tempo = max(ratio, 0.01)
+    stages: List[float] = []
+    remaining = tempo
+    # ffmpeg atempo accepts [0.5, 2.0], so split extreme ratios into valid stages
+    while remaining > 2.0:
+        stages.append(2.0)
+        remaining /= 2.0
+    while remaining < 0.5:
+        stages.append(0.5)
+        remaining /= 0.5
+    stages.append(remaining)
+
+    filter_chain = ",".join(f"atempo={s:.6f}" for s in stages)
+    cmd = [
+        "ffmpeg", "-y", "-i", in_path,
+        "-af", filter_chain,
+        "-ar", str(sr), "-ac", str(ac),
+        "-c:a", "flac",
+        out_path
+    ]
+    run_logged_subprocess(cmd, check=True, capture_output=True)
     return out_path
 
 
@@ -186,7 +214,7 @@ def concat_audio(parts: List[str], out_path: str) -> str:
                 "-ar", "48000", "-ac", "2", "-c:a", "flac",
                 nf.name
             ]
-            subprocess.run(cmd, check=True, capture_output=True)
+            run_logged_subprocess(cmd, check=True, capture_output=True)
             norm_parts.append(nf.name)
         except Exception:
             # fallback to original if conversion fails
@@ -203,7 +231,7 @@ def concat_audio(parts: List[str], out_path: str) -> str:
             "-ar", "48000", "-ac", "2", "-c:a", "flac",
             out_path
         ]
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_logged_subprocess(cmd, check=True, capture_output=True)
     finally:
         try:
             os.unlink(list_path)
@@ -287,7 +315,7 @@ def build_narration_from_srt(srt_path: str, out_audio: str, voice_name: str = "v
                 natural_src = fx_func(src_wav, natural_fx)
             natural = os.path.join(tmpdir, f"{srt_base}_nat_{line_idx}.flac")
             # Convert to FLAC (no time-stretch)
-            subprocess.run(["ffmpeg", "-y", "-i", natural_src, "-c:a", "flac", natural], check=True, capture_output=True)
+            run_logged_subprocess(["ffmpeg", "-y", "-i", natural_src, "-c:a", "flac", natural], check=True, capture_output=True)
             parts.append(natural)
             current_t = adj_start + ffprobe_duration(natural)
         else:
@@ -308,7 +336,23 @@ def build_narration_from_srt(srt_path: str, out_audio: str, voice_name: str = "v
     return final_audio
 
 
-def build_narration_schedule(srt_path: str, out_audio: str, voice_name: str = "vi-VN-Standard-C", speaking_rate: float = 1.0, lead: float = 0.3, meta_out: str | None = None, trim: bool = False, trim_threshold_db: int = -40, rate_mode: int = 0, apply_fx: bool = False, tmp_subdir: str | None = None, no_overlap: bool = True, voice_fx_func: Callable[[str, str], str] | None = None) -> Tuple[str, str]:
+def build_narration_schedule(
+    srt_path: str,
+    out_audio: str,
+    voice_name: str = "vi-VN-Standard-C",
+    speaking_rate: float = 1.0,
+    lead: float = 0.2,
+    meta_out: str | None = None,
+    trim: bool = False,
+    trim_threshold_db: int = -40,
+    rate_mode: int = 0,
+    apply_fx: bool = False,
+    tmp_subdir: str | None = None,
+    no_overlap: bool = True,
+    max_speed_rate: float = 1.25,
+    max_lead_overlap: float = 0.6,
+    voice_fx_func: Callable[[str, str], str] | None = None,
+) -> Tuple[str, str]:
     """Generate per-line audio, then mix by scheduling each clip at its start time using adelay.
     Returns (final_audio_path, metadata_json_path)."""
     subs = pysubs2.load(srt_path, encoding="utf-8")
@@ -348,26 +392,33 @@ def build_narration_schedule(srt_path: str, out_audio: str, voice_name: str = "v
         # Speaking rate: dynamic when rate_mode=1, else fixed base_rate
         slot = end - start
         norm_wav = os.path.join(norm_dir, f"norm_{srt_base}_{piece_idx}.flac")
-        if not os.path.exists(raw_wav) and not os.path.exists(raw_wav_vi): 
-            if os.path.exists(raw_wav_vi) and not os.path.exists(raw_wav):
-                raw_wav = raw_wav_vi
-            
+        
+        # Check if cached TTS exists (either format)
+        if os.path.exists(raw_wav_vi):
+            # Prefer .vi_tts format if exists
+            src_wav = raw_wav_vi
+        elif os.path.exists(raw_wav):
+            # Use regular _tts format
+            src_wav = raw_wav
+        else:
+            # Generate new TTS
             rate_use = _compute_dynamic_speaking_rate(text, slot, base_rate=speaking_rate) if rate_mode == 1 else speaking_rate
             res = text_to_wav(text, raw_wav, voice_name=voice_name, speaking_rate=rate_use, sendNotify=False)
             if not res or not os.path.exists(raw_wav):
                 # Skip TTS failure by inserting no audio for this item
                 continue
+            src_wav = raw_wav
 
         # Normalize TTS output to 48kHz stereo FLAC to avoid container/codec duration bugs
-        src_wav = raw_wav
         try:
-            normalize_audio_to_flac(raw_wav, norm_wav)
+            normalize_audio_to_flac(src_wav, norm_wav)
             src_wav = norm_wav
         except Exception:
-            src_wav = raw_wav
+            pass  # Keep using src_wav if normalization fails
+        
         if trim:
             trimmed = os.path.join(trim_dir, f"{srt_base}_trim_{piece_idx}.wav")
-            trim_silence(raw_wav, trimmed, threshold_db=trim_threshold_db)
+            trim_silence(src_wav, trimmed, threshold_db=trim_threshold_db)
             src_wav = trimmed
         # Produce a piece fitted to the slot to reduce overlaps when scheduling
         # Apply FX if requested, then fit piece to slot to reduce overlaps
@@ -380,22 +431,79 @@ def build_narration_schedule(srt_path: str, out_audio: str, voice_name: str = "v
         # to avoid cutting a sentence when the subtitle slot ends. Convert
         # the source to FLAC preserving its full length. If conversion fails,
         # fall back to fitting to the slot to ensure a piece exists.
+        piece_created = False
         try:
-            subprocess.run([
+            result = run_logged_subprocess([
                 "ffmpeg", "-y", "-i", slot_src,
                 "-ar", "48000", "-ac", "2", "-c:a", "flac", piece
             ], check=True, capture_output=True)
+            # Ensure file is fully written (important for Linux)
+            if os.path.exists(piece) and os.path.getsize(piece) > 0:
+                piece_created = True
         except Exception:
+            pass
+        
+        if not piece_created:
+            # Fallback: fit to slot to ensure a piece exists
             fit_audio_to_slot(slot_src, slot, piece)
-
+        
+        # Wait briefly for file system sync on Linux
+        import time
+        if not os.name == 'nt':  # Not Windows
+            time.sleep(0.01)  # 10ms delay for file sync
+        
         dur = ffprobe_duration(piece)
-        # Enforce sequential narration if no_overlap=True.
-        # Ensure each piece starts at least 0.5s after the previous narration end
-        # (this is independent of the subtitle display timestamp).
+        if dur <= 0:
+            # Fallback: use source duration if probe fails
+            dur = ffprobe_duration(slot_src) if os.path.exists(slot_src) else slot
+
+        soft_allow = slot + 0.2
+        allowed_duration = soft_allow
+        speed_capped = False
+        if dur > allowed_duration:
+            # Keep narration within the slot by gradually speeding it up in small steps.
+            orig_piece = piece
+            orig_dur = dur
+            target_ratio = min(
+                max(orig_dur / max(allowed_duration, 1e-6), 1.0),
+                max_speed_rate,
+            )
+            if target_ratio >= max_speed_rate:
+                speed_capped = True
+            current_ratio = 1.0
+            attempt = 0
+            while dur > allowed_duration and current_ratio < target_ratio:
+                attempt += 1
+                remaining = target_ratio - current_ratio
+                # Use a finer increment near the end for smoother durations
+                delta = 0.05
+                next_ratio = min(current_ratio + delta, target_ratio)
+                if next_ratio <= current_ratio:
+                    break
+                fast_piece = os.path.join(piece_dir, f"{srt_base}_piece_{piece_idx}_fast_{attempt}.flac")
+                try:
+                    accelerate_audio(orig_piece, fast_piece, next_ratio)
+                    if not os.path.exists(fast_piece):
+                        break
+                    piece = fast_piece
+                    new_dur = ffprobe_duration(piece)
+                    if new_dur <= 0 or new_dur >= dur:
+                        break
+                    dur = new_dur
+                    current_ratio = next_ratio
+                except Exception:
+                    break
+
+        # Enforce sequential narration if no_overlap=True while keeping pacing natural.
+        eff_start = adj_start
         if no_overlap:
-            eff_start = max(adj_start, cursor_t +0.15)
-        else:
-            eff_start = adj_start
+            if speed_capped:
+                eff_start = max(
+                    max(0.0, adj_start - max_lead_overlap),
+                    cursor_t + 0.05,
+                )
+            else:
+                eff_start = max(adj_start, cursor_t + 0.05)
         cursor_t = eff_start + dur
         items.append({"start": eff_start, "duration": dur, "file": piece,"end": eff_start + dur})
 
@@ -414,33 +522,41 @@ def build_narration_schedule(srt_path: str, out_audio: str, voice_name: str = "v
     with open(meta_path, "w", encoding="utf-8") as f:
         json.dump({"items": items}, f, ensure_ascii=False, indent=2)
 
-    # Build filter graph: one input per item with adelay, then amix
-    # We'll invoke ffmpeg with N inputs (each piece once)
+    # ✅ STUDIO-GRADE APPROACH: silence baseline + adelay overlay
+    # Create a silent timeline, then overlay each piece at exact position using adelay
+    # This prevents ANY overlap and is standard in professional audio mixing
+    
+    # Calculate total timeline duration (last item end + 1s buffer)
+    total_duration = max(it["end"] for it in items) + 1.0
+    
+    # Build ffmpeg command with anullsrc baseline as input [0]
     cmd: List[str] = ["ffmpeg", "-y"]
+    cmd += ["-f", "lavfi", "-i", f"anullsrc=r=48000:cl=stereo:d={total_duration}"]
+    
+    # Add all pieces as inputs [1], [2], ..., [N]
     for it in items:
         cmd += ["-i", it["file"]]
-
-    # Construct filter_complex
+    
+    # Build filter_complex: adelay each piece, then amix with baseline
     delays = []
     labels = []
-    for idx, it in enumerate(items):
+    for idx, it in enumerate(items, start=1):  # Start from 1 because [0] is anullsrc
         ms = max(0, int(it["start"] * 1000))
         lbl = f"a{idx}"
         delays.append(f"[{idx}:a]adelay={ms}|{ms}[{lbl}]")
         labels.append(f"[{lbl}]")
-
-    # amix across all delayed clips
-    filter_complex = ";".join(delays) + ";" + "".join(labels) + f"amix=inputs={len(items)}:duration=longest:normalize=0[mix]"
-
+    
+    # amix: baseline [0:a] + all delayed pieces
+    filter_complex = ";".join(delays) + f";[0:a]{''.join(labels)}amix=inputs={len(items)+1}:duration=longest:normalize=0"
+    
     cmd += [
         "-filter_complex", filter_complex,
-        "-map", "[mix]",
         "-c:a", "flac",
         out_audio
     ]
-
-    # To avoid huge stderr, capture but allow errors to propagate
-    subprocess.run(cmd, check=True, capture_output=True)
+    
+    # send_discord_message(cmd) 
+    run_logged_subprocess(cmd, check=True, capture_output=True)
     # Cleanup temporary files: keep only WAV files (remove generated .flac and other aux files)
     try:
         for root, _, files in os.walk(tmpdir):
@@ -490,7 +606,7 @@ def mix_narration_into_video(video_path: str, narration_path: str, out_path: str
                 "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2", "-movflags", "+faststart",
                 out_path
             ]
-        subprocess.run(cmd, check=True)
+        run_logged_subprocess(cmd, check=True)
         return out_path
 
     # Mix with original audio; if original has no audio, this still works by mapping only narration
@@ -503,21 +619,20 @@ def mix_narration_into_video(video_path: str, narration_path: str, out_path: str
         pre.append(f"atrim={abs(shift_sec)}:")
         pre.append("asetpts=PTS-STARTPTS")
 
-    pre_chain = ",".join(pre) if pre else None
-    vol = f"volume={10 ** (narration_volume_db/20):.4f}"
-    if pre_chain:
-        nar_chain = f"[1:a]{pre_chain},{vol}[nar]"
-    else:
-        nar_chain = f"[1:a]{vol}[nar]"
+    pre_chain = ",".join(pre) if pre else ""
+    bg_gain = 0.4 * (10 ** (video_volume_db / 20))
+    nar_gain = 1.4 * (10 ** (narration_volume_db / 20))
+    nar_prefix = f"[1:a]{pre_chain}," if pre_chain else "[1:a]"
+    nar_chain = f"{nar_prefix}aresample=48000,volume={nar_gain:.6f}[nar]"
+    vid_pre = f"[0:a]aresample=48000,volume={bg_gain:.6f}[bg]"
 
     if need_pad:
         vfilter = f"[0:v]tpad=stop_mode=clone:stop_duration={pad_sec}[v]"
-        vid_pre = f"[0:a]volume={10 ** (video_volume_db/20):.4f}[bg]"
         filter_complex = (
             vfilter + ";" +
             vid_pre + ";" +
             nar_chain + ";" +
-            f"[bg][nar]amix=inputs=2:duration=longest:normalize=0[a]"
+            f"[bg][nar]amix=inputs=2:duration=longest:normalize=1[a]"
         )
         cmd = [
             "ffmpeg", "-y",
@@ -529,11 +644,10 @@ def mix_narration_into_video(video_path: str, narration_path: str, out_path: str
             out_path
         ]
     else:
-        vid_pre = f"[0:a]volume={10 ** (video_volume_db/20):.4f}[bg]"
         filter_complex = (
             vid_pre + ";" +
             nar_chain + ";" +
-            f"[bg][nar]amix=inputs=2:duration=first:normalize=0[a]"
+            f"[bg][nar]amix=inputs=2:duration=first:normalize=1[a]"
         )
         cmd = [
             "ffmpeg", "-y",
@@ -545,7 +659,7 @@ def mix_narration_into_video(video_path: str, narration_path: str, out_path: str
             out_path
         ]
     try:
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_logged_subprocess(cmd, check=True, capture_output=True)
         return out_path
     except subprocess.CalledProcessError:
         # Fallback: replace
@@ -557,7 +671,7 @@ def mix_narration_into_video(video_path: str, narration_path: str, out_path: str
             "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2", "-movflags", "+faststart",
             out_path
         ]
-        subprocess.run(cmd2, check=True)
+        run_logged_subprocess(cmd2, check=True)
         return out_path
 
 

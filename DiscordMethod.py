@@ -39,7 +39,7 @@ def send_discord_message(*args, sep=' ', end='\n'):
             dict: JSON phản hồi từ Discord hoặc dict chứa lỗi.
         """
         token = os.getenv("DISCORD_BOT_TOKEN")
-        time.sleep(1);
+        time.sleep(0.4)  # tránh rate limit;
         channel_id ='1431324318775775324';
     
 

@@ -1,3 +1,5 @@
+from subprocess_helper import run_logged_subprocess
+
 import os
 import os
 import re
@@ -261,7 +263,7 @@ def generate_audio_content(content_text: str, title_slug: str, voice="nova"):
             "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", concat_list_file,
             "-ar", "24000", "-ac", "1", "-c:a", "pcm_s16le", temp_wav
         ]
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_logged_subprocess(cmd, check=True, capture_output=True)
 
         # Use centralized flac encoder to ensure consistent encoding across flows
         try:

@@ -1,3 +1,5 @@
+from subprocess_helper import run_logged_subprocess
+
 import os
 import re
 import subprocess
@@ -38,7 +40,7 @@ def _concat_audio_from_list(concat_list_path: str, output_path: str):
         "-b:a", "192k",
         output_path
     ]
-    subprocess.run(cmd, check=True, capture_output=True)
+    run_logged_subprocess(cmd, check=True, capture_output=True)
 
 
 def _write_part_manifest(file_path: str):
@@ -69,7 +71,7 @@ def _write_part_manifest(file_path: str):
 
 def _create_flac_copy(input_path: str, out_flac: str):
     cmd = ["ffmpeg", "-y", "-i", input_path, "-c:a", "flac", out_flac]
-    subprocess.run(cmd, check=True, capture_output=True)
+    run_logged_subprocess(cmd, check=True, capture_output=True)
 
 
 def get_tts_part_files(title_slug: str, output_dir: str | None = None) -> list:
@@ -153,7 +155,7 @@ def create_final_parts_from_tts(tts_parts: list, title_slug: str, output_dir: st
                 "-sample_fmt", "s16",
                 out_path
             ]
-            subprocess.run(cmd, check=True, capture_output=True)
+            run_logged_subprocess(cmd, check=True, capture_output=True)
             out_parts.append(out_path)
         except subprocess.CalledProcessError as e:
             raise
@@ -169,7 +171,7 @@ def split_audio_by_duration(audio_path: str, max_part_duration: int = 3600, outp
     if not os.path.exists(audio_path):
         raise FileNotFoundError(audio_path)
 
-    probe = subprocess.run([
+    probe = run_logged_subprocess([
         "ffprobe", "-v", "error",
         "-show_entries", "format=duration",
         "-of", "default=noprint_wrappers=1:nokey=1", audio_path
@@ -198,7 +200,7 @@ def split_audio_by_duration(audio_path: str, max_part_duration: int = 3600, outp
             "-sample_fmt", "s16",
             part_file
         ]
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_logged_subprocess(cmd, check=True, capture_output=True)
         audio_parts.append(part_file)
 
     return audio_parts

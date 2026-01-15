@@ -1,3 +1,5 @@
+from subprocess_helper import run_logged_subprocess
+
 import os
 import math
 import subprocess
@@ -13,7 +15,7 @@ def get_media_info(path):
     """Extract width, height, duration from media file using ffprobe."""
     if not os.path.exists(path):
         raise FileNotFoundError(path)
-    probe = subprocess.run([
+    probe = run_logged_subprocess([
         "ffprobe", "-v", "error",
         "-show_entries", "format=duration",
         "-show_entries", "stream=codec_type,width,height",
@@ -49,12 +51,12 @@ def _create_clip_from_source(src_path: str, out_path: str, desired_duration: flo
         max_start = max(0.0, dur - desired - 1.0)
         start = random.uniform(0, max_start) if max_start > 0 else 0
         cmd = ['ffmpeg', '-y', '-ss', str(start), '-i', src_path, '-t', str(desired), '-c', 'copy', out_path]
-        subprocess.run(cmd, check=True)
+        run_logged_subprocess(cmd, check=True)
         return
 
     loops = int(math.ceil(desired / dur))
     cmd = ['ffmpeg', '-y', '-stream_loop', str(loops - 1), '-i', src_path, '-t', str(desired), '-c', 'copy', out_path]
-    subprocess.run(cmd, check=True)
+    run_logged_subprocess(cmd, check=True)
 
 
 def concat_crop_audio_with_titles(video_paths, audio_path, output_path="final.mp4",
@@ -124,5 +126,5 @@ def concat_crop_audio_with_titles(video_paths, audio_path, output_path="final.mp
         output_path
     ]
     send_discord_message(f"🔧 Rendering final video to: {output_path}")
-    subprocess.run(cmd, check=True)
+    run_logged_subprocess(cmd, check=True)
     return output_path

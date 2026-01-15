@@ -223,6 +223,8 @@
               <input type="number" name="max_episodes" placeholder="Số tập tối đa" min="1">
               <label>Render mode (0/1/2)</label>
               <input type="text" name="render_mode" placeholder="0">
+              <label>Tốc độ tối đa thuyết minh</label>
+              <input type="number" name="narration_max_speed_rate" value="1.2" step="0.05" min="0.5">
               <div class="mb-2"><label>Upload to TikTok</label>
                 <div class="tiktok-row">
                   <div class="tiktok-checkbox"><label style="margin:0"><input type="checkbox" name="is_upload_tiktok"> Upload</label></div>
@@ -279,6 +281,8 @@
                 <option value="vi-VN-Standard-B">vi-VN-Standard-B</option>
                 <option value="vi-VN-Standard-D">vi-VN-Standard-D</option>
               </select>
+              <label>Tốc độ tối đa thuyết minh</label>
+              <input type="number" name="narration_max_speed_rate" value="1.2" step="0.05" min="0.5">
               <label>Âm lượng thuyết minh (dB)</label>
               <input type="number" name="narration_volume_db" value="8" step="0.5">
               <div class="mb-2"><label><input type="checkbox" name="narration_replace_audio"> Thay audio gốc</label></div>
@@ -320,6 +324,8 @@
                 <option value="vi-VN-Standard-B">vi-VN-Standard-B</option>
                 <option value="vi-VN-Standard-D">vi-VN-Standard-D</option>
               </select>
+              <label>Tốc độ tối đa thuyết minh</label>
+              <input type="number" name="narration_max_speed_rate" value="1.2" step="0.05" min="0.5">
               <label>Âm lượng thuyết minh (dB)</label>
               <input type="number" name="narration_volume_db" value="8" step="0.5">
               <div class="mb-2"><label><input type="checkbox" name="narration_replace_audio"> Thay audio gốc</label></div>
@@ -701,7 +707,19 @@
           }
         }catch(e){ }
 
-        const b = { start_url: f.start_url.value.trim(), titles: f.titles.value.trim(), max_episodes: f.max_episodes.value ? Number(f.max_episodes.value) : undefined, render_mode: f.render_mode.value.trim(), voice: (f.voice ? f.voice.value : ''), is_upload_tiktok: f.is_upload_tiktok && f.is_upload_tiktok.checked ? 'true' : 'false', tiktok_tags: _tiktok_tags, cookies: f.cookies && f.cookies.value ? f.cookies.value.trim() : undefined, upload_duration_hours: f.upload_duration_hours && f.upload_duration_hours.value ? Number(f.upload_duration_hours.value) : undefined, bg_choice: f.bg_choice && f.bg_choice.value ? f.bg_choice.value.trim() : undefined };
+        const b = {
+          start_url: f.start_url.value.trim(),
+          titles: f.titles.value.trim(),
+          max_episodes: f.max_episodes.value ? Number(f.max_episodes.value) : undefined,
+          render_mode: f.render_mode.value.trim(),
+          narration_max_speed_rate: f.narration_max_speed_rate && f.narration_max_speed_rate.value ? Number(f.narration_max_speed_rate.value) : 1.2,
+          voice: (f.voice ? f.voice.value : ''),
+          is_upload_tiktok: f.is_upload_tiktok && f.is_upload_tiktok.checked ? 'true' : 'false',
+          tiktok_tags: _tiktok_tags,
+          cookies: f.cookies && f.cookies.value ? f.cookies.value.trim() : undefined,
+          upload_duration_hours: f.upload_duration_hours && f.upload_duration_hours.value ? Number(f.upload_duration_hours.value) : undefined,
+          bg_choice: f.bg_choice && f.bg_choice.value ? f.bg_choice.value.trim() : undefined
+        };
         let btn = f.querySelector('button[type=submit]') || document.getElementById('processSeriesSubmitBtn');
         if(btn) btn.disabled = true;
 
@@ -765,6 +783,7 @@
           narration_voice: f.narration_voice && f.narration_voice.value ? f.narration_voice.value : 'vi-VN-Standard-C',
           narration_volume_db: f.narration_volume_db && f.narration_volume_db.value ? Number(f.narration_volume_db.value) : 8.0,
           narration_replace_audio: f.narration_replace_audio && f.narration_replace_audio.checked ? 'true' : 'false',
+          narration_max_speed_rate: f.narration_max_speed_rate && f.narration_max_speed_rate.value ? Number(f.narration_max_speed_rate.value) : 1.2,
           bg_choice: f.bg_choice && f.bg_choice.value ? f.bg_choice.value.trim() : undefined,
         };
         let btn = f.querySelector('button[type=submit]') || document.getElementById('processPlaylistSubmitBtn');
@@ -795,6 +814,7 @@
           narration_voice: f.narration_voice && f.narration_voice.value ? f.narration_voice.value : 'vi-VN-Standard-C',
           narration_volume_db: f.narration_volume_db && f.narration_volume_db.value ? Number(f.narration_volume_db.value) : 8.0,
           narration_replace_audio: f.narration_replace_audio && f.narration_replace_audio.checked ? 'true' : 'false',
+          narration_max_speed_rate: f.narration_max_speed_rate && f.narration_max_speed_rate.value ? Number(f.narration_max_speed_rate.value) : 1.2,
           bg_choice: f.bg_choice && f.bg_choice.value ? f.bg_choice.value.trim() : undefined,
         };
         let btn = f.querySelector('button[type=submit]') || document.getElementById('processVideoSubmitBtn');

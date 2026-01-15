@@ -1,3 +1,5 @@
+from subprocess_helper import run_logged_subprocess
+
 from fastapi import FastAPI, Query
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.responses import StreamingResponse, HTMLResponse, Response
@@ -306,7 +308,7 @@ def enhance_audio(input_path: str) -> str:
         "-c:a", "flac",
         output_path
     ]
-    subprocess.run(cmd, check=True)
+    run_logged_subprocess(cmd, check=True)
     send_discord_message("✅ Đã tạo audio đã chỉnh tốc: %s", output_path)
     return output_path
 def enhance_audio_gemini(input_path: str) -> str:
@@ -328,7 +330,7 @@ def enhance_audio_gemini(input_path: str) -> str:
         "-c:a", "flac",
         output_path
     ]
-    subprocess.run(cmd, check=True)
+    run_logged_subprocess(cmd, check=True)
     send_discord_message("✅ Đã tạo audio đã chỉnh tốc: %s", output_path)
     return output_path
 def extract_domain_structure(url): 
@@ -739,7 +741,7 @@ def get_media_info(path):
     if not os.path.exists(path):
         raise FileNotFoundError(f"Không tìm thấy file: {path}")
 
-    probe = subprocess.run([
+    probe = run_logged_subprocess([
         "ffprobe", "-v", "error",
         "-show_entries", "format=duration",
         "-show_entries", "stream=codec_type,width,height",
@@ -805,7 +807,7 @@ def get_media_info_fbs(path):
         raise FileNotFoundError(f"Không tìm thấy file: {path}")
 
     # Gọi ffprobe để lấy thông tin video + audio
-    probe = subprocess.run([
+    probe = run_logged_subprocess([
         "ffprobe", "-v", "error",
         "-select_streams", "v:0",  # chỉ lấy stream video đầu tiên
         "-show_entries", "stream=codec_type,width,height,r_frame_rate",
@@ -965,7 +967,7 @@ def concat_crop_audio_youtube(
         ]
 
         send_discord_message("🎬 Render video (concat + crop + loop + audio + title multi-parts)...")
-        result = subprocess.run(cmd, text=True, capture_output=True)
+        result = run_logged_subprocess(cmd, text=True, capture_output=True)
         if result.returncode != 0:
             logging.error(f"❌ FFmpeg error:\n{result.stderr}")
             raise RuntimeError(f"Lỗi khi render video: {result.stderr}")
@@ -999,7 +1001,7 @@ def concat_crop_audio_youtube(
             "-avoid_negative_ts", "make_zero",
             part_path
         ]
-        subprocess.run(cut_cmd, check=True)
+        run_logged_subprocess(cut_cmd, check=True)
         output_files.append(part_path)
 
         send_discord_message(f"✅ Xuất video hoàn tất: {part_path}")
@@ -1039,7 +1041,7 @@ def render_video_only(video_paths, audio_path, output_path="video_ready.mp4",dur
 
     # --- Gộp video tạm ---
     merged_tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4").name
-    subprocess.run([
+    run_logged_subprocess([
         "ffmpeg", "-y", "-f", "concat", "-safe", "0",
         "-i", list_file, "-c", "copy", merged_tmp
     ], check=True)
@@ -1057,7 +1059,7 @@ def render_video_only(video_paths, audio_path, output_path="video_ready.mp4",dur
 
     # --- Lặp video đủ độ dài audio ---
     loop_tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4").name
-    subprocess.run([
+    run_logged_subprocess([
         "ffmpeg", "-y", "-stream_loop", str(loop_count - 1),
         "-i", merged_tmp,
         "-t", str(audio_duration),
@@ -1075,7 +1077,7 @@ def render_video_only(video_paths, audio_path, output_path="video_ready.mp4",dur
 def add_audio_to_video(video_path, audio_path, output_path="final_with_audio.mp4"):
     # Apply optional narration gain so voice is louder relative to any music
     if NARRATION_GAIN_DB and NARRATION_GAIN_DB != 0:
-        subprocess.run([
+        run_logged_subprocess([
             "ffmpeg", "-y",
             "-i", video_path,
             "-i", audio_path,
@@ -1086,7 +1088,7 @@ def add_audio_to_video(video_path, audio_path, output_path="final_with_audio.mp4
             output_path
         ], check=True)
     else:
-        subprocess.run([
+        run_logged_subprocess([
             "ffmpeg", "-y",
             "-i", video_path,
             "-i", audio_path,
@@ -1214,7 +1216,7 @@ def render_add_audio_and_split(video_paths, audio_path, output_path="final.mp4",
         send_discord_message("🎬 Render single-pass (concat+audio+titles)...")
         # Tránh treo do buffer stdout/stderr khi encode lâu: không capture output
         try:
-            subprocess.run(cmd, check=True)
+            run_logged_subprocess(cmd, check=True)
         except subprocess.CalledProcessError as e:
             # Fallback nhẹ nếu bị kill (thường do OOM): render mute video rồi ghép audio và chia part
             if e.returncode in (-9, 137):
@@ -1278,7 +1280,7 @@ def render_add_audio_and_split(video_paths, audio_path, output_path="final.mp4",
             "-c", "copy",
             part_path
         ]
-        subprocess.run(cut_cmd, check=True)
+        run_logged_subprocess(cut_cmd, check=True)
         output_files.append(part_path)
         send_discord_message(f"✅ Xuất video hoàn tất: {part_path}")
 
@@ -1375,7 +1377,7 @@ def concat_and_add_audio(video_paths, audio_path, output_path="final.mp4", Title
         ]
 
         send_discord_message("🎬 Render video (concat + crop + audio)...")
-        result = subprocess.run(cmd, text=True, capture_output=True)
+        result = run_logged_subprocess(cmd, text=True, capture_output=True)
         if result.returncode != 0:
             logging.error(f"❌ FFmpeg error:\n{result.stderr}")
             raise RuntimeError("Lỗi khi render video")
@@ -1458,7 +1460,7 @@ def split_video_by_time_with_title(input_path, base_title=None, font_path="times
             title_len = min(3, duration)
             clip_title = f"{base}_part_{i+1}_title{ext}"
             # encode title portion with drawtext
-            subprocess.run([
+            run_logged_subprocess([
                 "ffmpeg", "-y", "-ss", str(start), "-t", str(title_len),
                 "-i", input_path, "-vf", drawtext,
                 "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
@@ -1470,7 +1472,7 @@ def split_video_by_time_with_title(input_path, base_title=None, font_path="times
             if duration > title_len:
                 clip_rest = f"{base}_part_{i+1}_rest{ext}"
                 # encode rest with matching codec/settings (avoid -c copy to ensure identical parameters)
-                subprocess.run([
+                run_logged_subprocess([
                     "ffmpeg", "-y", "-ss", str(start + title_len), "-t", str(duration - title_len),
                     "-i", input_path,
                     "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
@@ -1483,7 +1485,7 @@ def split_video_by_time_with_title(input_path, base_title=None, font_path="times
                 concat_file = f"{base}_part_{i+1}_list.txt"
                 with open(concat_file, "w", encoding="utf-8") as f:
                     f.write(f"file '{clip_title}'\nfile '{clip_rest}'\n")
-                subprocess.run([
+                run_logged_subprocess([
                     "ffmpeg", "-y", "-fflags", "+genpts", "-f", "concat", "-safe", "0",
                     "-i", concat_file, "-c", "copy", "-movflags", "+faststart", output_path
                 ], check=True)
@@ -1513,7 +1515,7 @@ def split_video_by_time_with_title(input_path, base_title=None, font_path="times
 
         else:
             # Copy toàn bộ nếu không cần title
-            subprocess.run([
+            run_logged_subprocess([
                 "ffmpeg", "-y", "-ss", str(start), "-t", str(duration),
                 "-i", input_path, "-c", "copy", output_path
             ], check=True)
@@ -1581,7 +1583,7 @@ def concat_videos_fast_cpu(video_paths, output_path="merged.mp4"):
         output_path
     ]
 
-    result = subprocess.run(cmd, text=True, capture_output=True)
+    result = run_logged_subprocess(cmd, text=True, capture_output=True)
     if result.returncode != 0:
         send_discord_message("❌ FFmpeg error:\n", result.stderr)
         raise RuntimeError("Lỗi khi concat video")
@@ -1848,7 +1850,7 @@ def combine_video_with_audio(video_path, audio_path, output_path="out.mp4"):
 
 
     send_discord_message("🎬 Đang render video cuối cùng...")
-    subprocess.run(loop_cmd, check=True)
+    run_logged_subprocess(loop_cmd, check=True)
     send_discord_message("✅ Xuất video hoàn tất: %s", output_path)
  
 

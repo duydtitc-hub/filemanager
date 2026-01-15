@@ -30,7 +30,7 @@ from base64 import b64encode, b64decode
 import json as _json
 from google import genai as _genai
 from google.genai import types as gen_types
-from typing import List, Dict
+from typing import List, Dict, Sequence
 from datetime import timedelta
 from pathlib import Path
 import asyncio
@@ -53,7 +53,17 @@ from appTest import uploadOneDrive
 from DiscordMethod import send_discord_message
 from srt_translate import translate_srt_file
 from GetTruyen import get_novel_text_laophatgia, get_novel_text_vivutruyen, get_novel_text, crawl_chapters_until_disabled, get_wattpad_novel
-from appYouTube import generatevideoveo3,concat_crop_audio_youtube,upload_video,render_video_only,add_audio_to_video,split_video_by_time_with_title,render_add_audio_and_split
+from appYouTube import (
+    generatevideoveo3,
+    concat_crop_audio_youtube,
+    upload_video,
+    render_video_only,
+    add_audio_to_video,
+    split_video_by_time_with_title,
+    render_add_audio_and_split,
+)
+from subprocess_helper import run_logged_subprocess
+
 # khởi tạo executor (tùy chỉnh max_workers nếu muốn)
 executor = ThreadPoolExecutor(max_workers=4)
 TASK_QUEUE: asyncio.Queue = asyncio.Queue()
@@ -739,7 +749,7 @@ async def scheduler_tiktok_upload(
             if no_headless:
                 cmd += ['--no-headless']
 
-            proc = subprocess.run(cmd, cwd=BASE_DIR, capture_output=True, text=True)
+            proc = run_logged_subprocess(cmd, cwd=BASE_DIR, capture_output=True, text=True)
             try:
                 logger.debug('tiktok scheduler uploader stdout: %s', proc.stdout)
                 logger.debug('tiktok scheduler uploader stderr: %s', proc.stderr)
@@ -1509,7 +1519,7 @@ def prepare_audio_for_video(input_path: str, bg_choice: str | None = None, narra
         ]
         print(cmd);
         try:
-            subprocess.run(cmd, check=True, capture_output=True)
+            run_logged_subprocess(cmd, check=True, capture_output=True)
             send_discord_message("✅ Audio đã xử lý + nhạc nền: %s", output_path)
             return output_path
         except subprocess.CalledProcessError as e:
@@ -1527,7 +1537,7 @@ def prepare_audio_for_video(input_path: str, bg_choice: str | None = None, narra
             output_path,
         ]    
         try:
-            subprocess.run(cmd, check=True, capture_output=True)
+            run_logged_subprocess(cmd, check=True, capture_output=True)
             send_discord_message("✅ Audio đã xử lý (không có nhạc nền): %s", output_path)
             return output_path
         except subprocess.CalledProcessError as e:
@@ -1551,7 +1561,7 @@ def enhance_audio_gemini(input_path: str) -> str:
         "-c:a", "flac",
         output_path
     ]
-    subprocess.run(cmd, check=True)
+    run_logged_subprocess(cmd, check=True)
     send_discord_message("✅ Đã tạo audio đã chỉnh tốc: %s", output_path)
     return output_path
 
@@ -1631,7 +1641,7 @@ def prepare_audio_for_video_gemini(input_path: str, bg_choice: str | None = None
         ]
 
         try:
-            subprocess.run(cmd, check=True, capture_output=True)
+            run_logged_subprocess(cmd, check=True, capture_output=True)
             send_discord_message("✅ (Gemini) Audio đã xử lý + nhạc nền: %s", output_path)
             return output_path
         except subprocess.CalledProcessError as e:
@@ -1647,7 +1657,7 @@ def prepare_audio_for_video_gemini(input_path: str, bg_choice: str | None = None
     ]
 
     try:
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_logged_subprocess(cmd, check=True, capture_output=True)
         send_discord_message("✅ (Gemini) Audio đã xử lý (không có nhạc nền): %s", output_path)
         return output_path
     except subprocess.CalledProcessError as e:
@@ -1731,7 +1741,7 @@ def prepare_audio_for_video_gemini_male(input_path: str, bg_choice: str | None =
         ]
 
         try:
-            subprocess.run(cmd, check=True, capture_output=True)
+            run_logged_subprocess(cmd, check=True, capture_output=True)
             send_discord_message("✅ (Gemini) Audio đã xử lý + nhạc nền: %s", output_path)
             return output_path
         except subprocess.CalledProcessError as e:
@@ -1747,7 +1757,7 @@ def prepare_audio_for_video_gemini_male(input_path: str, bg_choice: str | None =
     ]
 
     try:
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_logged_subprocess(cmd, check=True, capture_output=True)
         send_discord_message("✅ (Gemini) Audio đã xử lý (không có nhạc nền): %s", output_path)
         return output_path
     except subprocess.CalledProcessError as e:
@@ -1892,7 +1902,7 @@ def _concat_audio_from_list(concat_list_path: str, output_path: str):
         "-b:a", "192k",
         output_path
     ]
-    subprocess.run(cmd, check=True, capture_output=True)
+    run_logged_subprocess(cmd, check=True, capture_output=True)
 
 
 def _create_flac_copy(input_path: str, out_flac: str):
@@ -1901,7 +1911,7 @@ def _create_flac_copy(input_path: str, out_flac: str):
     Raises subprocess.CalledProcessError on failure.
     """
     cmd = ["ffmpeg", "-y", "-i", input_path, "-c:a", "flac", out_flac]
-    subprocess.run(cmd, check=True, capture_output=True)
+    run_logged_subprocess(cmd, check=True, capture_output=True)
 
 
 def combine_audio_files(summary_file: str, content_file: str, output_file: str) -> str:
@@ -2234,7 +2244,7 @@ def download_video_url(url: str, output="temp_video.mp4", retries=3, delay=2, ta
                 _report_and_ignore(e, "ignored")
             try:
                 print(" ".join(cmd + [url]))
-                subprocess.run(cmd + [url], check=True)
+                run_logged_subprocess(cmd + [url], check=True)
             except (subprocess.CalledProcessError, FileNotFoundError) as ytdlp_err:
                 # Fallback: try Python API of yt_dlp to be more portable on Linux
                 try:
@@ -2339,7 +2349,7 @@ def download_video_url(url: str, output="temp_video.mp4", retries=3, delay=2, ta
 
                     send_discord_message("🔧 Tạo bản TikTok-optimized: %s", ff_out)
                     try:
-                        subprocess.run(cmd, check=True, capture_output=True)
+                        run_logged_subprocess(cmd, check=True, capture_output=True)
                         # Processing succeeded: delete original raw cached file to avoid duplication and return processed cache path
                         send_discord_message("🗑️ Xóa video gốc để tiết kiệm dung lượng cache...")
                         try:
@@ -2421,12 +2431,12 @@ def download_video_url(url: str, output="temp_video.mp4", retries=3, delay=2, ta
                     f.write(f"file '{os.path.abspath(p)}'\n")
 
             cmd = ['ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', concat_list, '-c', 'copy', output]
-            subprocess.run(cmd, check=True)
+            run_logged_subprocess(cmd, check=True)
 
             # Trim to exact duration in case of small rounding issues
             tmp_trim = output + '.tmp'
             cmd_trim = ['ffmpeg', '-y', '-i', output, '-t', str(target_duration), '-c', 'copy', tmp_trim]
-            subprocess.run(cmd_trim, check=True)
+            run_logged_subprocess(cmd_trim, check=True)
             shutil.move(tmp_trim, output)
             try:
                 shutil.rmtree(tmp_dir)
@@ -2462,12 +2472,12 @@ def _create_clip_from_source(src_path: str, out_path: str, desired_duration: flo
         max_start = max(0.0, dur - desired - 1.0)
         start = random.uniform(0, max_start) if max_start > 0 else 0
         cmd = ['ffmpeg', '-y', '-ss', str(start), '-i', src_path, '-t', str(desired), '-c', 'copy', out_path]
-        subprocess.run(cmd, check=True)
+        run_logged_subprocess(cmd, check=True)
         return
 
     loops = int(math.ceil(desired / dur))
     cmd = ['ffmpeg', '-y', '-stream_loop', str(loops - 1), '-i', src_path, '-t', str(desired), '-c', 'copy', out_path]
-    subprocess.run(cmd, check=True)
+    run_logged_subprocess(cmd, check=True)
    
 @app.get("/sample_random_mix")
 async def sample_random_mix(count: int = Query(1, description="How many samples to generate (default 1)")):
@@ -2670,7 +2680,7 @@ def get_media_info(path):
     if not os.path.exists(path):
         raise FileNotFoundError(f"Không tìm thấy file: {path}")
 
-    probe = subprocess.run([
+    probe = run_logged_subprocess([
         "ffprobe", "-v", "error",
         "-show_entries", "format=duration",
         "-show_entries", "stream=codec_type,width,height",
@@ -2708,7 +2718,7 @@ def extract_audio_from_video(video_path: str, out_wav: str) -> str:
         'ffmpeg', '-y', '-i', video_path,
         '-vn', '-acodec', 'pcm_s16le', '-ar', '44100', '-ac', '2', out_wav
     ]
-    subprocess.run(cmd, check=True)
+    run_logged_subprocess(cmd, check=True)
     if not os.path.exists(out_wav):
         raise RuntimeError(f"Failed to extract audio to {out_wav}")
     return out_wav
@@ -2938,7 +2948,7 @@ def overlay_logo_on_bbox(src_path: str, out_path: str, bbox: tuple, logo_path: s
     cmd = ['ffmpeg', '-y', '-i', src_path, '-i', logo_path, '-filter_complex', filter_complex]
     cmd.extend(_preferred_video_encode_args())
     cmd.extend(['-c:a', 'copy', out_path])
-    subprocess.run(cmd, check=True)
+    run_logged_subprocess(cmd, check=True)
     print(cmd);
     return out_path
 
@@ -2951,7 +2961,7 @@ def blur_bbox_with_delogo(src_path: str, out_path: str, bbox: tuple) -> str:
     cmd = ['ffmpeg', '-y', '-i', src_path, '-vf', filter_str]
     cmd.extend(_preferred_video_encode_args())
     cmd.extend(['-c:a', 'copy', out_path])
-    subprocess.run(cmd, check=True)
+    run_logged_subprocess(cmd, check=True)
     return out_path
 
 
@@ -3413,7 +3423,7 @@ def get_media_info_fbs(path):
         raise FileNotFoundError(f"Không tìm thấy file: {path}")
 
     # Gọi ffprobe để lấy thông tin video + audio
-    probe = subprocess.run([
+    probe = run_logged_subprocess([
         "ffprobe", "-v", "error",
         "-select_streams", "v:0",  # chỉ lấy stream video đầu tiên
         "-show_entries", "stream=codec_type,width,height,r_frame_rate",
@@ -3581,7 +3591,7 @@ def concat_crop_audio_with_titles(video_paths, audio_path, output_path="final.mp
     cmd.extend(["-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", "-shortest", "-pix_fmt", "yuv420p", output_path])
 
     send_discord_message("🎬 Render video (concat + crop + audio + title multi-parts)...")
-    result = subprocess.run(cmd, text=True, capture_output=True)
+    result = run_logged_subprocess(cmd, text=True, capture_output=True)
     if result.returncode != 0:
         logging.error(f"❌ FFmpeg error:\n{result.stderr}")
         raise RuntimeError("Lỗi khi render video")
@@ -3608,7 +3618,7 @@ def concat_crop_audio_with_titles(video_paths, audio_path, output_path="final.mp
             "-c", "copy",
             part_path
         ]
-        subprocess.run(cut_cmd, check=True)
+        run_logged_subprocess(cut_cmd, check=True)
         output_files.append(part_path)
 
         try:
@@ -3697,7 +3707,7 @@ def concat_and_add_audio(video_paths, audio_path, output_path="final.mp4", Title
     ]
 
     send_discord_message("🎬 Render video (concat + crop + audio)...")
-    result = subprocess.run(cmd, text=True, capture_output=True)
+    result = run_logged_subprocess(cmd, text=True, capture_output=True)
     if result.returncode != 0:
         logging.error(f"❌ FFmpeg error:\n{result.stderr}")
         raise RuntimeError("Lỗi khi render video")
@@ -3721,7 +3731,7 @@ def split_video_by_hour_with_title(input_path, base_title=None, font_path="times
     """
     import math
 
-    result = subprocess.run(
+    result = run_logged_subprocess(
         ["ffprobe", "-v", "error", "-show_entries", "format=duration",
          "-of", "default=noprint_wrappers=1:nokey=1", input_path],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE
@@ -3762,11 +3772,11 @@ def split_video_by_hour_with_title(input_path, base_title=None, font_path="times
             cmd_clip_title = ["ffmpeg", "-y", "-ss", str(start), "-t", "3", "-i", input_path, "-vf", drawtext]
             cmd_clip_title.extend(_preferred_video_encode_args())
             cmd_clip_title.extend(["-c:a", "copy", clip_title])
-            subprocess.run(cmd_clip_title, check=True)
+            run_logged_subprocess(cmd_clip_title, check=True)
 
             # 2️⃣ Copy phần còn lại
             clip_rest = f"{base}_part_{i+1}_rest{ext}"
-            subprocess.run([
+            run_logged_subprocess([
                 "ffmpeg", "-y", "-ss", str(start + 3), "-t", str(duration - 3),
                 "-i", input_path, "-c", "copy", clip_rest
             ], check=True)
@@ -3775,7 +3785,7 @@ def split_video_by_hour_with_title(input_path, base_title=None, font_path="times
             concat_file = f"{base}_part_{i+1}_list.txt"
             with open(concat_file, "w") as f:
                 f.write(f"file '{clip_title}'\nfile '{clip_rest}'\n")
-            subprocess.run([
+            run_logged_subprocess([
                 "ffmpeg", "-y", "-f", "concat", "-safe", "0",
                 "-i", concat_file, "-c", "copy", output_path
             ], check=True)
@@ -3787,7 +3797,7 @@ def split_video_by_hour_with_title(input_path, base_title=None, font_path="times
 
         else:
             # Copy toàn bộ nếu không cần title
-            subprocess.run([
+            run_logged_subprocess([
                 "ffmpeg", "-y", "-ss", str(start), "-t", str(duration),
                 "-i", input_path, "-c", "copy", output_path
             ], check=True)
@@ -3837,7 +3847,7 @@ def concat_videos_fast_cpu(video_paths, output_path="merged.mp4"):
         output_path
     ]
 
-    result = subprocess.run(cmd, text=True, capture_output=True)
+    result = run_logged_subprocess(cmd, text=True, capture_output=True)
     if result.returncode != 0:
         send_discord_message("❌ FFmpeg error:\n", result.stderr)
         raise RuntimeError("Lỗi khi concat video")
@@ -3876,7 +3886,7 @@ def concat_videos_fast_cpu(video_paths, output_path="merged.mp4"):
 #     ]
 # 
 #     try:
-#         subprocess.run(cmd, check=True, capture_output=True)
+#         run_logged_subprocess(cmd, check=True, capture_output=True)
 #     except Exception as e:
 #         send_discord_message(f"⚠️ Lỗi khi chạy sox: {e}. Bỏ qua sox và dùng file gốc.")
 #         # fallback to original behavior: return original or raise
@@ -4034,7 +4044,7 @@ def combine_video_with_audio(video_path, audio_path, output_path="out.mp4"):
 
 
     send_discord_message("🎬 Đang render video cuối cùng...")
-    subprocess.run(loop_cmd, check=True)
+    run_logged_subprocess(loop_cmd, check=True)
     send_discord_message("✅ Xuất video hoàn tất: %s", output_path)
  
 
@@ -4229,7 +4239,8 @@ async def queue_worker(worker_id: int):
                         narration_apply_fx=item.get('narration_apply_fx', 1),
                         bg_choice=item.get('bg_choice'),
                         request_id=task_id,
-                        use_queue=False
+                        use_queue=False,
+                        silent_pass=item.get('silent_pass', False)
                     )
                 except Exception as e:
                     logger.exception("Worker-%s failed running process_video_ytdl for %s: %s", worker_id, task_id, e)
@@ -4643,7 +4654,7 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
                     else:
                         # Fallback: simple ffmpeg SRT->ASS conversion
                         try:
-                            subprocess.run(["ffmpeg", "-y", "-i", burn_srt, ass_path], check=True)
+                            run_logged_subprocess(["ffmpeg", "-y", "-i", burn_srt, ass_path], check=True)
                         except Exception:
                             ass_path = burn_srt
                 
@@ -4671,7 +4682,7 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
                     ]
                     print(cmd)
                     # Run ffmpeg in executor with check=True
-                    await loop.run_in_executor(executor, lambda: subprocess.run(cmd, check=True))
+                    await loop.run_in_executor(executor, lambda: run_logged_subprocess(cmd, check=True))
                     send_discord_message("[%s] ✅ Burned subtitles: %s", task_id, tiktok_video)
                 except Exception as e:
                     send_discord_message("[%s] ⚠️ Worker(convert_stt): burn subtitles (ASS) failed: %s", task_id, e)
@@ -6149,7 +6160,7 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
                             long_clip
                         ]
                         try:
-                            subprocess.run(cmd, check=True, capture_output=True)
+                            run_logged_subprocess(cmd, check=True, capture_output=True)
                         except subprocess.CalledProcessError:
                             # fallback: re-encode to ensure compatibility
                             cmd2 = [
@@ -6162,7 +6173,7 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
                                 "-c:a", "aac", "-b:a", "128k",
                                 long_clip
                             ]
-                            subprocess.run(cmd2, check=True)
+                            run_logged_subprocess(cmd2, check=True)
                     else:
                         # As a last resort just copy the base clip
                         shutil.copy(base_clip, long_clip)
@@ -7701,7 +7712,7 @@ def enhance_video_for_copyright(src_path: str, out_path: str) -> str:
 
             try:
                 cmd_list = shlex.split(cmd_str)
-                subprocess.run(cmd_list, check=True)
+                run_logged_subprocess(cmd_list, check=True)
                 return out_path
             except Exception as e:
                 send_discord_message("⚠️ Lỗi khi chạy lệnh Gemini: %s. Sẽ dùng phương pháp fallback.", e)
@@ -7724,7 +7735,7 @@ def enhance_video_for_copyright(src_path: str, out_path: str) -> str:
         out_path
     ]
 
-    subprocess.run(cmd, check=True)
+    run_logged_subprocess(cmd, check=True)
     return out_path
 
 
@@ -7790,7 +7801,7 @@ def cover_watermark_with_logo(src_path: str, out_path: str, logo_path: str | Non
         '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23',
         '-c:a', 'copy', out_path
     ]
-    subprocess.run(cmd, check=True)
+    run_logged_subprocess(cmd, check=True)
     return out_path
 
 
@@ -7952,7 +7963,7 @@ async def render_tiktok_from_video_url(
                 "ffmpeg", "-y", "-i", dp,
                 "-vn", "-acodec", "libmp3lame", "-ar", "24000", "-ac", "1", mp3_out
             ]
-            subprocess.run(cmd, check=True, capture_output=True)
+            run_logged_subprocess(cmd, check=True, capture_output=True)
             if not os.path.exists(mp3_out):
                 raise RuntimeError("FFmpeg failed to extract audio")
 
@@ -8203,7 +8214,7 @@ def extract_random_segment_from_video(video_path: str, target_duration: float, o
     ]
     
     try:
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_logged_subprocess(cmd, check=True, capture_output=True)
         return output_path
     except subprocess.CalledProcessError as e:
         # Nếu copy codec fail, thử re-encode
@@ -8217,7 +8228,7 @@ def extract_random_segment_from_video(video_path: str, target_duration: float, o
             "-c:a", "aac", "-b:a", "128k",
             output_path
         ]
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_logged_subprocess(cmd, check=True, capture_output=True)
         return output_path
 
 
@@ -8296,7 +8307,7 @@ def split_audio_by_duration(audio_path: str, max_part_duration: int = 3600, outp
         ]
         
         try:
-            subprocess.run(cmd, check=True, capture_output=True)
+            run_logged_subprocess(cmd, check=True, capture_output=True)
             audio_parts.append(part_file)
         except subprocess.CalledProcessError as e:
             send_discord_message(f"❌ Lỗi khi tạo audio part {i+1}: {e.stderr.decode()}")
@@ -8573,7 +8584,7 @@ def render_tiktok_video_from_audio_part(
         output_path
     ]
     send_discord_message(cmd);
-    result = subprocess.run(cmd, text=True, capture_output=True)
+    result = run_logged_subprocess(cmd, text=True, capture_output=True)
     if result.returncode != 0:
         logging.error(f"❌ FFmpeg error:\n{result.stderr}")
         raise RuntimeError(f"Lỗi khi render video part {part_number}")
@@ -9286,7 +9297,7 @@ async def download_bgaudio(
             for attempt in range(1, conv_attempts + 1):
                 try:
                     cmd = ['ffmpeg', '-y', '-i', downloaded_path, '-ar', '48000', '-ac', '2', out_wav]
-                    result = subprocess.run(cmd, capture_output=True, text=True)
+                    result = run_logged_subprocess(cmd, capture_output=True, text=True)
                     if result.returncode == 0 and os.path.exists(out_wav):
                         wav_ok = True
                         break
@@ -9307,7 +9318,7 @@ async def download_bgaudio(
                 out_mp3 = _unique_path(os.path.join(dest_dir, f"{safe_name}.mp3"))
                 try:
                     cmd2 = ['ffmpeg', '-y', '-i', downloaded_path, '-ar', '48000', '-ac', '2', '-b:a', '192k', out_mp3]
-                    r2 = subprocess.run(cmd2, capture_output=True, text=True)
+                    r2 = run_logged_subprocess(cmd2, capture_output=True, text=True)
                     if r2.returncode != 0 or not os.path.exists(out_mp3):
                         logger.error('ffmpeg mp3 fallback failed: %s', r2.stderr)
                         return JSONResponse(status_code=500, content={"ok": False, "error": 'Both WAV and MP3 conversion failed', 'wav_err': last_conv_err, 'mp3_err': r2.stderr})
@@ -9945,7 +9956,7 @@ def burn_subtitles_ass_tiktok(input_video: str, srt_path: str, output_path: str 
             convert_srt_to_ass_convert(srt_path, ass_path, 30, 11, "Noto Sans", 20, 150)
         else:
             try:
-                subprocess.run(["ffmpeg", "-y", "-i", srt_path, ass_path], check=True)
+                run_logged_subprocess(["ffmpeg", "-y", "-i", srt_path, ass_path], check=True)
             except Exception:
                 ass_path = srt_path
 
@@ -9958,7 +9969,7 @@ def burn_subtitles_ass_tiktok(input_video: str, srt_path: str, output_path: str 
             "-c:a", "copy",
             output_path
         ]
-        subprocess.run(cmd, check=True)
+        run_logged_subprocess(cmd, check=True)
         return output_path
     except Exception:
         try:
@@ -9983,13 +9994,94 @@ def _ffmpeg_sub_filter(ass_path: str) -> str:
         return f"subtitles='{subtitle_input_escaped}'"
 
 
-def find_silence_points(video_path: str, chunk_duration: int = 300, silence_threshold: str = '-40dB', min_silence_duration: float = 0.5) -> list:
+def detect_non_speech_split_points(
+    video_path: str,
+    min_gap_duration: float = 0.3,
+) -> list:
+    """Detect non-speech gaps using Faster-Whisper tiny (CPU) and return split points."""
+    import os
+    import tempfile
+
+    fw_model = convert_stt.get_fast_whisper_model(model_size="tiny")
+    if fw_model is None:
+        send_discord_message("⚠️ Faster-Whisper model unavailable, skipping VAD detection")
+        return None
+
+    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+        wav_path = tmp.name
+
+    try:
+        run_logged_subprocess([
+            "ffmpeg", "-y", "-i", video_path,
+            "-ac", "1",
+            "-ar", "16000",
+            "-f", "wav",
+            wav_path
+        ], capture_output=True, check=True)
+
+        try:
+            segments_result = fw_model.transcribe(
+                wav_path,
+                vad_filter=True,
+                vad_parameters={
+                    "threshold": 0.6,                  # tăng để bỏ nhạc nền
+                    "min_speech_duration_ms": 300,     # chỉ giữ thoại đủ dài
+                    "min_silence_duration_ms": 300     # silence tối thiểu
+                },
+                beam_size=1,
+                temperature=0.0,
+                without_timestamps=False,
+                condition_on_previous_text=False
+            )
+        except Exception as exc:
+            send_discord_message(f"⚠️ Faster-Whisper failed: {exc}")
+            raise
+
+        if isinstance(segments_result, tuple) and len(segments_result) >= 1:
+            segments = segments_result[0] or []
+        elif isinstance(segments_result, dict) and "segments" in segments_result:
+            segments = segments_result.get("segments", [])
+        else:
+            try:
+                segments = [seg for seg in segments_result]
+            except Exception:
+                segments = []
+
+        if not segments:
+            send_discord_message("⚠️ Faster-Whisper returned no segments")
+            return None
+
+        split_points = [0.0]
+        last_end = 0.0
+        for seg in segments:
+            start = float(getattr(seg, "start", seg[0] if isinstance(seg, Sequence) else 0))
+            end = float(getattr(seg, "end", seg[1] if isinstance(seg, Sequence) else 0))
+
+            gap = start - last_end
+            if gap >= min_gap_duration:
+                split_points.append(round((last_end + start) / 2, 3))
+
+            last_end = end
+
+        return sorted(set(split_points))
+    finally:
+        if os.path.exists(wav_path):
+            os.remove(wav_path)
+
+
+def find_silence_points(video_path: str, chunk_duration: int = 300, silence_threshold: str = '-25dB', min_silence_duration: float = 0.5,silentpass: bool = False) -> list:
     """Detect silence points in video to find optimal split positions.
+    
+    Phát hiện các khoảng không có thoại (có thể có nhạc nền) để cắt video tại đó.
     
     Args:
         video_path: Path to video file
         chunk_duration: Target duration for each chunk (seconds)
-        silence_threshold: Audio level considered as silence (e.g. '-40dB')
+        silence_threshold: Audio level considered as silence/no-speech
+            - '-40dB' = im lặng hoàn toàn (quá strict)
+            - '-30dB' = rất nhỏ, pause giữa câu
+            - '-25dB' = nhỏ-trung bình, nhạc nền/ambient (RECOMMENDED cho detect gap thoại)
+            - '-20dB' = trung bình, phát hiện cả gap khi có nhạc nền lớn
         min_silence_duration: Minimum duration of silence to detect (seconds)
     
     Returns:
@@ -10003,21 +10095,66 @@ def find_silence_points(video_path: str, chunk_duration: int = 300, silence_thre
         send_discord_message("⚠️ Không lấy được thời lượng video, chia đều")
         return None
     
-    send_discord_message(f"🔍 Phát hiện khoảng lặng trong video ({video_duration:.1f}s)...")
     
-    # Use ffmpeg silencedetect filter
-    cmd = [
-        "ffmpeg", "-i", video_path,
-        "-af", f"silencedetect=noise={silence_threshold}:d={min_silence_duration}",
-        "-f", "null", "-"
-    ]
     
+    
+    if silentpass == True:
+        send_discord_message(f"⚠️ Bỏ qua phát hiện khoảng lặng theo")
+        num_chunks = max(1, int(video_duration / chunk_duration))
+        split_points = [i * (video_duration / num_chunks) for i in range(num_chunks + 1)]
+        send_discord_message(f"✂️ Chia đều thành {num_chunks} phần: {[f'{t:.1f}s' for t in split_points]}")
+        return split_points
+    
+    # Try WebRTC VAD first (more accurate for speech detection)
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True, stderr=subprocess.STDOUT)
-        output = result.stdout
+        send_discord_message("🔍 Phát hiện gap không có thoại (WebRTC VAD)...")
+        
+        vad_splits = detect_non_speech_split_points(
+            video_path,
+            min_gap_duration=0.3,  # 0.2-0.5s depending on speech pace
+                     # 0-3 (2 is balanced)
+        )
+        
+        if vad_splits and len(vad_splits) > 1:
+            send_discord_message(
+                f"✅ VAD phát hiện {len(vad_splits)-1} gap không có thoại: "
+                f"{[f'{t:.1f}s' for t in vad_splits[:10]]}"  # Show first 10
+            )
+            
+            # Add video duration as final point
+            if vad_splits[-1] < video_duration:
+                vad_splits.append(video_duration)
+            
+            return vad_splits
+        else:
+            send_discord_message("⚠️ VAD không tìm thấy gap, thử silencedetect...")
+    
+    except Exception as e:
+        send_discord_message(f"⚠️ VAD lỗi ({e}), fallback silencedetect...")
+    
+    # Fallback to silencedetect if VAD fails or finds nothing
+    # Fallback to silencedetect if VAD fails or finds nothing
+    try:
+        send_discord_message(f"🔍 Fallback: silencedetect (threshold={silence_threshold}, min={min_silence_duration}s)...")
+        # Use silencedetect (NOT silenceremove) - we need to FIND silence positions, not remove them
+        # silencedetect: detects and logs silence positions → use for finding cut points
+        # silenceremove: removes silence from audio → use for audio cleanup
+        # Higher threshold (-25dB) detects speech gaps even with background music
+        cmd = [
+            "ffmpeg", "-i", video_path,
+            "-af", f"silencedetect=noise={silence_threshold}:d={min_silence_duration}:mono=0",
+            "-f", "null", "-"
+        ]
+        result = run_logged_subprocess(cmd, capture_output=True, text=True)
+        # ffmpeg outputs to stderr, so check both
+        output = result.stderr if result.stderr else result.stdout
     except Exception as e:
         send_discord_message(f"⚠️ Lỗi phát hiện silence: {e}, chia đều")
-        return None
+        # Fallback: divide evenly
+        num_chunks = max(1, int(video_duration / chunk_duration))
+        split_points = [i * (video_duration / num_chunks) for i in range(num_chunks + 1)]
+        send_discord_message(f"✂️ Chia đều thành {num_chunks} phần: {[f'{t:.1f}s' for t in split_points]}")
+        return split_points
     
     # Parse silence_start and silence_end from output
     silence_starts = []
@@ -10035,7 +10172,11 @@ def find_silence_points(video_path: str, chunk_duration: int = 300, silence_thre
     
     if not silence_starts and not silence_ends:
         send_discord_message("⚠️ Không tìm thấy khoảng lặng, chia đều")
-        return None
+        # Fallback: divide evenly into chunks
+        num_chunks = max(1, int(video_duration / chunk_duration))
+        split_points = [i * (video_duration / num_chunks) for i in range(num_chunks + 1)]
+        send_discord_message(f"✂️ Chia đều thành {num_chunks} phần: {[f'{t:.1f}s' for t in split_points]}")
+        return split_points
     
     # Calculate silence midpoints (middle of each silent period)
     silence_midpoints = []
@@ -10095,8 +10236,10 @@ def process_long_video_in_chunks(
     narration_rate_dynamic: int = 0,
     narration_apply_fx: int = 1,
     voice_fx_func = None,
+    narration_max_speed_rate: float = 1.15,
     progress_callback: callable = None,
-    chunk_duration: int = 120  # 2 phút (tối ưu cho transcribe chính xác)
+    chunk_duration: int = 120,  # 2 phút (tối ưu cho transcribe chính xác),
+    silentPass: bool = False   
 ) -> dict:
     """Process long video by splitting at silence points, processing each independently, then concatenating.
     
@@ -10153,6 +10296,7 @@ def process_long_video_in_chunks(
             narration_rate_dynamic=narration_rate_dynamic,
             narration_apply_fx=narration_apply_fx,
             voice_fx_func=voice_fx_func,
+            narration_max_speed_rate=narration_max_speed_rate,
             progress_callback=progress_callback
         )
         # Wrap in lists for consistency
@@ -10164,7 +10308,7 @@ def process_long_video_in_chunks(
         return result
     
     # Video is long, find optimal split points at silence
-    split_points = find_silence_points(video_path, chunk_duration)
+    split_points = find_silence_points(video_path, chunk_duration, silentpass=silentPass)
     
     if split_points is None:
         # Fallback to equal splits if silence detection fails
@@ -10207,7 +10351,7 @@ def process_long_video_in_chunks(
                 "-c", "copy",
                 chunk_video
             ]
-            subprocess.run(cmd, check=True)
+            run_logged_subprocess(cmd, check=True)
             send_discord_message(f"✅ Đã tách chunk {chunk_idx}")
         else:
             send_discord_message(f"♻️ Chunk {chunk_idx} đã tồn tại")
@@ -10236,6 +10380,7 @@ def process_long_video_in_chunks(
             narration_rate_dynamic=narration_rate_dynamic,
             narration_apply_fx=narration_apply_fx,
             voice_fx_func=voice_fx_func,
+            narration_max_speed_rate=narration_max_speed_rate,
             progress_callback=chunk_progress
         )
         
@@ -10270,7 +10415,7 @@ def process_long_video_in_chunks(
         "-c", "copy",
         final_video
     ]
-    subprocess.run(cmd, check=True)
+    run_logged_subprocess(cmd, check=True)
     
     send_discord_message(f"✅ Đã nối video FULL hoàn chỉnh: {final_video}")
     
@@ -10302,6 +10447,7 @@ def process_single_video_pipeline(
     narration_rate_dynamic: int = 0,
     narration_apply_fx: int = 1,
     voice_fx_func = None,
+    narration_max_speed_rate: float = 1.15,
     progress_callback: callable = None,
     skip_transcribe: bool = False,
     skip_translate: bool = False,
@@ -10442,7 +10588,9 @@ def process_single_video_pipeline(
                 rate_mode=narration_rate_dynamic,
                 apply_fx=bool(narration_apply_fx),
                 tmp_subdir=tts_pieces_dir,
-                voice_fx_func=voice_fx_func
+                voice_fx_func=voice_fx_func,
+                no_overlap = True,
+                max_speed_rate=narration_max_speed_rate
             )
             nar_audio_path = nar_flac
             send_discord_message(f"✅ Đã tạo thuyết minh: {nar_flac}")
@@ -10461,7 +10609,7 @@ def process_single_video_pipeline(
                 ass_file = ass_path
             except Exception:
                 # Fallback to ffmpeg conversion
-                subprocess.run(["ffmpeg", "-y", "-i", vi_srt, ass_path], check=True)
+                run_logged_subprocess(["ffmpeg", "-y", "-i", vi_srt, ass_path], check=True)
                 ass_file = ass_path
     
     # Step 5: Render final video
@@ -10509,7 +10657,7 @@ def process_single_video_pipeline(
                 cmd = ["ffmpeg", "-y", "-i", video_path, "-vf", sub_filter]
                 cmd.extend(_preferred_video_encode_args())
                 cmd.extend(["-c:a", "copy", final_video])
-                subprocess.run(cmd, check=True)
+                run_logged_subprocess(cmd, check=True)
             else:
                 # No subtitles, no narration: just copy
                 shutil.copy2(video_path, final_video)
@@ -10562,7 +10710,7 @@ def burn_and_mix_narration(src_video: str, ass_path: str | None, narr_file: str,
         else:
             vchain = f"[0:v]{tpad},setpts=PTS[v]" if tpad else "[0:v]setpts=PTS[v]"
 
-        nar_chain = f"[1:a]adelay={shift_ms}|{shift_ms},volume={narr_vol_lin}[nar]"
+        nar_chain = f"[1:a]aresample=48000,adelay={shift_ms}|{shift_ms},volume={narr_vol_lin}[nar]"
 
         if replace_audio:
             filt = ";".join([vchain, nar_chain])
@@ -10571,16 +10719,17 @@ def burn_and_mix_narration(src_video: str, ass_path: str | None, narr_file: str,
             cmd.extend(_preferred_audio_encode_args())
             cmd.append(out_path)
         else:
-            vid_bg = f"[0:a]volume={10 ** ((-9.0) / 20):.6f}[bg]"
-            amix = f"[bg][nar]amix=inputs=2:duration=longest:normalize=0[a]"
-            filt = ";".join([vchain, vid_bg, nar_chain, amix])
+            vid_bg = f"[0:a]aresample=48000,volume={10 ** ((-9.0) / 20):.6f}[bg]"
+            amix = f"[bg][nar]amix=inputs=2:duration=longest:normalize=0[mix]"
+            final_mix = "[mix]volume=0.92[a]"
+            filt = ";".join([vchain, vid_bg, nar_chain, amix, final_mix])
             cmd = ["ffmpeg", "-y", "-i", src_for_ff, "-i", narr_file_local, "-filter_complex", filt, "-map", "[v]", "-map", "[a]"]
             cmd.extend(_preferred_video_encode_args())
             cmd.extend(_preferred_audio_encode_args())
             cmd.append(out_path)
 
         try:
-            subprocess.run(cmd, check=True)
+            run_logged_subprocess(cmd, check=True, capture_output=True, text=True)
             return True
         except Exception:
             # fallback to the previous Python helper
@@ -10674,6 +10823,7 @@ async def process_series(
             "narration_volume_db": narration_volume_db,
             "narration_rate_dynamic": narration_rate_dynamic,
             "narration_apply_fx": narration_apply_fx,
+            "narration_max_speed_rate": narration_max_speed_rate,
             "bg_choice": bg_choice,
             "is_upload_tiktok": bool(is_upload_tiktok),
             "upload_duration_hours": _coerce_hours(upload_duration_hours),
@@ -10946,7 +11096,7 @@ async def process_series(
                     import json
                     def get_info(p):
                         cmd = ['ffprobe', '-v', 'error', '-print_format', 'json', '-show_streams', p]
-                        proc = subprocess.run(cmd, capture_output=True, text=True)
+                        proc = run_logged_subprocess(cmd, capture_output=True, text=True)
                         if proc.returncode != 0:
                             return None
                         return json.loads(proc.stdout)
@@ -10980,7 +11130,7 @@ async def process_series(
 
             def _has_encoder(enc_name: str) -> bool:
                 try:
-                    p = subprocess.run(['ffmpeg', '-hide_banner', '-encoders'], capture_output=True, text=True)
+                    p = run_logged_subprocess(['ffmpeg', '-hide_banner', '-encoders'], capture_output=True, text=True)
                     return enc_name in p.stdout
                 except Exception:
                     return False
@@ -10997,7 +11147,7 @@ async def process_series(
                             with open(concat_list, 'w', encoding='utf-8') as f:
                                 for p in grp:
                                     f.write(f"file '{os.path.abspath(p)}'\n")
-                            subprocess.run(['ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', concat_list, '-c', 'copy', group_out], check=True)
+                            run_logged_subprocess(['ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', concat_list, '-c', 'copy', group_out], check=True)
                             used_encoder = None
                         else:
                             # choose best available encoder (prefer libx265)
@@ -11016,7 +11166,7 @@ async def process_series(
                             ff_args.extend(v_args)
                             ff_args.extend(a_args)
                             ff_args.append(group_out)
-                            subprocess.run(ff_args, check=True)
+                            run_logged_subprocess(ff_args, check=True)
                             used_encoder = enc
                     except Exception:
                         # Last resort: try concat-copy (best effort)
@@ -11025,7 +11175,7 @@ async def process_series(
                             with open(concat_list, 'w', encoding='utf-8') as f:
                                 for p in grp:
                                     f.write(f"file '{os.path.abspath(p)}'\n")
-                            subprocess.run(['ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', concat_list, '-c', 'copy', group_out], check=True)
+                            run_logged_subprocess(['ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', concat_list, '-c', 'copy', group_out], check=True)
                         except Exception as e:
                             _report_and_ignore(e, "ignored")
                             continue
@@ -11058,7 +11208,7 @@ async def process_series(
                             cmd_title = ["ffmpeg", "-y", "-i", group_out, "-vf", drawtext]
                             cmd_title.extend(_preferred_video_encode_args())
                             cmd_title.extend(["-c:a", "copy", tmp_title])
-                            subprocess.run(cmd_title, check=True)
+                            run_logged_subprocess(cmd_title, check=True)
                             os.replace(tmp_title, group_out)
                         except Exception as e:
                             _report_and_ignore(e, "ignored")
@@ -11174,7 +11324,7 @@ async def process_series(
                                         msg_parts.append("nhạc nền")
                                     send_discord_message(f"🎬 Đang render nhóm {g_idx}: {' + '.join(msg_parts)}...")
                                     
-                                    subprocess.run(cmd, check=True, capture_output=True)
+                                    run_logged_subprocess(cmd, check=True, capture_output=True)
                                     os.replace(tmp_output, group_out)
                                     
                                     success_parts = []
@@ -11199,7 +11349,7 @@ async def process_series(
                         for p in range(parts):
                             start = p * 3600
                             outp = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx}_P{p+1}.mp4")
-                            subprocess.run(['ffmpeg', '-y', '-ss', str(start), '-i', group_out, '-t', '3600', '-c', 'copy', outp], check=True)
+                            run_logged_subprocess(['ffmpeg', '-y', '-ss', str(start), '-i', group_out, '-t', '3600', '-c', 'copy', outp], check=True)
                             final_files.append(outp)
                         # Immediately announce each split part for this group (Drive upload removed)
                         try:
@@ -11632,7 +11782,7 @@ async def process_series(
                                             ass_path = vi_srt
                                     else:
                                         try:
-                                            subprocess.run(["ffmpeg", "-y", "-i", vi_srt, ass_path], check=True)
+                                            run_logged_subprocess(["ffmpeg", "-y", "-i", vi_srt, ass_path], check=True)
                                         except Exception:
                                             ass_path = vi_srt
                                 else:
@@ -11740,7 +11890,9 @@ async def process_series(
                                                 trim=False,
                                                 rate_mode=narration_rate_dynamic,
                                                 apply_fx=bool(narration_apply_fx),
-                                                tmp_subdir=tts_pieces_dir
+                                                tmp_subdir=tts_pieces_dir,
+                                                max_speed_rate=narration_max_speed_rate,
+                                                no_overlap = True
                                             )
                                             if os.path.exists(nar_out_flac):
                                                 try:
@@ -11795,7 +11947,9 @@ async def process_series(
                                     trim=False,
                                     rate_mode=narration_rate_dynamic,
                                     apply_fx=bool(narration_apply_fx),
-                                    tmp_subdir=tts_pieces_dir
+                                    tmp_subdir=tts_pieces_dir,
+                                    max_speed_rate=narration_max_speed_rate,
+                                    no_overlap = True
                                 )
                                 # ensure ep_narr_out path set
                                 ep_narr_out = os.path.join(run_dir, f"{ep_label}.nar.mp4")
@@ -11861,7 +12015,7 @@ async def process_series(
                                     cmd.extend(_preferred_audio_encode_args())
                                     cmd.append(ep_narr_out)
                                 try:
-                                    subprocess.run(cmd, check=True)
+                                    run_logged_subprocess(cmd, check=True)
                                     narrated_videos.append(ep_narr_out)
                                     # Track final per-episode video for grouping
                                     if 1 <= i <= total_eps:
@@ -12036,7 +12190,7 @@ async def process_series(
                             convert_srt_to_ass_convert(use_srt, ass_path, 30, 11, "Noto Sans", 20, 150)
                         else:
                             try:
-                                subprocess.run(["ffmpeg", "-y", "-i", use_srt, ass_path], check=True)
+                                run_logged_subprocess(["ffmpeg", "-y", "-i", use_srt, ass_path], check=True)
                             except Exception:
                                 ass_path = use_srt
 
@@ -12090,7 +12244,9 @@ async def process_series(
                                     trim=False,
                                     rate_mode=narration_rate_dynamic,
                                     apply_fx=bool(narration_apply_fx),
-                                    tmp_subdir=tts_pieces_dir
+                                    tmp_subdir=tts_pieces_dir,
+                                    max_speed_rate=narration_max_speed_rate,
+                                    no_overlap = True
                                 )
                                 # Ensure FLAC path reference uses outputs
                                 if nar_audio != nar_out_flac:
@@ -12117,7 +12273,7 @@ async def process_series(
                                             ass_path = use_srt
                                     else:
                                         try:
-                                            subprocess.run(["ffmpeg", "-y", "-i", use_srt, ass_path], check=True)
+                                            run_logged_subprocess(["ffmpeg", "-y", "-i", use_srt, ass_path], check=True)
                                         except Exception:
                                             ass_path = use_srt
 
@@ -12152,7 +12308,7 @@ async def process_series(
                                         cmd.extend(_preferred_video_encode_args())
                                         cmd.extend(_preferred_audio_encode_args())
                                         cmd.append(ep_narr_out)
-                                    subprocess.run(cmd, check=True)
+                                    run_logged_subprocess(cmd, check=True)
                                     narrated_videos.append(ep_narr_out)
                                     # Track final per-episode video for grouping
                                     if 1 <= i <= total_eps:
@@ -12832,7 +12988,7 @@ async def process_series_episodes(
                                             ass_path = vi_srt
                                     else:
                                         try:
-                                            subprocess.run(["ffmpeg", "-y", "-i", vi_srt, ass_path], check=True)
+                                            run_logged_subprocess(["ffmpeg", "-y", "-i", vi_srt, ass_path], check=True)
                                         except Exception:
                                             ass_path = vi_srt
                                 else:
@@ -12938,7 +13094,9 @@ async def process_series_episodes(
                                                 trim=False,
                                                 rate_mode=narration_rate_dynamic,
                                                 apply_fx=bool(narration_apply_fx),
-                                                tmp_subdir=tts_pieces_dir
+                                                tmp_subdir=tts_pieces_dir,
+                                                max_speed_rate=narration_max_speed_rate,
+                                                no_overlap = True
                                             )
                                             if os.path.exists(nar_out_flac):
                                                 try:
@@ -12995,7 +13153,9 @@ async def process_series_episodes(
                                     trim=False,
                                     rate_mode=narration_rate_dynamic,
                                     apply_fx=bool(narration_apply_fx),
-                                    tmp_subdir=tts_pieces_dir
+                                    tmp_subdir=tts_pieces_dir,
+                                    max_speed_rate=narration_max_speed_rate,
+                                    no_overlap = True
                                 )
                                 # ensure ep_narr_out path set
                                 ep_narr_out = os.path.join(run_dir, f"{ep_label}.nar.mp4")
@@ -13061,7 +13221,7 @@ async def process_series_episodes(
                                     cmd.extend(_preferred_audio_encode_args())
                                     cmd.append(ep_narr_out)
                                 try:
-                                    subprocess.run(cmd, check=True)
+                                    run_logged_subprocess(cmd, check=True)
                                     narrated_videos.append(ep_narr_out)
                                     if 1 <= i <= total_eps:
                                         episode_videos[i-1] = ep_narr_out
@@ -13233,7 +13393,7 @@ async def process_series_episodes(
                             convert_srt_to_ass_convert(use_srt, ass_path, 30, 11, "Noto Sans", 20, 150)
                         else:
                             try:
-                                subprocess.run(["ffmpeg", "-y", "-i", use_srt, ass_path], check=True)
+                                run_logged_subprocess(["ffmpeg", "-y", "-i", use_srt, ass_path], check=True)
                             except Exception:
                                 ass_path = use_srt
 
@@ -13282,7 +13442,9 @@ async def process_series_episodes(
                                     trim=False,
                                     rate_mode=narration_rate_dynamic,
                                     apply_fx=bool(narration_apply_fx),
-                                    tmp_subdir=tts_pieces_dir
+                                    tmp_subdir=tts_pieces_dir,
+                                    max_speed_rate=narration_max_speed_rate,
+                                    no_overlap = True
                                 )
                                 # Ensure FLAC path reference uses outputs
                                 if nar_audio != nar_out_flac:
@@ -13309,7 +13471,7 @@ async def process_series_episodes(
                                             ass_path = use_srt
                                     else:
                                         try:
-                                            subprocess.run(["ffmpeg", "-y", "-i", use_srt, ass_path], check=True)
+                                            run_logged_subprocess(["ffmpeg", "-y", "-i", use_srt, ass_path], check=True)
                                         except Exception:
                                             ass_path = use_srt
 
@@ -13344,7 +13506,7 @@ async def process_series_episodes(
                                         cmd.extend(_preferred_video_encode_args())
                                         cmd.extend(_preferred_audio_encode_args())
                                         cmd.append(ep_narr_out)
-                                    subprocess.run(cmd, check=True)
+                                    run_logged_subprocess(cmd, check=True)
                                     narrated_videos.append(ep_narr_out)
                                     try:
                                         rel = to_project_relative_posix(ep_narr_out)
@@ -13436,7 +13598,7 @@ async def process_series_episodes(
                     import json
                     def get_info(p):
                         cmd = ['ffprobe', '-v', 'error', '-print_format', 'json', '-show_streams', p]
-                        proc = subprocess.run(cmd, capture_output=True, text=True)
+                        proc = run_logged_subprocess(cmd, capture_output=True, text=True)
                         if proc.returncode != 0:
                             return None
                         return json.loads(proc.stdout)
@@ -13470,7 +13632,7 @@ async def process_series_episodes(
 
             def _has_encoder(enc_name: str) -> bool:
                 try:
-                    p = subprocess.run(['ffmpeg', '-hide_banner', '-encoders'], capture_output=True, text=True)
+                    p = run_logged_subprocess(['ffmpeg', '-hide_banner', '-encoders'], capture_output=True, text=True)
                     return enc_name in p.stdout
                 except Exception:
                     return False
@@ -13489,7 +13651,7 @@ async def process_series_episodes(
                         with open(concat_list, 'w', encoding='utf-8') as f:
                             for p in grp:
                                 f.write(f"file '{os.path.abspath(p)}'\n")
-                        subprocess.run(['ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', concat_list, '-c', 'copy', group_out], check=True)
+                        run_logged_subprocess(['ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', concat_list, '-c', 'copy', group_out], check=True)
                         used_encoder = None
                     else:
                         # choose best available encoder (prefer libx265)
@@ -13508,7 +13670,7 @@ async def process_series_episodes(
                         ff_args.extend(v_args)
                         ff_args.extend(a_args)
                         ff_args.append(group_out)
-                        subprocess.run(ff_args, check=True)
+                        run_logged_subprocess(ff_args, check=True)
                         used_encoder = enc
                 except Exception:
                     # Last resort: try concat-copy (best effort)
@@ -13516,7 +13678,7 @@ async def process_series_episodes(
                     with open(concat_list, 'w', encoding='utf-8') as f:
                         for p in grp:
                             f.write(f"file '{os.path.abspath(p)}'\n")
-                    subprocess.run(['ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', concat_list, '-c', 'copy', group_out], check=True)
+                    run_logged_subprocess(['ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', concat_list, '-c', 'copy', group_out], check=True)
                     used_encoder = None
 
                 # Overlay title for 3s at start indicating starting episode or FULL
@@ -13545,7 +13707,7 @@ async def process_series_episodes(
                         cmd_title = ["ffmpeg", "-y", "-i", group_out, "-vf", drawtext]
                         cmd_title.extend(_preferred_video_encode_args())
                         cmd_title.extend(["-c:a", "copy", tmp_title])
-                        subprocess.run(cmd_title, check=True)
+                        run_logged_subprocess(cmd_title, check=True)
                         os.replace(tmp_title, group_out)
                     except Exception as e:
                         _report_and_ignore(e, "ignored")
@@ -13565,7 +13727,7 @@ async def process_series_episodes(
                     for p in range(parts):
                         start = p * 3600
                         outp = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx}_P{p+1}.mp4")
-                        subprocess.run(['ffmpeg', '-y', '-ss', str(start), '-i', group_out, '-t', '3600', '-c', 'copy', outp], check=True)
+                        run_logged_subprocess(['ffmpeg', '-y', '-ss', str(start), '-i', group_out, '-t', '3600', '-c', 'copy', outp], check=True)
                         final_files.append(outp)
                     # Immediately announce and upload each split part for this group
                     try:
@@ -13901,9 +14063,11 @@ async def process_video_ytdl(
     narration_volume_db: float = Query(8.0, description='Âm lượng thuyết minh khi trộn (dB)'),
     narration_rate_dynamic: int = Query(0, description='1: dùng tốc độ nói động (1.28–1.40), 0: cố định 1.0'),
     narration_apply_fx: int = Query(1, description='1: áp EQ/tone/time filter cho giọng thuyết minh'),
+    narration_max_speed_rate: float = Query(1.15, description='Giới hạn tốc độ tối đa mà narration có thể đạt'),
     bg_choice: str | None = Query(None, description='Tên file nhạc nền (optional)'),
     request_id: str | None = Query(None, description='(internal) reuse existing task_id'),
-    use_queue: bool = Query(True, description='If True enqueue the job into TASK_QUEUE instead of running inline')
+    use_queue: bool = Query(True, description='If True enqueue the job into TASK_QUEUE instead of running inline'),
+    silent_pass: bool = Query(False, description='If True skip silence detection errors'),
 ):
     """Download a video using yt-dlp, create subtitles, translate them, create narration,
     and render with [FULL] title overlay. Saves to folder safename(title).
@@ -13944,8 +14108,10 @@ async def process_video_ytdl(
             "narration_volume_db": narration_volume_db,
             "narration_rate_dynamic": narration_rate_dynamic,
             "narration_apply_fx": narration_apply_fx,
+            "narration_max_speed_rate": narration_max_speed_rate,
             "bg_choice": bg_choice,
-            "with_subtitles": with_subtitles
+            "with_subtitles": with_subtitles,
+            "silent_pass": silent_pass,
         }
         try:
             save_tasks(tasks_local)
@@ -13964,7 +14130,9 @@ async def process_video_ytdl(
             "narration_volume_db": narration_volume_db,
             "narration_rate_dynamic": narration_rate_dynamic,
             "narration_apply_fx": narration_apply_fx,
+            "narration_max_speed_rate": narration_max_speed_rate,
             "bg_choice": bg_choice,
+            "silent_pass": silent_pass
         }
         try:
             await enqueue_task(payload)
@@ -14007,8 +14175,10 @@ async def process_video_ytdl(
                 "narration_volume_db": narration_volume_db,
                 "narration_rate_dynamic": narration_rate_dynamic,
                 "narration_apply_fx": narration_apply_fx,
+                "narration_max_speed_rate": narration_max_speed_rate,
                 "bg_choice": bg_choice,
-                "with_subtitles": with_subtitles
+                "with_subtitles": with_subtitles,
+                "silent_pass": silent_pass,
             }
             try:
                 save_tasks(tasks_local)
@@ -14131,8 +14301,10 @@ async def process_video_ytdl(
                     narration_rate_dynamic=narration_rate_dynamic,
                     narration_apply_fx=narration_apply_fx,
                     voice_fx_func=narration_from_srt.gemini_voice_fx,
+                    narration_max_speed_rate=narration_max_speed_rate,
                     progress_callback=progress_callback,
-                    chunk_duration=120  # 2 phút (tối ưu cho transcribe)
+                    chunk_duration=120,  # 2 phút (tối ưu cho transcribe)
+                    silentPass=silent_pass
                 )
                 final_video = result['final_video']
             except Exception as e:
@@ -14253,7 +14425,7 @@ async def process_video_ytdl(
                             msg_parts.append("nhạc nền")
                         send_discord_message(f"🎬 Đang render {' + '.join(msg_parts)}...")
                         
-                        subprocess.run(cmd, check=True, capture_output=True)
+                        run_logged_subprocess(cmd, check=True, capture_output=True)
                         os.replace(tmp_output, final_video)
                         
                         success_parts = []
@@ -14350,9 +14522,11 @@ async def process_playlist_ytdl(
     narration_volume_db: float = Query(8.0, description='Âm lượng thuyết minh khi trộn (dB)'),
     narration_rate_dynamic: int = Query(0, description='1: dùng tốc độ nói động (1.28–1.40), 0: cố định 1.0'),
     narration_apply_fx: int = Query(1, description='1: áp EQ/tone/time filter cho giọng thuyết minh'),
+    narration_max_speed_rate: float = Query(1.15, description='Giới hạn tốc độ tối đa mà narration có thể đạt'),
     bg_choice: str | None = Query(None, description='Tên file nhạc nền (optional, áp dụng cho mỗi group/tập hoặc FULL video)'),
     request_id: str | None = Query(None, description='(internal) reuse existing task_id'),
-    use_queue: bool = Query(True, description='If True enqueue the job into TASK_QUEUE instead of running inline')
+    use_queue: bool = Query(True, description='If True enqueue the job into TASK_QUEUE instead of running inline'),
+    silent_pass: bool = Query(False, description='If True skip silence detection errors')
 ):
     """Download a playlist using yt-dlp, group 4 videos into 1 episode or create FULL video.
     Similar to process_series but downloads from YouTube playlist.
@@ -14417,6 +14591,7 @@ async def process_playlist_ytdl(
             "narration_volume_db": narration_volume_db,
             "narration_rate_dynamic": narration_rate_dynamic,
             "narration_apply_fx": narration_apply_fx,
+            "narration_max_speed_rate": narration_max_speed_rate,
             "bg_choice": bg_choice,
         }
         try:
@@ -14460,6 +14635,7 @@ async def process_playlist_ytdl(
                 "narration_volume_db": narration_volume_db,
                 "narration_rate_dynamic": narration_rate_dynamic,
                 "narration_apply_fx": narration_apply_fx,
+                "narration_max_speed_rate": narration_max_speed_rate,
                 "with_subtitles": with_subtitles,
                 "bg_choice": bg_choice,
                 "render_full": render_full,
@@ -14642,7 +14818,8 @@ async def process_playlist_ytdl(
                         narration_apply_fx=narration_apply_fx,
                         voice_fx_func=narration_from_srt.gemini_voice_fx,
                         progress_callback=progress_callback,
-                        chunk_duration=120  # 2 phút (tối ưu cho transcribe)
+                        chunk_duration=120,  # 2 phút (tối ưu cho transcribe),
+                        silentPass=silent_pass
                     )
                     
                     final_video = result['final_video']
@@ -14678,7 +14855,7 @@ async def process_playlist_ytdl(
                 try:
                     def get_info(p):
                         cmd = ['ffprobe', '-v', 'error', '-print_format', 'json', '-show_streams', p]
-                        proc = subprocess.run(cmd, capture_output=True, text=True)
+                        proc = run_logged_subprocess(cmd, capture_output=True, text=True)
                         if proc.returncode != 0:
                             return None
                         return json.loads(proc.stdout)
@@ -14711,7 +14888,7 @@ async def process_playlist_ytdl(
             # Helper: check encoder availability
             def _has_encoder(enc_name: str) -> bool:
                 try:
-                    p = subprocess.run(['ffmpeg', '-hide_banner', '-encoders'], capture_output=True, text=True)
+                    p = run_logged_subprocess(['ffmpeg', '-hide_banner', '-encoders'], capture_output=True, text=True)
                     return enc_name in p.stdout
                 except Exception:
                     return False
@@ -14758,7 +14935,7 @@ async def process_playlist_ytdl(
                         with open(concat_list, 'w', encoding='utf-8') as f:
                             for p in group_videos:
                                 f.write(f"file '{os.path.abspath(p)}'\n")
-                        subprocess.run(['ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', concat_list, '-c', 'copy', group_out], check=True)
+                        run_logged_subprocess(['ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', concat_list, '-c', 'copy', group_out], check=True)
                     else:
                         enc = 'libx265' if _has_encoder('libx265') else 'libx264'
                         if enc == 'libx265':
@@ -14774,7 +14951,7 @@ async def process_playlist_ytdl(
                         ff_args.extend(v_args)
                         ff_args.extend(a_args)
                         ff_args.append(group_out)
-                        subprocess.run(ff_args, check=True)
+                        run_logged_subprocess(ff_args, check=True)
                 except Exception as e:
                     send_discord_message(f"⚠️ Lỗi ghép group {g_idx}: {e}")
                     continue
@@ -14884,7 +15061,7 @@ async def process_playlist_ytdl(
                                     msg_parts.append("nhạc nền")
                                 send_discord_message(f"🎬 Đang render group {g_idx}: {' + '.join(msg_parts)}...")
                                 
-                                subprocess.run(cmd, check=True, capture_output=True)
+                                run_logged_subprocess(cmd, check=True, capture_output=True)
                                 os.replace(tmp_output, group_out)
                                 
                                 success_parts = []
@@ -14910,7 +15087,7 @@ async def process_playlist_ytdl(
                     for p in range(parts):
                         start = p * 3600
                         outp = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx}_P{p+1}.mp4")
-                        subprocess.run(['ffmpeg', '-y', '-ss', str(start), '-i', group_out, '-t', '3600', '-c', 'copy', outp], check=True)
+                        run_logged_subprocess(['ffmpeg', '-y', '-ss', str(start), '-i', group_out, '-t', '3600', '-c', 'copy', outp], check=True)
                         final_groups.append(outp)
                     # Announce split parts
                     for p in range(parts):
@@ -15090,9 +15267,9 @@ async def api_convert_stt(
                 res_srt_path = cs.transcribe(out_video, task_id=request_id)
             else:
                 wav = base_prefix + ".wav"
-                subprocess.run(['ffmpeg', '-y', '-i', out_video, '-vn', '-acodec', 'pcm_s16le', '-ar', '16000', '-ac', '1', wav], check=True, capture_output=True)
+                run_logged_subprocess(['ffmpeg', '-y', '-i', out_video, '-vn', '-acodec', 'pcm_s16le', '-ar', '16000', '-ac', '1', wav], check=True, capture_output=True)
                 whisper_cmd = ['whisper', wav, '--model', 'small', '--output_format', 'srt', '--output_dir', OUTPUT_DIR]
-                res = subprocess.run(whisper_cmd, capture_output=True, text=True)
+                res = run_logged_subprocess(whisper_cmd, capture_output=True, text=True)
                 res_srt_path = os.path.splitext(wav)[0] + '.srt' if res.returncode == 0 and os.path.exists(os.path.splitext(wav)[0] + '.srt') else None
             if not res_srt_path or not os.path.exists(res_srt_path):
                 raise RuntimeError("Transcription failed")
@@ -15135,7 +15312,7 @@ async def api_convert_stt(
                 use_srt = vi_srt if os.path.exists(vi_srt) else (raw_srt if os.path.exists(raw_srt) else None)
                 if use_srt:
                     nar_tmp = base_prefix + ".nar.flac"
-                    nar_audio, _meta = narration_from_srt.build_narration_schedule(use_srt, nar_tmp, voice_name=narration_voice, speaking_rate=1.0, lead=0.0, meta_out=None, trim=False, tmp_subdir=request_id)
+                    nar_audio, _meta = narration_from_srt.build_narration_schedule(use_srt, nar_tmp, voice_name=narration_voice, speaking_rate=1.0, lead=0.0, meta_out=None, trim=False, tmp_subdir=request_id, no_overlap = True)
                     narr_out = base_prefix + ".narr.mp4"
                     narration_from_srt.mix_narration_into_video(tiktok_out, nar_audio, narr_out, narration_volume_db=narration_volume_db if narration_volume_db is not None else 3.0, replace_audio=narration_replace_audio, extend_video=True, shift_sec=0.0, video_volume_db=-3.0)
                     final_out = narr_out
@@ -15237,6 +15414,7 @@ async def add_narration_from_srt(
     output_path: str | None = Query(None, description="Đường dẫn video output; nếu trống sẽ tự đặt cùng thư mục"),
     voice: str = Query("vi-VN-Standard-C", description="Giọng Google TTS"),
     speaking_rate: float = Query(1.0, description="Tốc độ nói Google TTS (ví dụ 1.4)"),
+    max_speed_rate: float = Query(1.15, description="Giới hạn tốc độ tối đa mà narration có thể tăng lên"),
     replace_audio: bool = Query(False, description="Nếu True, thay hoàn toàn audio gốc bằng thuyết minh"),
     narration_volume_db: float = Query(-4.0, description="Âm lượng thuyết minh khi trộn (dB, âm là giảm)"),
     extend_video: bool = Query(True, description="Kéo dài video (freeze frame cuối) để thuyết minh phát hết"),
@@ -15266,7 +15444,7 @@ async def add_narration_from_srt(
 
         if not enabled:
             # No-op: just copy input video to output for consistency
-            subprocess.run([
+            run_logged_subprocess([
                 "ffmpeg", "-y", "-i", vpath, "-c", "copy", output_path
             ], check=True)
             send_discord_message("ℹ️ Bỏ qua tạo TTS (enabled=false). Trả về bản sao video gốc: %s", output_path)
@@ -15281,7 +15459,9 @@ async def add_narration_from_srt(
             lead=0.0,
             meta_out=None,
             trim=False,
-            tmp_subdir=request_id if 'request_id' in locals() else None
+            tmp_subdir=request_id if 'request_id' in locals() else None,
+            no_overlap = True,
+            max_speed_rate = max_speed_rate
         )
         out = narration_from_srt.mix_narration_into_video(
             vpath, nar_audio, output_path,
@@ -15371,7 +15551,7 @@ def api_tiktok_upload(
                 if no_headless:
                     cmd += ['--no-headless']
 
-                proc = subprocess.run(cmd, cwd=BASE_DIR, capture_output=True, text=True)
+                proc = run_logged_subprocess(cmd, cwd=BASE_DIR, capture_output=True, text=True)
                 try:
                     logger.debug('tiktok uploader stdout: %s', proc.stdout)
                     logger.debug('tiktok uploader stderr: %s', proc.stderr)

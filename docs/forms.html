@@ -225,6 +225,8 @@
               <input type="text" name="render_mode" placeholder="0">
               <label>Tốc độ tối đa thuyết minh</label>
               <input type="number" name="narration_max_speed_rate" value="1.2" step="0.05" min="0.5">
+              <label>Gemini atempo</label>
+              <input type="number" name="narration_atempo" value="1.6" step="0.05" min="0.5">
               <div class="mb-2"><label>Upload to TikTok</label>
                 <div class="tiktok-row">
                   <div class="tiktok-checkbox"><label style="margin:0"><input type="checkbox" name="is_upload_tiktok"> Upload</label></div>
@@ -274,6 +276,7 @@
               <div class="mb-2"><label><input type="checkbox" name="render_full"> Render FULL (ghép tất cả thành 1 video)</label></div>
               <div class="mb-2"><label><input type="checkbox" name="add_narration" checked> Thêm thuyết minh</label></div>
               <div class="mb-2"><label><input type="checkbox" name="with_subtitles" checked> Burn phụ đề</label></div>
+              <div class="mb-2"><label><input type="checkbox" name="silent_pass"> Bỏ qua lỗi detect silence</label></div>
               <label>Giọng TTS</label>
               <select name="narration_voice" class="form-select">
                 <option value="vi-VN-Standard-C">vi-VN-Standard-C</option>
@@ -283,6 +286,8 @@
               </select>
               <label>Tốc độ tối đa thuyết minh</label>
               <input type="number" name="narration_max_speed_rate" value="1.2" step="0.05" min="0.5">
+              <label>Gemini atempo</label>
+              <input type="number" name="narration_atempo" value="1.18" step="0.01" min="0.5">
               <label>Âm lượng thuyết minh (dB)</label>
               <input type="number" name="narration_volume_db" value="8" step="0.5">
               <div class="mb-2"><label><input type="checkbox" name="narration_replace_audio"> Thay audio gốc</label></div>
@@ -317,6 +322,7 @@
               <input type="text" name="title" placeholder="Tiêu đề video">
               <div class="mb-2"><label><input type="checkbox" name="add_narration" checked> Thêm thuyết minh</label></div>
               <div class="mb-2"><label><input type="checkbox" name="with_subtitles" checked> Burn phụ đề</label></div>
+              <div class="mb-2"><label><input type="checkbox" name="silent_pass"> Bỏ qua lỗi detect silence</label></div>
               <label>Giọng TTS</label>
               <select name="narration_voice" class="form-select">
                 <option value="vi-VN-Standard-C">vi-VN-Standard-C</option>
@@ -326,6 +332,8 @@
               </select>
               <label>Tốc độ tối đa thuyết minh</label>
               <input type="number" name="narration_max_speed_rate" value="1.2" step="0.05" min="0.5">
+              <label>Gemini atempo</label>
+              <input type="number" name="narration_atempo" value="1.18" step="0.01" min="0.5">
               <label>Âm lượng thuyết minh (dB)</label>
               <input type="number" name="narration_volume_db" value="8" step="0.5">
               <div class="mb-2"><label><input type="checkbox" name="narration_replace_audio"> Thay audio gốc</label></div>
@@ -713,6 +721,7 @@
           max_episodes: f.max_episodes.value ? Number(f.max_episodes.value) : undefined,
           render_mode: f.render_mode.value.trim(),
           narration_max_speed_rate: f.narration_max_speed_rate && f.narration_max_speed_rate.value ? Number(f.narration_max_speed_rate.value) : 1.2,
+            narration_atempo: f.narration_atempo && f.narration_atempo.value ? Number(f.narration_atempo.value) : 1.6,
           voice: (f.voice ? f.voice.value : ''),
           is_upload_tiktok: f.is_upload_tiktok && f.is_upload_tiktok.checked ? 'true' : 'false',
           tiktok_tags: _tiktok_tags,
@@ -780,10 +789,12 @@
           render_full: f.render_full && f.render_full.checked ? 'true' : 'false',
           add_narration: f.add_narration && f.add_narration.checked ? 'true' : 'false',
           with_subtitles: f.with_subtitles && f.with_subtitles.checked ? 'true' : 'false',
+            silent_pass: f.silent_pass && f.silent_pass.checked ? 'true' : 'false',
           narration_voice: f.narration_voice && f.narration_voice.value ? f.narration_voice.value : 'vi-VN-Standard-C',
           narration_volume_db: f.narration_volume_db && f.narration_volume_db.value ? Number(f.narration_volume_db.value) : 8.0,
           narration_replace_audio: f.narration_replace_audio && f.narration_replace_audio.checked ? 'true' : 'false',
           narration_max_speed_rate: f.narration_max_speed_rate && f.narration_max_speed_rate.value ? Number(f.narration_max_speed_rate.value) : 1.2,
+            narration_atempo: f.narration_atempo && f.narration_atempo.value ? Number(f.narration_atempo.value) : 1.18,
           bg_choice: f.bg_choice && f.bg_choice.value ? f.bg_choice.value.trim() : undefined,
         };
         let btn = f.querySelector('button[type=submit]') || document.getElementById('processPlaylistSubmitBtn');
@@ -811,10 +822,12 @@
           title: f.title.value.trim(),
           add_narration: f.add_narration && f.add_narration.checked ? 'true' : 'false',
           with_subtitles: f.with_subtitles && f.with_subtitles.checked ? 'true' : 'false',
+            silent_pass: f.silent_pass && f.silent_pass.checked ? 'true' : 'false',
           narration_voice: f.narration_voice && f.narration_voice.value ? f.narration_voice.value : 'vi-VN-Standard-C',
           narration_volume_db: f.narration_volume_db && f.narration_volume_db.value ? Number(f.narration_volume_db.value) : 8.0,
           narration_replace_audio: f.narration_replace_audio && f.narration_replace_audio.checked ? 'true' : 'false',
           narration_max_speed_rate: f.narration_max_speed_rate && f.narration_max_speed_rate.value ? Number(f.narration_max_speed_rate.value) : 1.2,
+            narration_atempo: f.narration_atempo && f.narration_atempo.value ? Number(f.narration_atempo.value) : 1.18,
           bg_choice: f.bg_choice && f.bg_choice.value ? f.bg_choice.value.trim() : undefined,
         };
         let btn = f.querySelector('button[type=submit]') || document.getElementById('processVideoSubmitBtn');

@@ -4210,7 +4210,9 @@ async def queue_worker(worker_id: int):
                         narration_apply_fx=item.get('narration_apply_fx', 1),
                         bg_choice=item.get('bg_choice'),
                         request_id=task_id,
-                        use_queue=False
+                        use_queue=False,
+                        silent_pass=item.get('silent_pass', False),
+                        
                     )
                 except Exception as e:
                     logger.exception("Worker-%s failed running process_series for %s: %s", worker_id, task_id, e)
@@ -4237,10 +4239,12 @@ async def queue_worker(worker_id: int):
                         narration_volume_db=item.get('narration_volume_db', 8.0),
                         narration_rate_dynamic=item.get('narration_rate_dynamic', 0),
                         narration_apply_fx=item.get('narration_apply_fx', 1),
+                        narration_atempo=item.get('narration_atempo', 1.18),
                         bg_choice=item.get('bg_choice'),
                         request_id=task_id,
                         use_queue=False,
-                        silent_pass=item.get('silent_pass', False)
+                        silent_pass=item.get('silent_pass', False),
+                        narration_max_speed_rate=item.get('narration_max_speed_rate', 1.5)
                     )
                 except Exception as e:
                     logger.exception("Worker-%s failed running process_video_ytdl for %s: %s", worker_id, task_id, e)
@@ -4269,9 +4273,12 @@ async def queue_worker(worker_id: int):
                         narration_volume_db=item.get('narration_volume_db', 8.0),
                         narration_rate_dynamic=item.get('narration_rate_dynamic', 0),
                         narration_apply_fx=item.get('narration_apply_fx', 1),
+                        narration_atempo=item.get('narration_atempo', 1.18),
                         bg_choice=item.get('bg_choice'),
                         request_id=task_id,
-                        use_queue=False
+                        use_queue=False,
+                        silent_pass=item.get('silent_pass', False),
+                        narration_max_speed_rate=item.get('narration_max_speed_rate', 1.15)
                     )
                 except Exception as e:
                     logger.exception("Worker-%s failed running process_playlist_ytdl for %s: %s", worker_id, task_id, e)
@@ -10763,7 +10770,9 @@ async def process_series(
     upload_duration_hours: float | None = Query(None, description='Spacing (hours) between scheduled uploads when `is_upload_tiktok` is true'),
     tiktok_tags: str | None = Query(None, description='Comma-separated tags to attach to scheduled TikTok uploads'),
     cookies: str | None = Query(None, description='Path to cookies.json to use for TikTok uploader'),
-    use_queue: bool = Query(True, description='If True enqueue the series job into TASK_QUEUE instead of running inline')
+    use_queue: bool = Query(True, description='If True enqueue the series job into TASK_QUEUE instead of running inline'),
+    narration_max_speed_rate: float = Query(1.15, description='Maximum speed rate for narration (e.g., 1.15 = 15% faster than normal)'),
+    narration_atempo: float = Query(1.6, description='Additional atempo factor to apply to narration audio (e.g., 1.1 = 10% faster)')
 ):
     """Download a sequence of episode pages starting from `start_url`, create subtitles for each
     episode (attempt via `whisper` CLI if available), then concatenate into a full video and
@@ -10824,6 +10833,7 @@ async def process_series(
             "narration_rate_dynamic": narration_rate_dynamic,
             "narration_apply_fx": narration_apply_fx,
             "narration_max_speed_rate": narration_max_speed_rate,
+            "narration_atempo": narration_atempo,
             "bg_choice": bg_choice,
             "is_upload_tiktok": bool(is_upload_tiktok),
             "upload_duration_hours": _coerce_hours(upload_duration_hours),
@@ -12642,7 +12652,8 @@ async def process_series_episodes(
                 "narration_volume_db": narration_volume_db,
                 "narration_rate_dynamic": narration_rate_dynamic,
                 "narration_apply_fx": narration_apply_fx
-                ,"render_full": render_full
+                ,"render_full": render_full,
+                "narration_atempo": narration_atempo,
             }
             try:
                 save_tasks(tasks_local)
@@ -14064,6 +14075,7 @@ async def process_video_ytdl(
     narration_rate_dynamic: int = Query(0, description='1: dùng tốc độ nói động (1.28–1.40), 0: cố định 1.0'),
     narration_apply_fx: int = Query(1, description='1: áp EQ/tone/time filter cho giọng thuyết minh'),
     narration_max_speed_rate: float = Query(1.15, description='Giới hạn tốc độ tối đa mà narration có thể đạt'),
+    narration_atempo: float = Query(1.18, description='Atempo factor injected into the Gemini FX chain (default 1.18)'),
     bg_choice: str | None = Query(None, description='Tên file nhạc nền (optional)'),
     request_id: str | None = Query(None, description='(internal) reuse existing task_id'),
     use_queue: bool = Query(True, description='If True enqueue the job into TASK_QUEUE instead of running inline'),
@@ -14131,6 +14143,7 @@ async def process_video_ytdl(
             "narration_rate_dynamic": narration_rate_dynamic,
             "narration_apply_fx": narration_apply_fx,
             "narration_max_speed_rate": narration_max_speed_rate,
+            "narration_atempo": narration_atempo,
             "bg_choice": bg_choice,
             "silent_pass": silent_pass
         }
@@ -14176,6 +14189,7 @@ async def process_video_ytdl(
                 "narration_rate_dynamic": narration_rate_dynamic,
                 "narration_apply_fx": narration_apply_fx,
                 "narration_max_speed_rate": narration_max_speed_rate,
+                "narration_atempo": narration_atempo,
                 "bg_choice": bg_choice,
                 "with_subtitles": with_subtitles,
                 "silent_pass": silent_pass,
@@ -14288,6 +14302,7 @@ async def process_video_ytdl(
             
             try:
                 import narration_from_srt
+                voice_fx_func = functools.partial(narration_from_srt.gemini_voice_fx, atempo=narration_atempo)
                 result = process_long_video_in_chunks(
                     video_path=downloaded,
                     output_dir=run_dir,
@@ -14300,7 +14315,7 @@ async def process_video_ytdl(
                     narration_volume_db=narration_volume_db,
                     narration_rate_dynamic=narration_rate_dynamic,
                     narration_apply_fx=narration_apply_fx,
-                    voice_fx_func=narration_from_srt.gemini_voice_fx,
+                    voice_fx_func=voice_fx_func,
                     narration_max_speed_rate=narration_max_speed_rate,
                     progress_callback=progress_callback,
                     chunk_duration=120,  # 2 phút (tối ưu cho transcribe)
@@ -14523,6 +14538,7 @@ async def process_playlist_ytdl(
     narration_rate_dynamic: int = Query(0, description='1: dùng tốc độ nói động (1.28–1.40), 0: cố định 1.0'),
     narration_apply_fx: int = Query(1, description='1: áp EQ/tone/time filter cho giọng thuyết minh'),
     narration_max_speed_rate: float = Query(1.15, description='Giới hạn tốc độ tối đa mà narration có thể đạt'),
+    narration_atempo: float = Query(1.18, description='Atempo factor injected into the Gemini FX chain (default 1.18)'),
     bg_choice: str | None = Query(None, description='Tên file nhạc nền (optional, áp dụng cho mỗi group/tập hoặc FULL video)'),
     request_id: str | None = Query(None, description='(internal) reuse existing task_id'),
     use_queue: bool = Query(True, description='If True enqueue the job into TASK_QUEUE instead of running inline'),
@@ -14567,6 +14583,8 @@ async def process_playlist_ytdl(
             "narration_volume_db": narration_volume_db,
             "narration_rate_dynamic": narration_rate_dynamic,
             "narration_apply_fx": narration_apply_fx,
+            "narration_max_speed_rate": narration_max_speed_rate,
+            "narration_atempo": narration_atempo,
             "bg_choice": bg_choice,
             "with_subtitles": with_subtitles,
             "render_full": render_full,
@@ -14592,6 +14610,7 @@ async def process_playlist_ytdl(
             "narration_rate_dynamic": narration_rate_dynamic,
             "narration_apply_fx": narration_apply_fx,
             "narration_max_speed_rate": narration_max_speed_rate,
+            "narration_atempo": narration_atempo,
             "bg_choice": bg_choice,
         }
         try:
@@ -14636,6 +14655,7 @@ async def process_playlist_ytdl(
                 "narration_rate_dynamic": narration_rate_dynamic,
                 "narration_apply_fx": narration_apply_fx,
                 "narration_max_speed_rate": narration_max_speed_rate,
+                "narration_atempo": narration_atempo,
                 "with_subtitles": with_subtitles,
                 "bg_choice": bg_choice,
                 "render_full": render_full,
@@ -14804,6 +14824,7 @@ async def process_playlist_ytdl(
                 # Process pipeline (transcribe → translate → narrate → render)
                 try:
                     import narration_from_srt
+                    voice_fx_func = functools.partial(narration_from_srt.gemini_voice_fx, atempo=narration_atempo)
                     result = process_long_video_in_chunks(
                         video_path=dl_video,
                         output_dir=run_dir,
@@ -14816,7 +14837,7 @@ async def process_playlist_ytdl(
                         narration_volume_db=narration_volume_db,
                         narration_rate_dynamic=narration_rate_dynamic,
                         narration_apply_fx=narration_apply_fx,
-                        voice_fx_func=narration_from_srt.gemini_voice_fx,
+                        voice_fx_func=voice_fx_func,
                         progress_callback=progress_callback,
                         chunk_duration=120,  # 2 phút (tối ưu cho transcribe),
                         silentPass=silent_pass

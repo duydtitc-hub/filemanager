@@ -50,11 +50,16 @@ def _compute_dynamic_speaking_rate(
     except Exception:
         return base_rate
 
-def apply_voice_fx(in_path: str, out_path: str) -> str:
+def apply_voice_fx(in_path: str, out_path: str, atempo: float = 1.6) -> str:
     """Apply narration voice FX chain to enhance clarity.
-    Chain: asetrate=44100*0.6, aresample=44100, atempo=1.4, highpass=80Hz, lowpass=8kHz, bass +6dB @120Hz, treble -6dB @6kHz.
+
+    Args:
+        atempo: Speed-up factor inserted into the FFmpeg chain; default mirrors the previous hard-coded 1.6 value.
     """
-    fx = "asetrate=44100*1.1,aresample=44100,atempo=1.6,highpass=f=80,lowpass=f=8000,bass=g=6:f=120,treble=g=-6:f=6000"
+    fx = (
+        f"asetrate=44100*1.1,aresample=44100,atempo={atempo},"
+        "highpass=f=80,lowpass=f=8000,bass=g=6:f=120,treble=g=-6:f=6000"
+    )
     cmd = [
         "ffmpeg", "-y", "-i", in_path,
         "-af", fx,
@@ -66,12 +71,18 @@ def apply_voice_fx(in_path: str, out_path: str) -> str:
     return out_path
 
 
-def gemini_voice_fx(in_path: str, out_path: str) -> str:
+def gemini_voice_fx(in_path: str, out_path: str, atempo: float = 1.18) -> str:
     """Apply Gemini-style narration voice FX chain.
     Chain: asetrate=44100*0.6, aresample=44100, atempo=1.4, highpass=80Hz, lowpass=8kHz, 
            bass +6dB @120Hz, treble -6dB @6kHz, dynaudnorm, volume=6dB
+
+    Args:
+        atempo: Speed-up factor inside the Gemini FX chain.
     """
-    fx = "asetrate=44100*1.3,aresample=44100,atempo=1.18,highpass=f=80,lowpass=f=8000,bass=g=6:f=120,treble=g=-6:f=6000,dynaudnorm=f=150:g=15,volume=6dB"
+    fx = (
+        f"asetrate=44100*1.3,aresample=44100,atempo={atempo},"
+        "highpass=f=80,lowpass=f=8000,bass=g=6:f=120,treble=g=-6:f=6000,dynaudnorm=f=150:g=15,volume=6dB"
+    )
     cmd = [
         "ffmpeg", "-y", "-i", in_path,
         "-af", fx,
@@ -349,8 +360,8 @@ def build_narration_schedule(
     apply_fx: bool = False,
     tmp_subdir: str | None = None,
     no_overlap: bool = True,
-    max_speed_rate: float = 1.25,
-    max_lead_overlap: float = 0.6,
+    max_speed_rate: float = 1.15,
+    max_lead_overlap: float = 0.8,
     voice_fx_func: Callable[[str, str], str] | None = None,
 ) -> Tuple[str, str]:
     """Generate per-line audio, then mix by scheduling each clip at its start time using adelay.
@@ -522,41 +533,26 @@ def build_narration_schedule(
     with open(meta_path, "w", encoding="utf-8") as f:
         json.dump({"items": items}, f, ensure_ascii=False, indent=2)
 
-    # ✅ STUDIO-GRADE APPROACH: silence baseline + adelay overlay
-    # Create a silent timeline, then overlay each piece at exact position using adelay
-    # This prevents ANY overlap and is standard in professional audio mixing
-    
-    # Calculate total timeline duration (last item end + 1s buffer)
-    total_duration = max(it["end"] for it in items) + 1.0
-    
-    # Build ffmpeg command with anullsrc baseline as input [0]
-    cmd: List[str] = ["ffmpeg", "-y"]
-    cmd += ["-f", "lavfi", "-i", f"anullsrc=r=48000:cl=stereo:d={total_duration}"]
-    
-    # Add all pieces as inputs [1], [2], ..., [N]
+    # Build a silence+pieces timeline by concatenating silence gaps and speech in order
+    segments: List[str] = []
+    timeline_cursor = 0.0
+    silence_idx = 0
     for it in items:
-        cmd += ["-i", it["file"]]
-    
-    # Build filter_complex: adelay each piece, then amix with baseline
-    delays = []
-    labels = []
-    for idx, it in enumerate(items, start=1):  # Start from 1 because [0] is anullsrc
-        ms = max(0, int(it["start"] * 1000))
-        lbl = f"a{idx}"
-        delays.append(f"[{idx}:a]adelay={ms}|{ms}[{lbl}]")
-        labels.append(f"[{lbl}]")
-    
-    # amix: baseline [0:a] + all delayed pieces
-    filter_complex = ";".join(delays) + f";[0:a]{''.join(labels)}amix=inputs={len(items)+1}:duration=longest:normalize=0"
-    
-    cmd += [
-        "-filter_complex", filter_complex,
-        "-c:a", "flac",
-        out_audio
-    ]
-    
-    # send_discord_message(cmd) 
-    run_logged_subprocess(cmd, check=True, capture_output=True)
+        gap = max(0.0, it["start"] - timeline_cursor)
+        if gap > 1e-3:
+            silence_path = os.path.join(tmpdir, f"{srt_base}_sched_silence_{silence_idx}.flac")
+            make_silence(gap, silence_path)
+            segments.append(silence_path)
+            timeline_cursor += gap
+            silence_idx += 1
+        segments.append(it["file"])
+        timeline_cursor = it["end"]
+
+    tail_silence = os.path.join(tmpdir, f"{srt_base}_sched_tail.flac")
+    make_silence(1.0, tail_silence)
+    segments.append(tail_silence)
+
+    concat_audio(segments, out_audio)
     # Cleanup temporary files: keep only WAV files (remove generated .flac and other aux files)
     try:
         for root, _, files in os.walk(tmpdir):
@@ -621,9 +617,14 @@ def mix_narration_into_video(video_path: str, narration_path: str, out_path: str
 
     pre_chain = ",".join(pre) if pre else ""
     bg_gain = 0.4 * (10 ** (video_volume_db / 20))
-    nar_gain = 1.4 * (10 ** (narration_volume_db / 20))
     nar_prefix = f"[1:a]{pre_chain}," if pre_chain else "[1:a]"
-    nar_chain = f"{nar_prefix}aresample=48000,volume={nar_gain:.6f}[nar]"
+    nar_chain = (
+        f"{nar_prefix}"
+        "aresample=48000,"
+        "volume=1.0,"
+        "alimiter=limit=0.97"
+        "[nar]"
+    )
     vid_pre = f"[0:a]aresample=48000,volume={bg_gain:.6f}[bg]"
 
     if need_pad:

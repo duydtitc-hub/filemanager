@@ -1,7 +1,7 @@
-from fastapi import FastAPI, Query, UploadFile, File, Form, Request, Body, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Query, UploadFile, File, Form, Request, Body, WebSocket, WebSocketDisconnect, BackgroundTasks, Depends
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.responses import StreamingResponse, HTMLResponse, Response
-import os, re, logging, hashlib, subprocess, json, math, requests
+import os, re, logging, hashlib, subprocess, json, math, requests, uuid
 from GoogleTTS import text_to_wav
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -38,6 +38,7 @@ from concurrent.futures import ThreadPoolExecutor
 import json
 import time
 from fastapi import HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import functools
 from google import genai
 from google.genai import types
@@ -153,6 +154,87 @@ class WebSocketManager:
 
 ws_manager = WebSocketManager()
 
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logger = logging.getLogger("truyen-video")
+
+app = FastAPI(title="Truyen Video API")
+# Allow CORS for album/static frontend requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+POLL_INTERVAL = 5  # giây chờ file audio sẵn sàng
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_DIR = os.path.join(BASE_DIR, "outputs")
+CACHE_DIR = os.path.join(BASE_DIR, "cache")
+music_path = os.path.join(BASE_DIR, "music_folder")
+VIDEO_CACHE_DIR = os.path.join(OUTPUT_DIR, "video_cache")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+os.makedirs(CACHE_DIR, exist_ok=True)
+os.makedirs(VIDEO_CACHE_DIR, exist_ok=True)
+os.makedirs(VIDEO_CACHE_DIR, exist_ok=True)
+
+
+@app.websocket('/ws/test')
+async def websocket_test(websocket: WebSocket):
+    """Simple websocket that echoes incoming messages for manual testing."""
+    await websocket.accept()
+    await websocket.send_text('connected')
+    try:
+        while True:
+            message = await websocket.receive_text()
+            await websocket.send_text(f'echo: {message}')
+    except WebSocketDisconnect:
+        pass
+
+
+@app.get('/ws/test-page', response_class=HTMLResponse)
+async def websocket_test_page():
+    """Serve a minimal test page that exercises the websocket endpoint."""
+    html = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Websocket Test</title>
+        <style>
+            body { font-family: sans-serif; padding: 2rem; }
+            #log { border: 1px solid #ccc; padding: 1rem; height: 240px; overflow: auto; }
+            button { margin-top: 1rem; }
+        </style>
+    </head>
+    <body>
+        <h1>Websocket Test</h1>
+        <div id="log">Connecting…</div>
+        <input id="message" placeholder="Type a message" />
+        <button id="send">Send</button>
+        <script>
+            const log = document.getElementById('log');
+            const msgInput = document.getElementById('message');
+            const ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws/test');
+            const append = (text) => { log.innerHTML += `<div>${text}</div>`; log.scrollTop = log.scrollHeight; };
+            ws.addEventListener('open', () => append('ws open'));
+            ws.addEventListener('message', (evt) => append('recv: ' + evt.data));
+            ws.addEventListener('close', () => append('ws closed'));
+            ws.addEventListener('error', () => append('ws error'));
+            document.getElementById('send').addEventListener('click', () => {
+                const value = msgInput.value.trim();
+                if (!value) {
+                    return;
+                }
+                ws.send(value);
+                append('sent: ' + value);
+            });
+        </script>
+    </body>
+    </html>
+    """
+    return HTMLResponse(html)
+
 def to_project_relative_posix(p: str) -> str:
     """Convert a file path to a project-relative POSIX path starting at OUTPUT_DIR.
 
@@ -203,33 +285,7 @@ async def enqueue_task(payload: dict):
 # ==============================
 # Cấu hình logging
 # ==============================
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
-logger = logging.getLogger("truyen-video")
-from fastapi.middleware.cors import CORSMiddleware
-
-app = FastAPI(title="Truyen Video API")
-# Allow CORS for album/static frontend requests
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# album endpoints will be defined later in this file (merged from album_api.py)
-# openai and Gemini keys are loaded from `config.py` below (read from env/.env)
-POLL_INTERVAL = 5  # giây chờ file audio sẵn sàng
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-OUTPUT_DIR = os.path.join(BASE_DIR, "outputs")
-CACHE_DIR = os.path.join(BASE_DIR, "cache")
-music_path = os.path.join(BASE_DIR, "music_folder")
-VIDEO_CACHE_DIR = os.path.join(OUTPUT_DIR, "video_cache")
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-os.makedirs(CACHE_DIR, exist_ok=True)
-os.makedirs(VIDEO_CACHE_DIR, exist_ok=True)
-os.makedirs(VIDEO_CACHE_DIR, exist_ok=True)
-# --- Album API (merged from album_api.py) ---
+ # --- Album API (merged from album_api.py) ---
 import mimetypes
 from pathlib import Path as _Path
 
@@ -374,6 +430,38 @@ async def upload(path: str = Form(''), files: List[UploadFile] = File(...)):
             shutil.copyfileobj(f.file, out)
         saved.append(filename)
     return {"saved": saved}
+
+
+@app.post('/api/video_to_chinese_srt')
+async def api_video_to_chinese_srt(
+  
+    file: UploadFile = File(...)
+):
+    if not file.filename.lower().endswith('.mp4'):
+        raise HTTPException(status_code=400, detail='file must be an MP4')
+    tmp_name = f"video_to_srt_{uuid.uuid4().hex}.mp4"
+    tmp_path = os.path.join(OUTPUT_DIR, tmp_name)
+    with open(tmp_path, 'wb') as out:
+        shutil.copyfileobj(file.file, out)
+
+    try:
+        srt_path = convert_stt.create_chinese_srt(tmp_path)
+    except Exception as exc:
+        try:
+            os.remove(tmp_path)
+        except Exception:
+            pass
+        raise HTTPException(status_code=500, detail=f'chinese srt transcription failed: {exc}')
+
+    def _cleanup() -> None:
+        for path in (tmp_path, srt_path):
+            try:
+                os.remove(path)
+            except Exception:
+                pass
+
+          
+    return FileResponse(str(srt_path), media_type='text/plain', filename=os.path.basename(srt_path))
 
 
 @app.get('/api/tiktok_tags')
@@ -3559,11 +3647,11 @@ def concat_crop_audio_with_titles(video_paths, audio_path, output_path="final.mp
     else:
         text = f"{Title.upper()} - P.{i+1}"
     text = text.replace(":", "\\:").replace("'", "\\'")
-    wrapped_text = wrap_text(text, max_chars_per_line=35)
+    wrapped_text = wrap_text(text, max_chars_per_line=33)
     pad_h = 40
     title_filters.append(
         f"drawtext=fontfile='{font_path}':text='{wrapped_text.upper()}':"
-        f"fontcolor=white:fontsize=40:box=1:boxcolor=black@1:boxborderw=20:"
+        f"fontcolor=white:fontsize=30:box=1:boxcolor=black@1:boxborderw=20:"
         f"text_align=center:"
         f"x=(w-text_w)/2:y=(h-text_h-line_h)/2:"
         f"enable='between(t,{start_time},{start_time+3})'"
@@ -3758,11 +3846,11 @@ def split_video_by_hour_with_title(input_path, base_title=None, font_path="times
                 title_text = f"[FULL] {base_title}"
             else:
                 title_text = f"{base_title} - P.{i+1}"
-            wrapped_text = wrap_text(title_text, max_chars_per_line=35)
+            wrapped_text = wrap_text(title_text, max_chars_per_line=33)
             pad_h = 40
             drawtext = (
                 f"drawtext=fontfile='{font_path}':text='{wrapped_text.upper()}':"
-                f"fontcolor=white:fontsize=42:box=1:boxcolor=black@1:boxborderw=20:"
+                f"fontcolor=white:fontsize=30:box=1:boxcolor=black@1:boxborderw=20:"
                 f"text_align=center:"
                 f"x=(w-text_w)/2:y=(h-text_h-line_h)/2:enable='between(t,0,3)':boxborderw={pad_h}"
             )
@@ -4211,7 +4299,11 @@ async def queue_worker(worker_id: int):
                         bg_choice=item.get('bg_choice'),
                         request_id=task_id,
                         use_queue=False,
-                        silent_pass=item.get('silent_pass', False),
+                        narration_atempo=item.get('narration_atempo', 1.6),
+                        narration_max_speed_rate=item.get('narration_max_speed_rate', 1.2)
+
+
+                        # silent_pass=item.get('silent_pass', False),
                         
                     )
                 except Exception as e:
@@ -4279,6 +4371,7 @@ async def queue_worker(worker_id: int):
                         use_queue=False,
                         silent_pass=item.get('silent_pass', False),
                         narration_max_speed_rate=item.get('narration_max_speed_rate', 1.15)
+
                     )
                 except Exception as e:
                     logger.exception("Worker-%s failed running process_playlist_ytdl for %s: %s", worker_id, task_id, e)
@@ -4719,7 +4812,10 @@ async def process_task(task_id, urls, story_url, merged_video_path, final_video_
                                     1.28,
                                     0.0,
                                     None,
-                                    False
+                                    False,
+                                    key_manager,
+                                    dynamic_rate=t_params.get('narration_rate_dynamic', 0),
+                                    narration_atempo=t_params.get('narration_atempo', 1.18),
                                 )
                             except Exception as e:
                                 send_discord_message("[%s] ⚠️ Worker(convert_stt): build narration failed: %s", task_id, e)
@@ -7021,7 +7117,6 @@ async def process_story_to_video_task(
 # ==============================
 # API endpoint
 # ==============================
-from fastapi import BackgroundTasks
 @app.on_event("startup")
 async def startup_workers():
     global _worker_tasks
@@ -8553,7 +8648,7 @@ def render_tiktok_video_from_audio_part(
                 f"drawtext=fontfile='{font_path}':"
                 f"text='{wrapped_text.upper()}':"
                 f"fontcolor=white:"
-                f"fontsize=40:"
+                f"fontsize=30:"
                 f"text_align=center:"
                 f"box=1:"
                 f"boxcolor=black@1:"
@@ -10083,7 +10178,7 @@ def find_silence_points(video_path: str, chunk_duration: int = 300, silence_thre
     
     Args:
         video_path: Path to video file
-        chunk_duration: Target duration for each chunk (seconds)
+        chunk_duration: Target duration for each chunk (seconds), minimum 180 seconds (3 minutes)
         silence_threshold: Audio level considered as silence/no-speech
             - '-40dB' = im lặng hoàn toàn (quá strict)
             - '-30dB' = rất nhỏ, pause giữa câu
@@ -10095,6 +10190,9 @@ def find_silence_points(video_path: str, chunk_duration: int = 300, silence_thre
         List of split points (timestamps in seconds), including 0 and video duration
     """
     import subprocess, re
+    
+    # Enforce minimum chunk duration of 3 minutes (180 seconds)
+    chunk_duration = max(180, chunk_duration)
     
     try:
         _, _, video_duration, _ = get_media_info_fbs(video_path)
@@ -10113,6 +10211,7 @@ def find_silence_points(video_path: str, chunk_duration: int = 300, silence_thre
         return split_points
     
     # Try WebRTC VAD first (more accurate for speech detection)
+    vad_splits = None
     try:
         send_discord_message("🔍 Phát hiện gap không có thoại (WebRTC VAD)...")
         
@@ -10124,109 +10223,432 @@ def find_silence_points(video_path: str, chunk_duration: int = 300, silence_thre
         
         if vad_splits and len(vad_splits) > 1:
             send_discord_message(
-                f"✅ VAD phát hiện {len(vad_splits)-1} gap không có thoại: "
-                f"{[f'{t:.1f}s' for t in vad_splits[:10]]}"  # Show first 10
+                f"✅ VAD phát hiện {len(vad_splits)-1} gap không có thoại"
             )
-            
-            # Add video duration as final point
-            if vad_splits[-1] < video_duration:
-                vad_splits.append(video_duration)
-            
-            return vad_splits
+            # Don't return directly - VAD creates too many short chunks
+            # Use VAD gaps as silence_midpoints input for 5-minute logic below
+            silence_midpoints = sorted(set(vad_splits))
         else:
             send_discord_message("⚠️ VAD không tìm thấy gap, thử silencedetect...")
+            vad_splits = None
     
     except Exception as e:
         send_discord_message(f"⚠️ VAD lỗi ({e}), fallback silencedetect...")
+        vad_splits = None
     
-    # Fallback to silencedetect if VAD fails or finds nothing
-    # Fallback to silencedetect if VAD fails or finds nothing
-    try:
-        send_discord_message(f"🔍 Fallback: silencedetect (threshold={silence_threshold}, min={min_silence_duration}s)...")
-        # Use silencedetect (NOT silenceremove) - we need to FIND silence positions, not remove them
-        # silencedetect: detects and logs silence positions → use for finding cut points
-        # silenceremove: removes silence from audio → use for audio cleanup
-        # Higher threshold (-25dB) detects speech gaps even with background music
-        cmd = [
-            "ffmpeg", "-i", video_path,
-            "-af", f"silencedetect=noise={silence_threshold}:d={min_silence_duration}:mono=0",
-            "-f", "null", "-"
-        ]
-        result = run_logged_subprocess(cmd, capture_output=True, text=True)
-        # ffmpeg outputs to stderr, so check both
-        output = result.stderr if result.stderr else result.stdout
-    except Exception as e:
-        send_discord_message(f"⚠️ Lỗi phát hiện silence: {e}, chia đều")
-        # Fallback: divide evenly
-        num_chunks = max(1, int(video_duration / chunk_duration))
-        split_points = [i * (video_duration / num_chunks) for i in range(num_chunks + 1)]
-        send_discord_message(f"✂️ Chia đều thành {num_chunks} phần: {[f'{t:.1f}s' for t in split_points]}")
-        return split_points
+    # If VAD didn't find gaps, use silencedetect
+    if vad_splits is None:
+        try:
+            send_discord_message(f"🔍 Fallback: silencedetect (threshold={silence_threshold}, min={min_silence_duration}s)...")
+            # Use silencedetect (NOT silenceremove) - we need to FIND silence positions, not remove them
+            # silencedetect: detects and logs silence positions → use for finding cut points
+            # silenceremove: removes silence from audio → use for audio cleanup
+            # Higher threshold (-25dB) detects speech gaps even with background music
+            cmd = [
+                "ffmpeg", "-i", video_path,
+                "-af", f"silencedetect=noise={silence_threshold}:d={min_silence_duration}:mono=0",
+                "-f", "null", "-"
+            ]
+            result = run_logged_subprocess(cmd, capture_output=True, text=True)
+            # ffmpeg outputs to stderr, so check both
+            output = result.stderr if result.stderr else result.stdout
+        except Exception as e:
+            send_discord_message(f"⚠️ Lỗi phát hiện silence: {e}, chia đều")
+            # Fallback: divide evenly
+            num_chunks = max(1, int(video_duration / chunk_duration))
+            split_points = [i * (video_duration / num_chunks) for i in range(num_chunks + 1)]
+            send_discord_message(f"✂️ Chia đều thành {num_chunks} phần: {[f'{t:.1f}s' for t in split_points]}")
+            return split_points
+        
+        # Parse silence_start and silence_end from output
+        silence_starts = []
+        silence_ends = []
+        
+        for line in output.split('\n'):
+            if 'silence_start' in line:
+                match = re.search(r'silence_start:\s*([\d.]+)', line)
+                if match:
+                    silence_starts.append(float(match.group(1)))
+            elif 'silence_end' in line:
+                match = re.search(r'silence_end:\s*([\d.]+)', line)
+                if match:
+                    silence_ends.append(float(match.group(1)))
+        
+        if not silence_starts and not silence_ends:
+            send_discord_message("⚠️ Không tìm thấy khoảng lặng, chia đều")
+            # Fallback: divide evenly into chunks
+            num_chunks = max(1, int(video_duration / chunk_duration))
+            split_points = [i * (video_duration / num_chunks) for i in range(num_chunks + 1)]
+            send_discord_message(f"✂️ Chia đều thành {num_chunks} phần: {[f'{t:.1f}s' for t in split_points]}")
+            return split_points
+        
+        # Calculate silence midpoints (middle of each silent period)
+        silence_midpoints = []
+        for i in range(min(len(silence_starts), len(silence_ends))):
+            midpoint = (silence_starts[i] + silence_ends[i]) / 2
+            silence_midpoints.append(midpoint)
+        
+        send_discord_message(f"✅ Tìm thấy {len(silence_midpoints)} khoảng lặng từ silencedetect")
     
-    # Parse silence_start and silence_end from output
-    silence_starts = []
-    silence_ends = []
+    # Now we have silence_midpoints from either VAD or silencedetect
+    # Apply 5-minute interval logic to select optimal split points
+    # Now we have silence_midpoints from either VAD or silencedetect
+    # Apply 5-minute interval logic to select optimal split points
+    send_discord_message(f"📊 Có {len(silence_midpoints)} điểm silence, đang áp dụng logic tối ưu...")
     
-    for line in output.split('\n'):
-        if 'silence_start' in line:
-            match = re.search(r'silence_start:\s*([\d.]+)', line)
-            if match:
-                silence_starts.append(float(match.group(1)))
-        elif 'silence_end' in line:
-            match = re.search(r'silence_end:\s*([\d.]+)', line)
-            if match:
-                silence_ends.append(float(match.group(1)))
-    
-    if not silence_starts and not silence_ends:
-        send_discord_message("⚠️ Không tìm thấy khoảng lặng, chia đều")
-        # Fallback: divide evenly into chunks
-        num_chunks = max(1, int(video_duration / chunk_duration))
-        split_points = [i * (video_duration / num_chunks) for i in range(num_chunks + 1)]
-        send_discord_message(f"✂️ Chia đều thành {num_chunks} phần: {[f'{t:.1f}s' for t in split_points]}")
-        return split_points
-    
-    # Calculate silence midpoints (middle of each silent period)
-    silence_midpoints = []
-    for i in range(min(len(silence_starts), len(silence_ends))):
-        midpoint = (silence_starts[i] + silence_ends[i]) / 2
-        silence_midpoints.append(midpoint)
-    
-    send_discord_message(f"✅ Tìm thấy {len(silence_midpoints)} khoảng lặng")
-    
-    # Find optimal split points near chunk boundaries
+    # Find split points without limiting upper length, only enforcing a 3-minute minimum
     split_points = [0]  # Always start at 0
-    target_time = chunk_duration
     
-    # Dynamic window: 25% of chunk_duration (for 120s = ±15s, for 300s = ±37.5s)
-    search_window = chunk_duration * 0.25
+    min_chunk = 180  # Require at least 3 minutes per chunk
+    send_discord_message(f"🎯 Chunk length >= {min_chunk}s, no maximum limit")
     
-    while target_time < video_duration:
-        # Find closest silence point to target_time
-        closest_silence = None
-        min_distance = float('inf')
-        
+    current_position = 0
+    
+    while current_position < video_duration:
+        last_split = split_points[-1]
+
+        # Look for the earliest silence after the minimum chunk duration
+        candidate = None
         for silence_time in silence_midpoints:
-            # Look within dynamic window of target
-            if abs(silence_time - target_time) < search_window:
-                distance = abs(silence_time - target_time)
-                if distance < min_distance:
-                    min_distance = distance
-                    closest_silence = silence_time
-        
-        if closest_silence is not None and closest_silence not in split_points:
-            split_points.append(closest_silence)
-            target_time = closest_silence + chunk_duration
-        else:
-            # No silence found nearby, use exact target
-            split_points.append(target_time)
-            target_time += chunk_duration
+            if silence_time <= last_split + min_chunk:
+                continue
+            if silence_time <= last_split:
+                continue
+            if candidate is None or silence_time < candidate:
+                candidate = silence_time
+
+        if candidate is not None:
+            chunk_dur = candidate - last_split
+            split_points.append(candidate)
+            send_discord_message(f"✅ Điểm cắt {candidate:.1f}s (chunk {chunk_dur:.1f}s = {chunk_dur/60:.1f}p)")
+            current_position = candidate
+            continue
+
+        # No silence found that satisfies minimum chunk; force split at end
+        forced_split = video_duration
+        if forced_split <= last_split:
+            forced_split = last_split + min_chunk
+        split_points.append(forced_split)
+        current_position = forced_split
+        send_discord_message(f"⚠️ Không tìm thấy điểm cắt phù hợp, chuyển tiếp đến {forced_split:.1f}s")
+        break
     
     # Always end at video duration
     if split_points[-1] < video_duration:
         split_points.append(video_duration)
     
-    send_discord_message(f"✂️ Điểm cắt: {[f'{t:.1f}s' for t in split_points]}")
+    # Calculate actual chunk durations for logging
+    chunk_durations = [split_points[i+1] - split_points[i] for i in range(len(split_points)-1)]
+    avg_duration = sum(chunk_durations) / len(chunk_durations) if chunk_durations else 0
+    
+    send_discord_message(
+        f"✂️ Điểm cắt: {[f'{t:.1f}s' for t in split_points]}\n"
+        f"📊 {len(split_points)-1} chunks, trung bình {avg_duration:.1f}s/chunk ({avg_duration/60:.1f}p)"
+    )
     return split_points
+
+
+
+def process_chunks_for_subtitles_only(
+    video_path: str,
+    output_dir: str,
+    base_name: str,
+    *,
+    task_id: str | None = None,
+    progress_callback: callable = None,
+    chunk_duration: int = 180,  # Minimum 3 minutes per chunk
+    silentPass: bool = False,
+) -> dict:
+    """Split video into chunks, transcribe and translate ONLY (no narration).
+    
+    Returns subtitle files with time offsets for concatenation.
+    
+    Returns:
+        dict with:
+            - chunk_srt_vi: List of (vi_srt_path, start_time) tuples
+            - chunk_srt_raw: List of (raw_srt_path, start_time) tuples  
+            - total_duration: Total video duration
+    """
+    send_discord_message(f"🎬 Bắt đầu chia video thành chunks để tạo phụ đề...")
+    
+    # Find optimal split points
+    split_points = find_silence_points(video_path, chunk_duration, silentpass=silentPass)
+    
+    if split_points is None:
+        send_discord_message(f"⚠️ Không thể tìm điểm cắt, xử lý toàn bộ video")
+        split_points = []
+    
+    num_chunks = len(split_points) - 1 if split_points else 1
+    send_discord_message(f"✂️ Chia thành {num_chunks} chunks")
+    
+    # Get video duration
+    try:
+        video_duration = get_media_info(video_path)[2]
+    except Exception:
+        video_duration = 0.0
+    
+    chunk_srt_vi = []
+    chunk_srt_raw = []
+    
+    for i in range(num_chunks):
+        start_time = split_points[i] if split_points else 0.0
+        end_time = split_points[i + 1] if (split_points and i + 1 < len(split_points)) else video_duration
+        duration = end_time - start_time
+        
+        send_discord_message(f"🎬 [{i+1}/{num_chunks}] Chunk {start_time:.1f}s → {end_time:.1f}s ({duration:.1f}s)")
+        
+        # Extract chunk
+        chunk_video = os.path.join(output_dir, f"{base_name}_chunk{i+1}.mp4")
+        if not os.path.exists(chunk_video):
+            cmd = [
+                'ffmpeg', '-y',
+                '-ss', str(start_time),
+                '-i', video_path,
+                '-t', str(duration),
+                '-c', 'copy',
+                chunk_video
+            ]
+            run_logged_subprocess(cmd, check=True, capture_output=True)
+        
+        # Transcribe and translate
+        vi_srt = os.path.join(output_dir, f"{base_name}_chunk{i+1}.vi.srt")
+        raw_srt = os.path.join(output_dir, f"{base_name}_chunk{i+1}.srt")
+        
+        if os.path.exists(vi_srt):
+            send_discord_message(f"♻️ Phụ đề tiếng Việt đã tồn tại, bỏ qua transcribe: {vi_srt}")
+        else:
+            send_discord_message(f"📝 Transcribe chunk {i+1}...")
+            
+            # Transcribe
+            try:
+                import convert_stt
+                result_srt = convert_stt.transcribe(chunk_video, task_id=f"{task_id}_chunk{i+1}" if task_id else None)
+                
+                if result_srt and os.path.exists(result_srt):
+                    # Check if transcribe returned translated SRT or raw
+                    if result_srt.endswith('.vi.srt'):
+                        # Transcribe already returned Vietnamese - move to vi_srt
+                        os.replace(result_srt, vi_srt)
+                        # Note: Raw SRT not available in this case (transcribe skipped raw)
+                        send_discord_message(f"⚠️ Transcribe trả về .vi.srt trực tiếp, không có raw SRT")
+                    else:
+                        # Transcribe returned raw SRT - save it and translate
+                        # Copy to raw_srt (use copy to preserve original if needed)
+                        import shutil
+                        shutil.copy2(result_srt, raw_srt)
+                        # Clean up original if different location
+                        if result_srt != raw_srt:
+                            try:
+                                os.remove(result_srt)
+                            except Exception:
+                                pass
+                        
+                        # Translate to Vietnamese
+                        try:
+                            from srt_translate import translate_srt_file
+                            api_key = os.environ.get('GEMINI_API_KEY_Translate') or os.environ.get('GOOGLE_TTS_API_KEY')
+                            translated = translate_srt_file(raw_srt, output_srt=vi_srt, task_id=f"{task_id}_chunk{i+1}" if task_id else None)
+                        except Exception as e:
+                            send_discord_message(f"⚠️ Dịch phụ đề thất bại: {e}")
+            except Exception as e:
+                send_discord_message(f"⚠️ Transcribe thất bại chunk {i+1}: {e}")
+                continue
+        
+        # Add to results with time offset
+        if os.path.exists(vi_srt):
+            chunk_srt_vi.append((vi_srt, start_time))
+        if os.path.exists(raw_srt):
+            chunk_srt_raw.append((raw_srt, start_time))
+        
+        # Progress callback
+        if progress_callback:
+            progress = 20 + int((i + 1) / num_chunks * 60)
+            progress_callback(f"chunk_{i+1}", progress)
+    
+    send_discord_message(f"✅ Hoàn tất xử lý {len(chunk_srt_vi)} chunks phụ đề")
+    
+    return {
+        'chunk_srt_vi': chunk_srt_vi,
+        'chunk_srt_raw': chunk_srt_raw,
+        'total_duration': video_duration
+    }
+
+
+def process_chunks_for_narration_subtitles(
+    video_path: str,
+    output_dir: str,
+    base_name: str,
+    *,
+    task_id: str | None = None,
+    narration_voice: str = 'vi-VN-Standard-C',
+    narration_rate_dynamic: int = 0,
+    narration_apply_fx: int = 1,
+    voice_fx_func = None,
+    narration_max_speed_rate: float = 1.15,
+    progress_callback: callable = None,
+    chunk_duration: int = 180,  # Minimum 3 phút (180 giây)
+    silentPass: bool = False,
+    narration_atempo: float = 1.18,
+) -> dict:
+    """Process video chunks to generate narration and subtitle files ONLY (no video rendering).
+    
+    New workflow:
+    1. Split video at silence points (minimum 3 minutes per chunk)
+    2. For each chunk: transcribe → translate → generate narration (NO rendering)
+    3. Return paths to chunk narration and subtitle files with time offsets
+    
+    Caller should then:
+    - Concatenate narration files using concatenate_narration_files()
+    - Concatenate subtitle files using concatenate_srt_files()
+    - Apply to original video in single pass using burn_and_mix_narration()
+    
+    Args:
+        video_path: Path to input video
+        output_dir: Directory for intermediate files
+        base_name: Base name for output files
+        chunk_duration: Target chunk duration (enforced minimum 180 seconds)
+        ... other narration params
+        
+    Returns:
+        dict with:
+            - chunk_narrations: [(nar_path, start_time), ...]
+            - chunk_srt_raw: [(srt_path, start_time), ...]
+            - chunk_srt_vi: [(srt_path, start_time), ...]
+            - total_duration: Total video duration
+    """
+    import os
+    chunk_duration = max(180, chunk_duration)  # Enforce minimum 3 minutes
+    
+    send_discord_message(f"🎬 Processing video for narration/subtitles only (min {chunk_duration}s chunks)")
+    
+    try:
+        _, _, video_duration, _ = get_media_info_fbs(video_path)
+    except Exception as e:
+        send_discord_message(f"❌ Cannot get video duration: {e}")
+        raise
+    
+    # For short videos, process as single chunk
+    if video_duration <= chunk_duration * 1.2:
+        send_discord_message(f"📹 Video ngắn ({video_duration:.1f}s), xử lý trực tiếp")
+        
+        # Process single video
+        try:
+            result = process_single_video_pipeline(
+                video_path=video_path,
+                output_dir=output_dir,
+                base_name=base_name,
+                task_id=task_id,
+                add_narration=True,
+                with_subtitles=True,
+                narration_voice=narration_voice,
+                narration_replace_audio=False,
+                narration_volume_db=8.0,
+                narration_rate_dynamic=narration_rate_dynamic,
+                narration_apply_fx=narration_apply_fx,
+                voice_fx_func=voice_fx_func,
+                narration_max_speed_rate=narration_max_speed_rate,
+                progress_callback=progress_callback,
+                skip_render=True,  # DON'T render video, just generate narration/subs
+                chunk_duration=video_duration,  # Pass video duration to prevent narration overflow
+                narration_atempo=narration_atempo
+            )
+            
+            return {
+                'chunk_narrations': [(result['nar_flac'], 0.0)] if result.get('nar_flac') else [],
+                'chunk_srt_raw': [(result['raw_srt'], 0.0)] if result.get('raw_srt') else [],
+                'chunk_srt_vi': [(result['vi_srt'], 0.0)] if result.get('vi_srt') else [],
+                'total_duration': video_duration
+            }
+        except Exception as e:
+            send_discord_message(f"❌ Lỗi xử lý video đơn: {e}")
+            raise
+    
+    # Long video: split into chunks
+    send_discord_message(f"📹 Video dài ({video_duration:.1f}s), chia thành chunks...")
+    
+    split_points = find_silence_points(
+        video_path,
+        chunk_duration=chunk_duration,
+        silence_threshold='-25dB',
+        min_silence_duration=0.5,
+        silentpass=silentPass
+    )
+    
+    if not split_points or len(split_points) < 2:
+        send_discord_message("⚠️ Không tìm thấy điểm cắt, xử lý toàn bộ video")
+        split_points = [0, video_duration]
+    
+    num_chunks = len(split_points) - 1
+    send_discord_message(f"✂️ Chia thành {num_chunks} chunks: {[f'{t:.1f}s' for t in split_points]}")
+    
+    chunk_narrations = []
+    chunk_srt_raw = []
+    chunk_srt_vi = []
+    
+    # Process each chunk
+    for i in range(num_chunks):
+        start_time = split_points[i]
+        end_time = split_points[i + 1]
+        duration = end_time - start_time
+        
+        send_discord_message(f"🎬 [{i+1}/{num_chunks}] Chunk {start_time:.1f}s → {end_time:.1f}s ({duration:.1f}s)")
+        
+        # Extract chunk
+        chunk_name = f"{base_name}_chunk{i+1}"
+        chunk_video = os.path.join(output_dir, f"{chunk_name}.mp4")
+        
+        if not os.path.exists(chunk_video):
+            send_discord_message(f"✂️ Cắt chunk {i+1}...")
+            extract_cmd = [
+                'ffmpeg', '-y', '-ss', str(start_time), '-i', video_path,
+                '-t', str(duration), '-c', 'copy', chunk_video
+            ]
+            run_logged_subprocess(extract_cmd, check=True, capture_output=True)
+        
+        # Process chunk (transcribe + translate + narrate, NO render)
+        chunk_result = process_single_video_pipeline(
+            video_path=chunk_video,
+            output_dir=output_dir,
+            base_name=chunk_name,
+            task_id=task_id,
+            add_narration=True,
+            with_subtitles=True,
+            narration_voice=narration_voice,
+            narration_replace_audio=False,
+            narration_volume_db=8.0,
+            narration_rate_dynamic=narration_rate_dynamic,
+            narration_apply_fx=narration_apply_fx,
+            voice_fx_func=voice_fx_func,
+            narration_max_speed_rate=narration_max_speed_rate,
+            progress_callback=progress_callback,
+            skip_render=True,  # CRITICAL: Don't render, just generate artifacts
+            chunk_duration=duration  # Pass chunk duration to prevent narration overflow
+        )
+        
+        # Collect paths with time offsets
+        if chunk_result.get('nar_flac') and os.path.exists(chunk_result['nar_flac']):
+            chunk_narrations.append((chunk_result['nar_flac'], start_time))
+        
+        if chunk_result.get('raw_srt') and os.path.exists(chunk_result['raw_srt']):
+            chunk_srt_raw.append((chunk_result['raw_srt'], start_time))
+        
+        if chunk_result.get('vi_srt') and os.path.exists(chunk_result['vi_srt']):
+            chunk_srt_vi.append((chunk_result['vi_srt'], start_time))
+        
+        send_discord_message(f"✅ Chunk {i+1} hoàn tất")
+        
+        # Update progress
+        if progress_callback:
+            progress_callback(f"chunk_{i+1}", int((i + 1) / num_chunks * 80))
+    
+    send_discord_message(f"✅ Hoàn tất xử lý {len(chunk_narrations)} chunks")
+    
+    return {
+        'chunk_narrations': chunk_narrations,
+        'chunk_srt_raw': chunk_srt_raw,
+        'chunk_srt_vi': chunk_srt_vi,
+        'total_duration': video_duration
+    }
 
 
 def process_long_video_in_chunks(
@@ -10459,7 +10881,9 @@ def process_single_video_pipeline(
     skip_transcribe: bool = False,
     skip_translate: bool = False,
     skip_narration: bool = False,
-    skip_render: bool = False
+    skip_render: bool = False,
+    chunk_duration: float | None = None,
+    narration_atempo: float = 1.18,
 ) -> dict:
     """Helper function to process a single video through the full pipeline.
     
@@ -10486,6 +10910,7 @@ def process_single_video_pipeline(
         skip_translate: Skip translation if Vietnamese SRT already exists
         skip_narration: Skip narration creation if FLAC already exists
         skip_render: Skip rendering if final video already exists
+        chunk_duration: Maximum duration for narration (used to prevent overflow)
     
     Returns:
         dict with keys:
@@ -10597,8 +11022,50 @@ def process_single_video_pipeline(
                 tmp_subdir=tts_pieces_dir,
                 voice_fx_func=voice_fx_func,
                 no_overlap = True,
-                max_speed_rate=narration_max_speed_rate
+                max_speed_rate=narration_max_speed_rate,
+                chunk_duration=chunk_duration,  # Pass chunk duration to prevent overflow
+                narration_atempo=narration_atempo,
             )
+            
+            # Check if narration is longer than video and adjust atempo if needed
+            try:
+                from app import get_media_info
+                _, _, video_dur = get_media_info(video_path)
+                _, _, nar_dur = get_media_info(nar_flac)
+                
+                if nar_dur > video_dur:
+                    overhang = nar_dur - video_dur
+                    send_discord_message(f"⚠️ Narration dài hơn video {overhang:.1f}s ({nar_dur:.1f}s vs {video_dur:.1f}s)")
+                    
+                    # Calculate required atempo to fit narration into video duration
+                    # atempo = nar_dur / video_dur (e.g., if nar 310s, video 300s → atempo 1.033)
+                    required_atempo = nar_dur / video_dur
+                    
+                    # Only adjust if overhang is significant (>2s) and atempo is reasonable (<1.3)
+                    if overhang > 2.0 and required_atempo < 1.3:
+                        send_discord_message(f"🔧 Điều chỉnh atempo {required_atempo:.3f}x để fit vào video...")
+                        
+                        adjusted_nar = nar_flac.replace('.flac', '_adjusted.flac')
+                        adjust_cmd = [
+                            'ffmpeg', '-y', '-i', nar_flac,
+                            '-af', f'atempo={required_atempo:.3f}',
+                            '-c:a', 'flac', adjusted_nar
+                        ]
+                        run_logged_subprocess(adjust_cmd, check=True, capture_output=True)
+                        
+                        # Replace original with adjusted
+                        os.replace(adjusted_nar, nar_flac)
+                        
+                        _, _, new_nar_dur = get_media_info(nar_flac)
+                        send_discord_message(f"✅ Đã điều chỉnh: {nar_dur:.1f}s → {new_nar_dur:.1f}s (atempo {required_atempo:.3f}x)")
+                    else:
+                        if overhang <= 2.0:
+                            send_discord_message(f"ℹ️ Overhang nhỏ ({overhang:.1f}s), không cần điều chỉnh")
+                        else:
+                            send_discord_message(f"⚠️ Atempo quá cao ({required_atempo:.3f}x), bỏ qua điều chỉnh")
+            except Exception as e:
+                send_discord_message(f"⚠️ Không thể kiểm tra/điều chỉnh narration duration: {e}")
+            
             nar_audio_path = nar_flac
             send_discord_message(f"✅ Đã tạo thuyết minh: {nar_flac}")
     
@@ -10681,7 +11148,266 @@ def process_single_video_pipeline(
     }
 
 
-def burn_and_mix_narration(src_video: str, ass_path: str | None, narr_file: str, out_path: str, *, replace_audio: bool = False, narration_volume_db: float | None = None, shift_sec: float = 0.7, with_subtitles: bool = True) -> bool:
+def concatenate_srt_files(srt_paths: list[tuple[str, float]], output_path: str) -> str:
+    """Concatenate multiple SRT files with time offset adjustments.
+    
+    Args:
+        srt_paths: List of tuples (srt_file_path, time_offset_seconds)
+        output_path: Path to output concatenated SRT file
+        
+    Returns:
+        Path to output SRT file
+    """
+    import re
+    
+    def parse_srt_time(time_str: str) -> float:
+        """Convert SRT timestamp to seconds."""
+        h, m, s = time_str.replace(',', '.').split(':')
+        return float(h) * 3600 + float(m) * 60 + float(s)
+    
+    def format_srt_time(seconds: float) -> str:
+        """Convert seconds to SRT timestamp format."""
+        h = int(seconds // 3600)
+        m = int((seconds % 3600) // 60)
+        s = seconds % 60
+        return f"{h:02d}:{m:02d}:{s:06.3f}".replace('.', ',')
+    
+    combined_entries = []
+    entry_id = 1
+    
+    for srt_path, time_offset in srt_paths:
+        if not os.path.exists(srt_path):
+            send_discord_message(f"⚠️ SRT không tồn tại: {srt_path}")
+            continue
+            
+        try:
+            with open(srt_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Parse SRT entries
+            entries = re.split(r'\n\n+', content.strip())
+            
+            for entry in entries:
+                if not entry.strip():
+                    continue
+                    
+                lines = entry.strip().split('\n')
+                if len(lines) < 3:
+                    continue
+                
+                # Parse timestamp line (format: 00:00:00,000 --> 00:00:01,000)
+                timestamp_line = lines[1]
+                match = re.match(r'(\S+)\s+-->\s+(\S+)', timestamp_line)
+                if not match:
+                    continue
+                
+                start_time = parse_srt_time(match.group(1)) + time_offset
+                end_time = parse_srt_time(match.group(2)) + time_offset
+                
+                # Get subtitle text (all lines after timestamp)
+                subtitle_text = '\n'.join(lines[2:])
+                
+                # Add adjusted entry
+                combined_entries.append({
+                    'id': entry_id,
+                    'start': start_time,
+                    'end': end_time,
+                    'text': subtitle_text
+                })
+                entry_id += 1
+                
+        except Exception as e:
+            send_discord_message(f"⚠️ Lỗi đọc SRT {srt_path}: {e}")
+            continue
+    
+    # Write combined SRT
+    try:
+        os.makedirs(os.path.dirname(output_path) or '.', exist_ok=True)
+        with open(output_path, 'w', encoding='utf-8') as f:
+            for entry in combined_entries:
+                f.write(f"{entry['id']}\n")
+                f.write(f"{format_srt_time(entry['start'])} --> {format_srt_time(entry['end'])}\n")
+                f.write(f"{entry['text']}\n\n")
+        
+        send_discord_message(f"✅ Đã ghép {len(combined_entries)} phụ đề từ {len(srt_paths)} file")
+        return output_path
+    except Exception as e:
+        send_discord_message(f"❌ Lỗi ghi SRT: {e}")
+        raise
+
+
+def concatenate_narration_files(nar_paths: list[tuple[str, float]], output_path: str) -> str:
+    """Concatenate multiple narration FLAC files with silence padding for time offsets.
+    
+    Args:
+        nar_paths: List of tuples (nar_file_path, start_time_seconds)
+        output_path: Path to output concatenated narration file
+        
+    Returns:
+        Path to output narration file
+    """
+    if not nar_paths:
+        raise ValueError("No narration files to concatenate")
+    
+    import tempfile
+    
+    # Sort by start time
+    nar_paths = sorted(nar_paths, key=lambda x: x[1])
+    
+    temp_files = []
+    concat_list_path = None
+    
+    try:
+        # Create temporary directory for processing
+        temp_dir = tempfile.mkdtemp(prefix='nar_concat_')
+        concat_list_path = os.path.join(temp_dir, 'concat_list.txt')
+        
+        current_time = 0.0
+        segment_idx = 0
+        
+        with open(concat_list_path, 'w', encoding='utf-8') as concat_file:
+            for nar_file, start_time in nar_paths:
+                if not os.path.exists(nar_file):
+                    send_discord_message(f"⚠️ Narration không tồn tại: {nar_file}")
+                    continue
+                
+                # Add silence padding if there's a gap
+                gap = start_time - current_time
+                if gap > 0.02:  # 20ms threshold
+                    silence_path = os.path.join(temp_dir, f'silence_{segment_idx}.flac')
+                    silence_duration = gap
+                    
+                    # Generate silence with aevalsrc (real audio frames)
+                    silence_cmd = [
+                        'ffmpeg', '-y', '-f', 'lavfi',
+                        '-i', f'aevalsrc=0:0:s=48000:d={silence_duration:.3f}:c=stereo',
+                        '-ar', '48000', '-ac', '2', '-sample_fmt', 's16',
+                        '-c:a', 'flac', silence_path
+                    ]
+                    run_logged_subprocess(silence_cmd, check=True, capture_output=True)
+                    
+                    concat_file.write(f"file '{silence_path}'\n")
+                    temp_files.append(silence_path)
+                    current_time += silence_duration
+                
+                # Normalize narration file to standard format
+                normalized_path = os.path.join(temp_dir, f'normalized_{segment_idx}.flac')
+                normalize_cmd = [
+                    'ffmpeg', '-y', '-i', nar_file,
+                    '-ar', '48000', '-ac', '2', '-sample_fmt', 's16',
+                    '-c:a', 'flac', normalized_path
+                ]
+                run_logged_subprocess(normalize_cmd, check=True, capture_output=True)
+                
+                concat_file.write(f"file '{normalized_path}'\n")
+                temp_files.append(normalized_path)
+                
+                # Update current time
+                try:
+                    _, _, nar_duration = get_media_info(nar_file)
+                    current_time += nar_duration
+                except Exception:
+                    current_time = start_time  # Fallback
+                
+                segment_idx += 1
+        
+        # Concatenate all segments
+        os.makedirs(os.path.dirname(output_path) or '.', exist_ok=True)
+        concat_cmd = [
+            'ffmpeg', '-y', '-f', 'concat', '-safe', '0',
+            '-i', concat_list_path,
+            '-c', 'copy', output_path
+        ]
+        run_logged_subprocess(concat_cmd, check=True, capture_output=True)
+        
+        send_discord_message(f"✅ Đã ghép {len(nar_paths)} file narration, tổng {current_time:.1f}s")
+        return output_path
+        
+    finally:
+        # Cleanup temporary files
+        for temp_file in temp_files:
+            try:
+                if os.path.exists(temp_file):
+                    os.unlink(temp_file)
+            except Exception:
+                pass
+        
+        if concat_list_path and os.path.exists(concat_list_path):
+            try:
+                os.unlink(concat_list_path)
+            except Exception:
+                pass
+        
+        try:
+            if temp_dir and os.path.exists(temp_dir):
+                os.rmdir(temp_dir)
+        except Exception:
+            pass
+
+
+def _format_title_text(title: str | None, render_full: bool, group_idx: int | None, is_last_group: bool) -> str | None:
+    """Return the display string used in overlays and scheduling."""
+    if not title:
+        return None
+
+    if render_full or group_idx is None:
+        text = f"[FULL] {title}"
+    else:
+        text = f"{title} - TẬP {group_idx}"
+
+    if is_last_group and not render_full:
+        text += " - Cuối"
+
+    return text
+
+
+def _prepare_title_and_bg_filters(title: str | None, bg_choice: str | None, render_full: bool = False, group_idx: int | None = None, is_last_group: bool = False) -> tuple[str | None, str | None]:
+    """Prepare drawtext filter for title overlay and background audio file path.
+    Returns (drawtext_filter, bg_file_path) tuple."""
+    drawtext_filter = None
+    bg_file = None
+    
+    # Prepare title overlay filter
+    title_label = _format_title_text(title, render_full, group_idx, is_last_group)
+    if title_label:
+        try:
+            font_path_try = "/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf"
+            if not os.path.exists(font_path_try):
+                font_path_try = "C:\\Windows\\Fonts\\arial.ttf" if os.name == "nt" else "times.ttf"
+            
+            escaped_text = title_label.replace(":", "\\:").replace("'", "\\'")
+            wrapped_text = wrap_text(escaped_text, max_chars_per_line=33)
+            
+            drawtext_filter = (
+                f"drawtext=fontfile='{font_path_try}':text_align=center:text='{wrapped_text.upper()}':"
+                f"fontcolor=white:fontsize=30:box=1:boxcolor=black@0.6:boxborderw=20:"
+                f"x=(w-text_w)/2:y=(h-text_h)/2:enable='between(t,0,3)'"
+            )
+        except Exception as e:
+            send_discord_message(f"⚠️ Không thể chuẩn bị title overlay: {e}")
+            drawtext_filter = None
+    
+    # Prepare background audio file
+    if bg_choice:
+        try:
+            discord_bot_bgaudio = os.path.join(BASE_DIR, "discord-bot", "bgaudio")
+            if os.path.isdir(discord_bot_bgaudio):
+                bgaudio_dir = discord_bot_bgaudio
+            else:
+                bgaudio_dir = os.path.join(OUTPUT_DIR, "bgaudio")
+            
+            bg_file_candidate = os.path.join(bgaudio_dir, os.path.basename(bg_choice))
+            if os.path.exists(bg_file_candidate):
+                bg_file = bg_file_candidate
+            else:
+                send_discord_message(f"⚠️ Không tìm thấy nhạc nền: {bg_file_candidate}")
+        except Exception as e:
+            send_discord_message(f"⚠️ Lỗi khi tìm nhạc nền: {e}")
+    
+    return drawtext_filter, bg_file
+
+
+def burn_and_mix_narration(src_video: str, ass_path: str | None, narr_file: str, out_path: str, *, replace_audio: bool = False, narration_volume_db: float | None = None, shift_sec: float = 0.7, with_subtitles: bool = True, title_overlay: str | None = None, bg_audio: str | None = None) -> bool:
     """Attempt a single-pass ffmpeg that optionally burns ASS subtitles and mixes a narration FLAC.
     Returns True on success, False on failure (on failure it will attempt the old Python mixer as a fallback).
     """
@@ -10712,28 +11438,64 @@ def burn_and_mix_narration(src_video: str, ass_path: str | None, narr_file: str,
         except Exception:
             sub_filter = None
 
+        # Build video filter chain with subtitle, tpad, and title overlay
+        vf_parts = []
+        if tpad:
+            vf_parts.append(tpad)
         if sub_filter:
-            vchain = f"[0:v]{tpad},{sub_filter}[v]" if tpad else f"[0:v]{sub_filter}[v]"
+            vf_parts.append(sub_filter)
+        if title_overlay:
+            vf_parts.append(title_overlay)
+        
+        if vf_parts:
+            vchain = f"[0:v]{','.join(vf_parts)}[v]"
         else:
-            vchain = f"[0:v]{tpad},setpts=PTS[v]" if tpad else "[0:v]setpts=PTS[v]"
+            vchain = "[0:v]setpts=PTS[v]"
 
-        nar_chain = f"[1:a]aresample=48000,adelay={shift_ms}|{shift_ms},volume={narr_vol_lin}[nar]"
+        # Count audio inputs: narration + optional background
+        audio_idx = 1
+        nar_chain = f"[{audio_idx}:a]aresample=48000,adelay={shift_ms}|{shift_ms},volume={narr_vol_lin}[nar]"
+        
+        # Build command with all inputs
+        cmd = ["ffmpeg", "-y", "-i", src_for_ff, "-i", narr_file_local]
+        
+        if bg_audio:
+            cmd.extend(["-i", bg_audio])
+            audio_idx += 1
 
         if replace_audio:
-            filt = ";".join([vchain, nar_chain])
-            cmd = ["ffmpeg", "-y", "-i", src_for_ff, "-i", narr_file_local, "-filter_complex", filt, "-map", "[v]", "-map", "[nar]"]
-            cmd.extend(_preferred_video_encode_args())
-            cmd.extend(_preferred_audio_encode_args())
-            cmd.append(out_path)
+            # Replace mode: only use narration (and optionally mix with background)
+            if bg_audio:
+                bg_chain = f"[{audio_idx}:a]aloop=loop=-1:size=2e+09,volume=-14dB[bg]"
+                mix_chain = "[nar][bg]amix=inputs=2:duration=first:dropout_transition=0[a]"
+                filt = ";".join([vchain, nar_chain, bg_chain, mix_chain])
+            else:
+                filt = ";".join([vchain, nar_chain])
+                cmd.extend(["-filter_complex", filt, "-map", "[v]", "-map", "[nar]"])
+                cmd.extend(_preferred_video_encode_args())
+                cmd.extend(_preferred_audio_encode_args())
+                cmd.append(out_path)
+                run_logged_subprocess(cmd, check=True, capture_output=True, text=True)
+                return True
         else:
-            vid_bg = f"[0:a]aresample=48000,volume={10 ** ((-9.0) / 20):.6f}[bg]"
-            amix = f"[bg][nar]amix=inputs=2:duration=longest:normalize=0[mix]"
+            # Mix mode: blend original audio + narration (+ optional background)
+            vid_bg = f"[0:a]aresample=48000,volume={10 ** ((-9.0) / 20):.6f}[origbg]"
+            if bg_audio:
+                bg_chain = f"[{audio_idx}:a]aloop=loop=-1:size=2e+09,volume=-14dB[bg]"
+                amix = "[origbg][nar][bg]amix=inputs=3:duration=longest:normalize=0[mix]"
+            else:
+                amix = "[origbg][nar]amix=inputs=2:duration=longest:normalize=0[mix]"
             final_mix = "[mix]volume=0.92[a]"
-            filt = ";".join([vchain, vid_bg, nar_chain, amix, final_mix])
-            cmd = ["ffmpeg", "-y", "-i", src_for_ff, "-i", narr_file_local, "-filter_complex", filt, "-map", "[v]", "-map", "[a]"]
-            cmd.extend(_preferred_video_encode_args())
-            cmd.extend(_preferred_audio_encode_args())
-            cmd.append(out_path)
+            
+            if bg_audio:
+                filt = ";".join([vchain, vid_bg, nar_chain, bg_chain, amix, final_mix])
+            else:
+                filt = ";".join([vchain, vid_bg, nar_chain, amix, final_mix])
+        
+        cmd.extend(["-filter_complex", filt, "-map", "[v]", "-map", "[a]"])
+        cmd.extend(_preferred_video_encode_args())
+        cmd.extend(_preferred_audio_encode_args())
+        cmd.append(out_path)
 
         try:
             run_logged_subprocess(cmd, check=True, capture_output=True, text=True)
@@ -10937,6 +11699,18 @@ async def process_series(
                 save_tasks(tasks_local)
             except Exception as e:
                 _report_and_ignore(e, "ignored")
+            # Build a per-title workspace early so cached episode lists can be reused
+            try:
+                base_title_val = safe_filename(title) if title else 'series'
+            except Exception:
+                base_title_val = 'series'
+            run_root = os.path.join(OUTPUT_DIR, base_title_val)
+            try:
+                os.makedirs(run_root, exist_ok=True)
+                run_dir = run_root
+            except Exception:
+                run_dir = OUTPUT_DIR
+
             # Build episode list robustly: prefer Playwright extraction; fallback to regex
             unique = []
             playlist_eps = []
@@ -10949,7 +11723,7 @@ async def process_series(
                 for attempt in range(5):
                     try:
                         send_discord_message(f"🔁 Lấy danh sách tập (try {attempt+1}/5)")
-                        playlist_eps = get_episode_links(current_url, headless=True, slow_mo=300, timeout_ms=120000)
+                        playlist_eps = get_episode_links(current_url, headless=True, run_dir=run_dir)
                         if playlist_eps:
                             break
                     except Exception as e_attempt:
@@ -10988,21 +11762,6 @@ async def process_series(
             burned_videos = []
             narrated_videos = []
             episode_links = []
-            # Base title for naming temp/component files (no URL hash)
-            try:
-                base_title_val = safe_filename(title) if title else 'series'
-            except Exception:
-                base_title_val = 'series'
-
-            # Create per-title run directory to store all episode artifacts and temps
-            try:
-                run_root = os.path.join(OUTPUT_DIR, base_title_val)
-                os.makedirs(run_root, exist_ok=True)
-                # Use a persistent run folder per title (do NOT include request_id)
-                run_dir = run_root
-            except Exception:
-                run_dir = OUTPUT_DIR
-
             # Subfolder to store final/grouped videos for this title
             try:
                 final_dir = os.path.join(run_dir, "finalvideo")
@@ -11150,6 +11909,8 @@ async def process_series(
                 last_group_idx = max(group_map.keys()) if group_map else None
                 has_multiple_groups = len(group_map) > 1
                 for g_idx, grp, group_out in group_items:
+                    is_last_group = has_multiple_groups and last_group_idx == g_idx
+                    title_text = _format_title_text(title, render_full, g_idx, is_last_group)
                     # Prefer concat-copy when all files are compatible; otherwise re-encode with efficient CRF
                     try:
                         if _can_concat_copy(grp):
@@ -11190,96 +11951,14 @@ async def process_series(
                             _report_and_ignore(e, "ignored")
                             continue
 
-                    # Overlay title for 3s at start indicating starting episode or FULL
-                    if title:
-                        tmp_title = None
-                        try:
-                            font_path_try = "/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf"
-                            try:
-                                if not os.path.exists(font_path_try):
-                                    font_path_try = "C:\\Windows\\Fonts\\arial.ttf" if os.name == "nt" else "times.ttf"
-                            except Exception:
-                                font_path_try = "C:\\Windows\\Fonts\\arial.ttf" if os.name == "nt" else "times.ttf"
-                            # Use group ordinal for the overlay, or [FULL] when requested
-                            if render_full:
-                                title_text = f"[FULL] {title}"
-                            else:
-                                title_text = f"{title} - Tập {g_idx}"
-                                if has_multiple_groups and last_group_idx == g_idx:
-                                    title_text += " - Cuối"
-                            title_text = title_text.replace(":", "\\:").replace("'", "\\'")
-                            wrapped_text = wrap_text(title_text, max_chars_per_line=35)
-                            drawtext = (
-                                f"drawtext=fontfile='{font_path_try}':text_align=center:text='{wrapped_text.upper()}':"
-                                f"fontcolor=white:fontsize=42:box=1:boxcolor=black@0.6:boxborderw=20:"
-                                f"x=(w-text_w)/2:y=(h-text_h)/2:enable='between(t,0,3)'"
-                            )
-                            tmp_title = group_out + ".title.mp4"
-                            cmd_title = ["ffmpeg", "-y", "-i", group_out, "-vf", drawtext]
-                            cmd_title.extend(_preferred_video_encode_args())
-                            cmd_title.extend(["-c:a", "copy", tmp_title])
-                            run_logged_subprocess(cmd_title, check=True)
-                            os.replace(tmp_title, group_out)
-                        except Exception as e:
-                            _report_and_ignore(e, "ignored")
-                        finally:
-                            try:
-                                if tmp_title and os.path.exists(tmp_title):
-                                    os.remove(tmp_title)
-                            except Exception:
-                                pass
-
-                    # Add title overlay and/or background audio in single ffmpeg pass
+                    # The helper now handles title overlay/background audio in a single pass
                     if title or bg_choice:
                         try:
-                            # Prepare title overlay filter if needed
-                            drawtext_filter = None
-                            if title:
-                                send_discord_message(f"✨ Chuẩn bị thêm tiêu đề overlay nhóm {g_idx}...")
-                                try:
-                                    font_path_try = "/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf"
-                                    if not os.path.exists(font_path_try):
-                                        font_path_try = "C:\\Windows\\Fonts\\arial.ttf" if os.name == "nt" else "times.ttf"
-                                    
-                                    if render_full:
-                                        title_text = f"[FULL] {title}"
-                                    else:
-                                        title_text = f"{title} - TẬP {g_idx}"
-                                    title_text = title_text.replace(":", "\\:").replace("'", "\\'")
-                                    wrapped_text = wrap_text(title_text, max_chars_per_line=35)
-                                    
-                                    drawtext_filter = (
-                                        f"drawtext=fontfile='{font_path_try}':text_align=center:text='{wrapped_text.upper()}':"
-                                        f"fontcolor=white:fontsize=42:box=1:boxcolor=black@0.6:boxborderw=20:"
-                                        f"x=(w-text_w)/2:y=(h-text_h)/2:enable='between(t,0,3)'"
-                                    )
-                                except Exception as e:
-                                    send_discord_message(f"⚠️ Không thể chuẩn bị title overlay: {e}")
-                                    drawtext_filter = None
-                            
-                            # Prepare background audio if needed
-                            bg_file = None
-                            if bg_choice:
-                                send_discord_message(f"🎵 Chuẩn bị thêm nhạc nền cho nhóm {g_idx}...")
-                                try:
-                                    discord_bot_bgaudio = os.path.join(BASE_DIR, "discord-bot", "bgaudio")
-                                    if os.path.isdir(discord_bot_bgaudio):
-                                        bgaudio_dir = discord_bot_bgaudio
-                                    else:
-                                        bgaudio_dir = os.path.join(OUTPUT_DIR, "bgaudio")
-                                    
-                                    bg_file_candidate = os.path.join(bgaudio_dir, os.path.basename(bg_choice))
-                                    if os.path.exists(bg_file_candidate):
-                                        bg_file = bg_file_candidate
-                                    else:
-                                        send_discord_message(f"⚠️ Không tìm thấy nhạc nền: {bg_file_candidate}")
-                                        bg_file = None
-                                except Exception as e:
-                                    send_discord_message(f"⚠️ Lỗi khi tìm nhạc nền: {e}")
-                                    bg_file = None
+                            # Use helper function to prepare filters
+                            title_filter, bg_file = _prepare_title_and_bg_filters(title, bg_choice, render_full=render_full, group_idx=g_idx, is_last_group=is_last_group)
                             
                             # Build single ffmpeg command with both title and bg (if applicable)
-                            if drawtext_filter or bg_file:
+                            if title_filter or bg_file:
                                 try:
                                     tmp_output = group_out + ".processed.mp4"
                                     
@@ -11294,8 +11973,8 @@ async def process_series(
                                     af_parts = []
                                     
                                     # Video filter: title overlay
-                                    if drawtext_filter:
-                                        vf_parts.append(drawtext_filter)
+                                    if title_filter:
+                                        vf_parts.append(title_filter)
                                     
                                     # Audio filter: mix background
                                     if bg_file:
@@ -11328,7 +12007,7 @@ async def process_series(
                                     
                                     # Execute single ffmpeg command
                                     msg_parts = []
-                                    if drawtext_filter:
+                                    if title_filter:
                                         msg_parts.append("tiêu đề")
                                     if bg_file:
                                         msg_parts.append("nhạc nền")
@@ -11338,7 +12017,7 @@ async def process_series(
                                     os.replace(tmp_output, group_out)
                                     
                                     success_parts = []
-                                    if drawtext_filter:
+                                    if title_filter:
                                         success_parts.append("tiêu đề overlay")
                                     if bg_file:
                                         success_parts.append(f"nhạc nền ({os.path.basename(bg_file)})")
@@ -11410,7 +12089,7 @@ async def process_series(
                                     scheduled = {
                                         'scheduled_at': int(start_time + idx_p * spacing) if spacing else int(start_time),
                                         'video_path': to_project_relative_posix(outp),
-                                        'title': (title_text if 'title_text' in locals() else (f"{title} - Tập {g_idx} P{idx_p+1}" if title else f"Tập {g_idx} P{idx_p+1}")),
+                                        'title': title_text or (f"{title} - Tập {g_idx} P{idx_p+1}" if title else f"Tập {g_idx} P{idx_p+1}"),
                                         'tags': tags_list,
                                         'created_at': int(time.time()),
                                         'task_request_id': request_id,
@@ -11484,7 +12163,7 @@ async def process_series(
                                     scheduled = {
                                         'scheduled_at': int(start_time),
                                         'video_path': to_project_relative_posix(group_out),
-                                        'title': (title_text if 'title_text' in locals() else (f"{title} - Tập {g_idx}" if title else f"Tập {g_idx}")),
+                                        'title': title_text or (f"{title} - Tập {g_idx}" if title else f"Tập {g_idx}"),
                                         'tags': tags_list,
                                         'created_at': int(time.time()),
                                         'task_request_id': request_id,
@@ -11902,7 +12581,8 @@ async def process_series(
                                                 apply_fx=bool(narration_apply_fx),
                                                 tmp_subdir=tts_pieces_dir,
                                                 max_speed_rate=narration_max_speed_rate,
-                                                no_overlap = True
+                                                no_overlap = True,
+                                                narration_atempo=narration_atempo,
                                             )
                                             if os.path.exists(nar_out_flac):
                                                 try:
@@ -11959,7 +12639,8 @@ async def process_series(
                                     apply_fx=bool(narration_apply_fx),
                                     tmp_subdir=tts_pieces_dir,
                                     max_speed_rate=narration_max_speed_rate,
-                                    no_overlap = True
+                                    no_overlap = True,
+                                    narration_atempo=narration_atempo
                                 )
                                 # ensure ep_narr_out path set
                                 ep_narr_out = os.path.join(run_dir, f"{ep_label}.nar.mp4")
@@ -12256,7 +12937,8 @@ async def process_series(
                                     apply_fx=bool(narration_apply_fx),
                                     tmp_subdir=tts_pieces_dir,
                                     max_speed_rate=narration_max_speed_rate,
-                                    no_overlap = True
+                                    no_overlap = True,
+                                    narration_atempo=narration_atempo
                                 )
                                 # Ensure FLAC path reference uses outputs
                                 if nar_audio != nar_out_flac:
@@ -12591,7 +13273,10 @@ async def process_series_episodes(
     narration_volume_db: float = Query(-4.0, description='Âm lượng thuyết minh khi trộn (dB)'),
     narration_enabled: bool | None = Query(None, description='Bật/tắt việc tạo TTS thuyết minh (ưu tiên tham số này nếu được truyền)'),
     narration_rate_dynamic: int = Query(0, description='1: dùng tốc độ nói động (1.28–1.40), 0: cố định 1.0'),
-    narration_apply_fx: int = Query(1, description='1: áp EQ/tone/time filter cho giọng thuyết minh')
+    narration_apply_fx: int = Query(1, description='1: áp EQ/tone/time filter cho giọng thuyết minh'),
+    narration_atempo: float = Query(1.0, description='Tốc độ tổng thể của thuyết minh (1.0 = bình thường)'),
+    narration_max_speed_rate: float = Query(1.15, description='Maximum speed rate for narration (e.g., 1.15 = 15% faster than normal)'),
+
 ):
     """Download a sequence of episode pages starting from `start_url`, create subtitles for each
     episode (attempt via `whisper` CLI if available), then concatenate into a full video and
@@ -12724,6 +13409,17 @@ async def process_series_episodes(
                 run_dir = run_root
             except Exception:
                 run_dir = OUTPUT_DIR
+
+            # Subfolder to store final/grouped videos for this title
+            try:
+                final_dir = os.path.join(run_dir, "finalvideo")
+                os.makedirs(final_dir, exist_ok=True)
+            except Exception:
+                final_dir = run_dir
+
+            # Initialize episode_videos list to track processed episodes
+            total_eps = len(unique)
+            episode_videos: list[str | None] = [None] * total_eps
 
             # metadata index to allow reuse of generated pieces (srt, vi.srt, tts parts, narration)
             index_path = os.path.join(run_dir, "index.json")
@@ -13708,10 +14404,10 @@ async def process_series_episodes(
                         else:
                             title_text = f"{title.upper()} - Tập {g_idx}"
                         title_text = title_text.replace(":", "\\:").replace("'", "\\'")
-                        wrapped_text = wrap_text(title_text, max_chars_per_line=40)
+                        wrapped_text = wrap_text(title_text, max_chars_per_line=33)
                         drawtext = (
                             f"drawtext=fontfile='{font_path_try}':text_align=center:text='{wrapped_text.upper()}':"
-                            f"fontcolor=white:fontsize=42:box=1:boxcolor=black@0.6:boxborderw=20:"
+                            f"fontcolor=white:fontsize=30:box=1:boxcolor=black@0.6:boxborderw=20:"
                             f"x=(w-text_w)/2:y=(h-text_h)/2:enable='between(t,0,3)'"
                         )
                         tmp_title = group_out + ".title.mp4"
@@ -14124,6 +14820,7 @@ async def process_video_ytdl(
             "bg_choice": bg_choice,
             "with_subtitles": with_subtitles,
             "silent_pass": silent_pass,
+            "naration_atempo":narration_atempo
         }
         try:
             save_tasks(tasks_local)
@@ -14259,6 +14956,9 @@ async def process_video_ytdl(
                 return
             
             # Step 1: Download video using yt-dlp
+            # Import convert_stt at the beginning for later use
+            import convert_stt
+            
             if os.path.exists(dl_video):
                 send_discord_message(f"♻️ Video đã tải sẵn: {dl_video}")
                 downloaded = dl_video
@@ -14276,7 +14976,6 @@ async def process_video_ytdl(
                     _report_and_ignore(e, "ignored")
                 
                 try:
-                    import convert_stt
                     downloaded = convert_stt.download_video(video_url, dl_video)
                     if not downloaded or not os.path.exists(downloaded):
                         raise RuntimeError(f"Download failed: {video_url}")
@@ -14289,7 +14988,7 @@ async def process_video_ytdl(
                     save_tasks(tasks_local)
                     return
             
-            # Step 2-5: Process video through full pipeline using helper
+            # Step 2-5: NEW WORKFLOW - Process chunks for narration/subtitles only, then apply to original video
             def progress_callback(step: str, pct: int):
                 try:
                     tasks_local = load_tasks()
@@ -14302,156 +15001,178 @@ async def process_video_ytdl(
             
             try:
                 import narration_from_srt
-                voice_fx_func = functools.partial(narration_from_srt.gemini_voice_fx, atempo=narration_atempo)
-                result = process_long_video_in_chunks(
-                    video_path=downloaded,
-                    output_dir=run_dir,
-                    base_name=base_title_val,
-                    task_id=request_id,
-                    add_narration=add_narration,
-                    with_subtitles=with_subtitles,
-                    narration_voice=narration_voice,
-                    narration_replace_audio=narration_replace_audio,
-                    narration_volume_db=narration_volume_db,
-                    narration_rate_dynamic=narration_rate_dynamic,
-                    narration_apply_fx=narration_apply_fx,
-                    voice_fx_func=voice_fx_func,
-                    narration_max_speed_rate=narration_max_speed_rate,
-                    progress_callback=progress_callback,
-                    chunk_duration=120,  # 2 phút (tối ưu cho transcribe)
-                    silentPass=silent_pass
-                )
-                final_video = result['final_video']
+                voice_fx_func = functools.partial(narration_from_srt.gemini_voice_fx)
+                
+                # Check if vi.srt already exists - skip chunking if yes
+                if os.path.exists(vi_srt):
+                    send_discord_message(f"♻️ Phụ đề tiếng Việt đã tồn tại, bỏ qua chia chunk: {vi_srt}")
+                    
+                    # Convert to ASS for better styling
+                    ass_file = vi_srt.replace('.srt', '.ass')
+                    try:
+                        import convert_srt_to_ass
+                        convert_srt_to_ass.convert(vi_srt, ass_file, max_chars=30, fontsize=11, font="Noto Sans", marginv=28, back_opacity=150)
+                    except Exception as e:
+                        send_discord_message(f"⚠️ Không thể convert sang ASS: {e}")
+                        ass_file = None
+                    
+                    # Update progress
+                    try:
+                        tasks_local = load_tasks()
+                        if request_id in tasks_local:
+                            tasks_local[request_id]['progress'] = 70
+                            save_tasks(tasks_local)
+                    except Exception:
+                        pass
+                else:
+                    # NEW WORKFLOW: Process chunks to generate SUBTITLES ONLY (no narration)
+                    send_discord_message(f"🎬 Bắt đầu xử lý chunks để tạo phụ đề...")
+                    chunk_result = process_chunks_for_subtitles_only(
+                        video_path=downloaded,
+                        output_dir=run_dir,
+                        base_name=base_title_val,
+                        task_id=request_id,
+                        progress_callback=progress_callback,
+                        chunk_duration=180,  # Minimum 3 minutes per chunk
+                        silentPass=silent_pass,
+                    )
+                    
+                    # Update progress after chunk processing
+                    try:
+                        tasks_local = load_tasks()
+                        if request_id in tasks_local:
+                            tasks_local[request_id]['progress'] = 70
+                            save_tasks(tasks_local)
+                    except Exception:
+                        pass
+                    
+                    # Concatenate subtitle files with proper time offsets
+                    if chunk_result.get('chunk_srt_vi'):
+                        send_discord_message(f"🔗 Ghép {len(chunk_result['chunk_srt_vi'])} file phụ đề tiếng Việt...")
+                        concatenate_srt_files(
+                            chunk_result['chunk_srt_vi'],
+                            vi_srt
+                        )
+                        
+                        # Convert to ASS for better styling
+                        ass_file = vi_srt.replace('.srt', '.ass')
+                        try:
+                            import convert_srt_to_ass
+                            convert_srt_to_ass.convert(vi_srt, ass_file, max_chars=30, fontsize=11, font="Noto Sans", marginv=28, back_opacity=150)
+                        except Exception as e:
+                            send_discord_message(f"⚠️ Không thể convert sang ASS: {e}")
+                            ass_file = None
+                    else:
+                        ass_file = None
+                    
+                    # Also concatenate raw SRT files if available
+                    if chunk_result.get('chunk_srt_raw'):
+                        send_discord_message(f"🔗 Ghép {len(chunk_result['chunk_srt_raw'])} file phụ đề gốc...")
+                        concatenate_srt_files(
+                            chunk_result['chunk_srt_raw'],
+                            raw_srt
+                        )
+                
+                # Build narration FROM FINAL SRT (batch processing automatically handles large files)
+                if add_narration and os.path.exists(vi_srt):
+                    send_discord_message(f"🎙️ Tạo thuyết minh từ phụ đề final...")
+                    
+                    try:
+                        tasks_local = load_tasks()
+                        if request_id in tasks_local:
+                            tasks_local[request_id]['progress'] = 75
+                            save_tasks(tasks_local)
+                    except Exception:
+                        pass
+                    
+                    # Use build_narration_schedule which has batch processing built-in
+                    nar_audio, _meta = narration_from_srt.build_narration_schedule(
+                        vi_srt, nar_out_flac,
+                        voice_name=narration_voice,
+                        speaking_rate=1.0,
+                        lead=0.0,
+                        meta_out=None,
+                        trim=False,
+                        rate_mode=narration_rate_dynamic,
+                        apply_fx=bool(narration_apply_fx),
+                        tmp_subdir=os.path.join(run_dir, "tts_pieces"),
+                        max_speed_rate=narration_max_speed_rate,
+                        no_overlap=True,
+                        voice_fx_func=voice_fx_func,
+                        narration_atempo=narration_atempo,
+                    )
+                else:
+                    nar_out_flac = None
+                
+                # Update progress before final render
+                try:
+                    tasks_local = load_tasks()
+                    if request_id in tasks_local:
+                        tasks_local[request_id]['progress'] = 85
+                        save_tasks(tasks_local)
+                except Exception:
+                    pass
+                
+                # Prepare title overlay and background audio filters
+                title_filter, bg_file = _prepare_title_and_bg_filters(title, bg_choice, render_full=True)
+                
+                # NEW: Apply narration + subtitles + title + background in ONE PASS
+                msg_parts = ["narration", "phụ đề"]
+                if title_filter:
+                    msg_parts.append("tiêu đề overlay")
+                if bg_file:
+                    msg_parts.append("nhạc nền")
+                send_discord_message(f"🎬 Render video final với {' + '.join(msg_parts)}...")
+                
+                if add_narration and nar_out_flac and os.path.exists(nar_out_flac):
+                    # Apply narration + subtitles + title + background in single pass
+                    success = burn_and_mix_narration(
+                        src_video=downloaded,
+                        ass_path=ass_file if with_subtitles and ass_file else None,
+                        narr_file=nar_out_flac,
+                        out_path=final_video,
+                        replace_audio=narration_replace_audio,
+                        narration_volume_db=narration_volume_db,
+                        shift_sec=0.7,
+                        with_subtitles=with_subtitles,
+                        title_overlay=title_filter,
+                        bg_audio=bg_file
+                    )
+                    
+                    if not success:
+                        raise RuntimeError("burn_and_mix_narration failed")
+                elif with_subtitles and ass_file:
+                    # Only burn subtitles (no narration)
+                    send_discord_message(f"🔥 Burn phụ đề vào video...")
+                    sub_filter = _ffmpeg_sub_filter(ass_file)
+                    cmd = [
+                        'ffmpeg', '-y', '-i', downloaded,
+                        '-vf', sub_filter,
+                        '-map', '0:v', '-map', '0:a'
+                    ]
+                    cmd.extend(_preferred_video_encode_args())
+                    cmd.extend(_preferred_audio_encode_args())
+                    cmd.append(final_video)
+                    run_logged_subprocess(cmd, check=True, capture_output=True)
+                else:
+                    # No narration, no subtitles - just copy
+                    send_discord_message(f"📋 Copy video (không có narration/phụ đề)...")
+                    import shutil
+                    shutil.copy2(downloaded, final_video)
+                
+                send_discord_message(f"✅ Hoàn tất render video final")
+                
             except Exception as e:
                 send_discord_message(f"❌ Lỗi xử lý video: {e}")
+                import traceback
+                send_discord_message(f"📋 Traceback: {traceback.format_exc()}")
                 tasks_local = load_tasks()
                 tasks_local[request_id]['status'] = 'error'
                 tasks_local[request_id]['error'] = f'Pipeline failed: {str(e)}'
                 save_tasks(tasks_local)
                 return
             
-            # Add title overlay and/or background audio in a single ffmpeg pass
-            if title or bg_choice:
-                try:
-                    tasks_local = load_tasks()
-                    if request_id not in tasks_local:
-                        tasks_local[request_id] = {"task_id": request_id, "status": "running", "created_at": time.time()}
-                    tasks_local[request_id]['progress'] = 90
-                    save_tasks(tasks_local)
-                except Exception as e:
-                    _report_and_ignore(e, "ignored")
-                
-                # Prepare title overlay filter if needed
-                drawtext_filter = None
-                if title:
-                    send_discord_message(f"✨ Chuẩn bị thêm tiêu đề overlay [FULL]...")
-                    try:
-                        font_path_try = "/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf"
-                        if not os.path.exists(font_path_try):
-                            font_path_try = "C:\\Windows\\Fonts\\arial.ttf" if os.name == "nt" else "times.ttf"
-                        
-                        title_text = f"[FULL] {title}"
-                        title_text = title_text.replace(":", "\\:").replace("'", "\\'")
-                        wrapped_text = wrap_text(title_text, max_chars_per_line=35)
-                        
-                        drawtext_filter = (
-                            f"drawtext=fontfile='{font_path_try}':text_align=center:text='{wrapped_text.upper()}':"
-                            f"fontcolor=white:fontsize=42:box=1:boxcolor=black@0.6:boxborderw=20:"
-                            f"x=(w-text_w)/2:y=(h-text_h)/2:enable='between(t,0,3)'"
-                        )
-                    except Exception as e:
-                        send_discord_message(f"⚠️ Không thể chuẩn bị title overlay: {e}")
-                        drawtext_filter = None
-                
-                # Prepare background audio if needed
-                bg_file = None
-                if bg_choice:
-                    send_discord_message(f"🎵 Chuẩn bị thêm nhạc nền...")
-                    try:
-                        discord_bot_bgaudio = os.path.join(BASE_DIR, "discord-bot", "bgaudio")
-                        if os.path.isdir(discord_bot_bgaudio):
-                            bgaudio_dir = discord_bot_bgaudio
-                        else:
-                            bgaudio_dir = os.path.join(OUTPUT_DIR, "bgaudio")
-                        
-                        bg_file_candidate = os.path.join(bgaudio_dir, os.path.basename(bg_choice))
-                        if os.path.exists(bg_file_candidate):
-                            bg_file = bg_file_candidate
-                        else:
-                            send_discord_message(f"⚠️ Không tìm thấy nhạc nền: {bg_file_candidate}")
-                            bg_file = None
-                    except Exception as e:
-                        send_discord_message(f"⚠️ Lỗi khi tìm nhạc nền: {e}")
-                        bg_file = None
-                
-                # Build single ffmpeg command with both title and bg (if applicable)
-                if drawtext_filter or bg_file:
-                    try:
-                        tmp_output = final_video + ".processed.mp4"
-                        
-                        cmd = ["ffmpeg", "-y", "-i", final_video]
-                        
-                        # Add background audio input if present
-                        if bg_file:
-                            cmd.extend(["-i", bg_file])
-                        
-                        # Build filters
-                        vf_parts = []
-                        af_parts = []
-                        
-                        # Video filter: title overlay
-                        if drawtext_filter:
-                            vf_parts.append(drawtext_filter)
-                        
-                        # Audio filter: mix background
-                        if bg_file:
-                            af_parts.append(
-                                "[1:a]aloop=loop=-1:size=2e+09,volume=-14dB[bg];"
-                                "[0:a][bg]amix=inputs=2:duration=first:dropout_transition=0[aout]"
-                            )
-                        
-                        # Apply filters
-                        if vf_parts:
-                            cmd.extend(["-vf", ",".join(vf_parts)])
-                        else:
-                            cmd.extend(["-c:v", "copy"])
-                        
-                        if af_parts:
-                            cmd.extend(["-filter_complex", ";".join(af_parts)])
-                            cmd.extend(["-map", "0:v", "-map", "[aout]"])
-                        else:
-                            cmd.extend(["-c:a", "copy"])
-                        
-                        # Video encoding if needed
-                        if vf_parts:
-                            cmd.extend(_preferred_video_encode_args())
-                        
-                        # Audio encoding if background added
-                        if bg_file:
-                            cmd.extend(["-c:a", "aac", "-b:a", "128k"])
-                        
-                        cmd.append(tmp_output)
-                        
-                        # Execute single ffmpeg command
-                        msg_parts = []
-                        if drawtext_filter:
-                            msg_parts.append("tiêu đề")
-                        if bg_file:
-                            msg_parts.append("nhạc nền")
-                        send_discord_message(f"🎬 Đang render {' + '.join(msg_parts)}...")
-                        
-                        run_logged_subprocess(cmd, check=True, capture_output=True)
-                        os.replace(tmp_output, final_video)
-                        
-                        success_parts = []
-                        if drawtext_filter:
-                            success_parts.append("tiêu đề overlay")
-                        if bg_file:
-                            success_parts.append(f"nhạc nền ({os.path.basename(bg_file)})")
-                        send_discord_message(f"✅ Đã thêm {' + '.join(success_parts)}")
-                        
-                    except Exception as e:
-                        send_discord_message(f"⚠️ Lỗi khi xử lý video: {e}")
+            # Title and background already added in first render pass, skip double encoding
             
             # Upload to OneDrive and announce
             send_discord_message(f"☁️ Đang upload lên OneDrive...")
@@ -14770,6 +15491,9 @@ async def process_playlist_ytdl(
             # Storage for processed videos per index
             video_outputs = {}  # video_idx -> final_video_path
             
+            # Import convert_stt for download and conversion functions
+            import convert_stt
+            
             # Step 3: Process each video (download → transcribe → translate → narrate)
             for v_idx, video_url in enumerate(video_urls, start=1):
                 send_discord_message(f"🎬 [{v_idx}/{len(video_urls)}] Xử lý video: {video_url}")
@@ -14821,34 +15545,102 @@ async def process_playlist_ytdl(
                     except Exception:
                         pass
                 
-                # Process pipeline (transcribe → translate → narrate → render)
+                # NEW WORKFLOW: Process pipeline (transcribe → translate → narrate, then apply to original)
                 try:
                     import narration_from_srt
-                    voice_fx_func = functools.partial(narration_from_srt.gemini_voice_fx, atempo=narration_atempo)
-                    result = process_long_video_in_chunks(
+                    voice_fx_func = functools.partial(narration_from_srt.gemini_voice_fx)
+                    
+                    # Step 1: Process chunks for narration/subtitles only
+                    send_discord_message(f"🎬 Xử lý chunks video {v_idx}...")
+                    chunk_result = process_chunks_for_narration_subtitles(
                         video_path=dl_video,
                         output_dir=run_dir,
                         base_name=video_label,
                         task_id=request_id,
-                        add_narration=add_narration,
-                        with_subtitles=with_subtitles,
                         narration_voice=narration_voice,
-                        narration_replace_audio=narration_replace_audio,
-                        narration_volume_db=narration_volume_db,
                         narration_rate_dynamic=narration_rate_dynamic,
                         narration_apply_fx=narration_apply_fx,
                         voice_fx_func=voice_fx_func,
+                        narration_max_speed_rate=narration_max_speed_rate,
                         progress_callback=progress_callback,
-                        chunk_duration=120,  # 2 phút (tối ưu cho transcribe),
-                        silentPass=silent_pass
+                        chunk_duration=180,  # Minimum 3 minutes
+                        silentPass=silent_pass,
+                        narration_atempo=narration_atempo
                     )
                     
-                    final_video = result['final_video']
+                    # Step 2: Concatenate narration files
+                    nar_file = None
+                    if add_narration and chunk_result.get('chunk_narrations'):
+                        nar_file = os.path.join(run_dir, f"{video_label}.nar.flac")
+                        send_discord_message(f"🔗 Ghép narration video {v_idx}...")
+                        concatenate_narration_files(
+                            chunk_result['chunk_narrations'],
+                            nar_file
+                        )
+                    
+                    # Step 3: Concatenate subtitle files
+                    vi_srt = None
+                    ass_file = None
+                    if chunk_result.get('chunk_srt_vi'):
+                        vi_srt = os.path.join(run_dir, f"{video_label}.vi.srt")
+                        send_discord_message(f"🔗 Ghép phụ đề video {v_idx}...")
+                        concatenate_srt_files(
+                            chunk_result['chunk_srt_vi'],
+                            vi_srt
+                        )
+                        
+                        # Convert to ASS
+                        ass_file = vi_srt.replace('.srt', '.ass')
+                        try:
+                            convert_stt.convert_srt_to_ass_tiktok(vi_srt, ass_file)
+                        except Exception as e:
+                            send_discord_message(f"⚠️ Không thể convert sang ASS: {e}")
+                            ass_file = None
+                    
+                    # Step 4: Apply narration and subtitles to original video in ONE PASS (no title for individual videos)
+                    send_discord_message(f"🎬 Render video {v_idx} final...")
+                    if add_narration and nar_file and os.path.exists(nar_file):
+                        # Apply narration + subtitles (title will be added at group level)
+                        success = burn_and_mix_narration(
+                            src_video=dl_video,
+                            ass_path=ass_file if with_subtitles and ass_file else None,
+                            narr_file=nar_file,
+                            out_path=final_video,
+                            replace_audio=narration_replace_audio,
+                            narration_volume_db=narration_volume_db,
+                            shift_sec=0.7,
+                            with_subtitles=with_subtitles,
+                            title_overlay=None,
+                            bg_audio=None
+                        )
+                        
+                        if not success:
+                            raise RuntimeError(f"burn_and_mix_narration failed for video {v_idx}")
+                    elif with_subtitles and ass_file:
+                        # Only burn subtitles
+                        send_discord_message(f"🔥 Burn phụ đề video {v_idx}...")
+                        sub_filter = _ffmpeg_sub_filter(ass_file)
+                        cmd = [
+                            'ffmpeg', '-y', '-i', dl_video,
+                            '-vf', sub_filter,
+                            '-map', '0:v', '-map', '0:a'
+                        ]
+                        cmd.extend(_preferred_video_encode_args())
+                        cmd.extend(_preferred_audio_encode_args())
+                        cmd.append(final_video)
+                        run_logged_subprocess(cmd, check=True, capture_output=True)
+                    else:
+                        # No narration, no subtitles - just copy
+                        import shutil
+                        shutil.copy2(dl_video, final_video)
+                    
                     video_outputs[v_idx] = final_video
                     send_discord_message(f"✅ Hoàn tất xử lý video {v_idx}")
                     
                 except Exception as e:
-                    send_discord_message(f"⚠️ Lỗi xử lý pipeline video {v_idx}: {e}, bỏ qua video này")
+                    send_discord_message(f"⚠️ Lỗi xử lý pipeline video {v_idx}: {e}")
+                    import traceback
+                    send_discord_message(f"📋 Traceback: {traceback.format_exc()}")
                     continue
             
             # Helper: check if group output exists
@@ -14977,57 +15769,15 @@ async def process_playlist_ytdl(
                     send_discord_message(f"⚠️ Lỗi ghép group {g_idx}: {e}")
                     continue
                 
-                # Add title overlay and/or background audio in single ffmpeg pass
+                # Add title overlay and/or background audio to group video (after concat)
+                # NOTE: This is separate from individual video processing - only applied to final concatenated group
                 if title or bg_choice:
                     try:
-                        # Prepare title overlay filter if needed
-                        drawtext_filter = None
-                        if title:
-                            send_discord_message(f"✨ Chuẩn bị thêm tiêu đề overlay group {g_idx}...")
-                            try:
-                                font_path_try = "/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf"
-                                if not os.path.exists(font_path_try):
-                                    font_path_try = "C:\\Windows\\Fonts\\arial.ttf" if os.name == "nt" else "times.ttf"
-                                
-                                if render_full:
-                                    title_text = f"[FULL] {title}"
-                                else:
-                                    title_text = f"{title} - TẬP {g_idx}"
-                                title_text = title_text.replace(":", "\\:").replace("'", "\\'")
-                                wrapped_text = wrap_text(title_text, max_chars_per_line=35)
-                                
-                                drawtext_filter = (
-                                    f"drawtext=fontfile='{font_path_try}':text_align=center:text='{wrapped_text.upper()}':"
-                                    f"fontcolor=white:fontsize=42:box=1:boxcolor=black@0.6:boxborderw=20:"
-                                    f"x=(w-text_w)/2:y=(h-text_h)/2:enable='between(t,0,3)'"
-                                )
-                            except Exception as e:
-                                send_discord_message(f"⚠️ Không thể chuẩn bị title overlay: {e}")
-                                drawtext_filter = None
-                        
-                        # Prepare background audio if needed
-                        bg_file = None
-                        if bg_choice:
-                            send_discord_message(f"🎵 Chuẩn bị thêm nhạc nền cho group {g_idx}...")
-                            try:
-                                discord_bot_bgaudio = os.path.join(BASE_DIR, "discord-bot", "bgaudio")
-                                if os.path.isdir(discord_bot_bgaudio):
-                                    bgaudio_dir = discord_bot_bgaudio
-                                else:
-                                    bgaudio_dir = os.path.join(OUTPUT_DIR, "bgaudio")
-                                
-                                bg_file_candidate = os.path.join(bgaudio_dir, os.path.basename(bg_choice))
-                                if os.path.exists(bg_file_candidate):
-                                    bg_file = bg_file_candidate
-                                else:
-                                    send_discord_message(f"⚠️ Không tìm thấy nhạc nền: {bg_file_candidate}")
-                                    bg_file = None
-                            except Exception as e:
-                                send_discord_message(f"⚠️ Lỗi khi tìm nhạc nền: {e}")
-                                bg_file = None
+                        # Prepare title overlay and background filters
+                        title_filter, bg_file = _prepare_title_and_bg_filters(title, bg_choice, render_full=render_full, group_idx=g_idx)
                         
                         # Build single ffmpeg command with both title and bg (if applicable)
-                        if drawtext_filter or bg_file:
+                        if title_filter or bg_file:
                             try:
                                 tmp_output = group_out + ".processed.mp4"
                                 
@@ -15042,8 +15792,8 @@ async def process_playlist_ytdl(
                                 af_parts = []
                                 
                                 # Video filter: title overlay
-                                if drawtext_filter:
-                                    vf_parts.append(drawtext_filter)
+                                if title_filter:
+                                    vf_parts.append(title_filter)
                                 
                                 # Audio filter: mix background
                                 if bg_file:
@@ -15076,7 +15826,7 @@ async def process_playlist_ytdl(
                                 
                                 # Execute single ffmpeg command
                                 msg_parts = []
-                                if drawtext_filter:
+                                if title_filter:
                                     msg_parts.append("tiêu đề")
                                 if bg_file:
                                     msg_parts.append("nhạc nền")
@@ -15086,7 +15836,7 @@ async def process_playlist_ytdl(
                                 os.replace(tmp_output, group_out)
                                 
                                 success_parts = []
-                                if drawtext_filter:
+                                if title_filter:
                                     success_parts.append("tiêu đề overlay")
                                 if bg_file:
                                     success_parts.append(f"nhạc nền ({os.path.basename(bg_file)})")
@@ -15474,16 +16224,17 @@ async def add_narration_from_srt(
         tmp_narr = os.path.splitext(output_path)[0] + ".flac"
         # Use schedule-based narration so each line starts at SRT start and plays fully (no trimming)
         nar_audio, meta_path = narration_from_srt.build_narration_schedule(
-            spath, tmp_narr,
-            voice_name=voice,
-            speaking_rate=speaking_rate,
-            lead=0.0,
-            meta_out=None,
-            trim=False,
-            tmp_subdir=request_id if 'request_id' in locals() else None,
-            no_overlap = True,
-            max_speed_rate = max_speed_rate
-        )
+                spath, tmp_narr,
+                voice_name=voice,
+                speaking_rate=speaking_rate,
+                lead=0.0,
+                meta_out=None,
+                trim=False,
+                tmp_subdir=request_id if 'request_id' in locals() else None,
+                no_overlap = True,
+                max_speed_rate = max_speed_rate
+          
+            )
         out = narration_from_srt.mix_narration_into_video(
             vpath, nar_audio, output_path,
             narration_volume_db=narration_volume_db,

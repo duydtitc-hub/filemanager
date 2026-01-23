@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Biên Nhận</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            background: #fff;
+            color: #000;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table td {
+            padding: 4px;
+            vertical-align: top;
+        }
+
+        table.myTable th,
+        table.myTable td {
+            border: 1px solid #000;
+            padding: 6px;
+        }
+
+        table.myTable th {
+            background: #f1f1f1;
+            text-align: center;
+        }
+
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .bold { font-weight: bold; }
+        .f-left { float: left; }
+
+        .divSign {
+            width: 100%;
+            display: flex;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .divSign > div {
+            width: 33.33%;
+        }
+
+        .createSignName {
+            margin-top: 70px;
+            font-weight: bold;
+        }
+
+        @media print {
+            * {
+                font-size: 12pt;
+            }
+            .footer {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="printReport">
+
+    <!-- HEADER -->
+    <table border="0">
+        <tr>
+            <td width="70%" class="text-center">
+                <div class="bold" style="font-size:16px;">{{COMPANY_NAME}}</div>
+                <div style="font-size:15px;">{{COMPANY_ADDRESS}}</div>
+                <div>
+                    <b>Điện thoại:</b> {{COMPANY_PHONE}} -
+                    <b>Website:</b> www.travel.com.vn - sale@vietravel.com
+                </div>
+            </td>
+            <td width="30%" class="text-right">
+                <div>Số phiếu thu: <b>{{RECEIPT_NO}}</b></div>
+                <div>Số booking: <b>{{BOOKING_NO}}</b></div>
+            </td>
+        </tr>
+    </table>
+
+    <br>
+
+    <div class="text-center">
+        <div style="font-size:26px;font-weight:bold;">BIÊN NHẬN</div>
+    </div>
+
+    <br>
+
+    <!-- THÔNG TIN NGƯỜI NỘP -->
+    <table border="0">
+        <tr>
+            <td width="20%">Họ tên người đăng ký:</td>
+            <td><b>{{PAYER}}</b></td>
+        </tr>
+        <tr>
+            <td>Địa chỉ:</td>
+            <td>{{ADDRESS}}</td>
+        </tr>
+        <tr>
+            <td>Điện thoại:</td>
+            <td>{{TELEPHONE}} - {{MOBILE}}</td>
+        </tr>
+        <tr>
+            <td>Công ty:</td>
+            <td>{{CUSTOMER_COMPANY}}</td>
+        </tr>
+        <tr>
+            <td>Mã số thuế:</td>
+            <td>{{VAT_CODE}}</td>
+        </tr>
+        <tr>
+            <td>Địa chỉ công ty:</td>
+            <td>{{COMPANY_ADDRESS_CUSTOMER}}</td>
+        </tr>
+        <tr>
+            <td>Theo chương trình:</td>
+            <td><b>{{DESTINATION}}</b></td>
+        </tr>
+
+        <!-- OPTION -->
+        <tr>
+            <td>Option:</td>
+            <td>{{OPTION_NAME}}</td>
+        </tr>
+
+        <tr>
+            <td>Thời gian:</td>
+            <td>
+                <b>{{DEPARTURE_DATE}} - {{END_DATE}}</b>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Số lượng khách:</td>
+            <td>
+                <b>{{TOTAL_GUEST}}</b>
+                (NL: {{ADULT}} | TE: {{CHILDREN}} | TN: {{CHILDREN10}})
+            </td>
+        </tr>
+    </table>
+
+    <br>
+
+    <!-- QR -->
+    <div style="text-align:right">
+        <img src="{{QR_IMAGE}}" style="width:190px;height:190px;">
+    </div>
+
+    <!-- CHI TIẾT THANH TOÁN -->
+    <table class="myTable">
+        <thead>
+        <tr>
+            <th>NỘI DUNG</th>
+            <th width="25%">SỐ TIỀN</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <!-- LOOP CONTENT -->
+        <tr>
+            <td>{{RECEIPT_CONTENT_NOTE}}</td>
+            <td class="text-right">{{AMOUNT}}</td>
+        </tr>
+
+        <tr>
+            <td class="text-right bold">Tổng cộng</td>
+            <td class="text-right bold">{{TOTAL_AMOUNT}}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <br>
+
+    <!-- THÔNG TIN KHÁC -->
+    <table border="0">
+        <tr>
+            <td width="20%">Giấy tờ kèm theo:</td>
+            <td>{{ATTACH_DOCUMENT}}</td>
+        </tr>
+        <tr>
+            <td>Ghi chú:</td>
+            <td>{{NOTE_HTML}}</td>
+        </tr>
+        <tr>
+            <td>Thông tin họp đoàn:</td>
+            <td><b>{{MEETING_TIME}} {{MEETING_PLACE}}</b></td>
+        </tr>
+        <tr>
+            <td>Thông tin tập trung:</td>
+            <td><b>{{GATHER_TIME}} {{GATHER_PLACE}}</b></td>
+        </tr>
+        <tr>
+            <td>Vận chuyển:</td>
+            <td>
+                <div>Chuyến đi: <b>{{FLIGHT_START}}</b> ({{FLIGHT_START_TIME}})</div>
+                <div>Chuyến về: <b>{{FLIGHT_END}}</b> ({{FLIGHT_END_TIME}})</div>
+            </td>
+        </tr>
+    </table>
+
+    <br>
+
+    <!-- LƯU Ý -->
+    <div>
+        <b>Một số điểm cần lưu ý:</b>
+        <ol>
+            <li>Quý khách vui lòng đọc kỹ chương trình, giá tour và điều kiện.</li>
+            <li>Thanh toán đủ tiền trước ngày khởi hành theo quy định.</li>
+            <li>Giờ bay có thể thay đổi theo hãng hàng không.</li>
+            <li>Điều kiện hủy tour áp dụng theo quy định Vietravel.</li>
+        </ol>
+        <b>Vui lòng đọc kỹ điều kiện hủy tour phía mặt sau.</b>
+    </div>
+
+    <!-- KÝ TÊN -->
+    <div class="divSign">
+        <div>
+            <b>Thu ngân / ĐD Phòng ĐKDL</b><br>
+            <small>(Ký, ghi rõ họ tên)</small>
+        </div>
+        <div>
+            <b>Người nộp tiền</b><br>
+            <small>(Ký, ghi rõ họ tên)</small>
+        </div>
+        <div>
+            Ngày {{DAY}} tháng {{MONTH}} năm {{YEAR}}<br>
+            <b>Lập phiếu</b>
+            <div class="createSignName">{{CREATED_BY}}</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function printReport() {
+        window.print();
+    }
+</script>
+
+</body>
+</html>

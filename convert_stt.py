@@ -13,6 +13,7 @@ import requests
 import time
 import hashlib
 import json
+import re
 # ---------------------------------------------------------
 # 1) Detect local model file ONLY (never treat as HF repo)
 # ---------------------------------------------------------
@@ -46,9 +47,6 @@ def get_fast_whisper_model(model_size: str = "large"):
 
     device = "cpu"
     model_dir = os.path.join(MODEL_PATH, model_size)
-    if model_size == "large":
-        model_dir = MODEL_PATH
-
     try:
         _FASTWHISPER_MODELS[model_size] = WhisperModel(model_dir, device=device, compute_type="int8")
     except Exception:
@@ -641,20 +639,27 @@ def download_video(url,output_filename="video.mp4"):
     output_path = os.path.join(DOWNLOAD_DIR, output_filename)
 
     send_discord_message("🎬 Đang tải video bằng yt-dlp")
-    try:
-        cmd = [
-            "yt-dlp",
-            "-f", "bv*+ba/b",
-            "--merge-output-format", "mp4",
-            "-o", output_path,
-            url
-        ]
-        print("Running command:", " ".join(cmd))
-        run_logged_subprocess(cmd, check=True)
-        return output_path
-    except Exception as e:
-        send_discord_message(f"❌ Lỗi khi tải video: {e}")
-        raise
+    cmd = [
+        "yt-dlp",
+        "-f", "bv*+ba/b",
+        "--merge-output-format", "mp4",
+        "-o", output_path,
+        url
+    ]
+
+    last_exc = None
+    for attempt in range(1, 6):
+        try:
+            print("Running command:", " ".join(cmd))
+            run_logged_subprocess(cmd, check=True)
+            return output_path
+        except Exception as e:
+            last_exc = e
+            send_discord_message(f"⚠️ Lỗi khi tải video (lần {attempt}/5): {e}")
+            if attempt == 5:
+                send_discord_message("❌ Tải video thất bại sau 5 lần thử.")
+                raise
+            time.sleep(1 + attempt)
 
 # ---------------------------------------------------------
 # Format SRT timestamp
@@ -774,10 +779,21 @@ def transcribe(video_path, task_id: Optional[str] = None,passwisper:bool = False
     if fw_model is not None and not passwisper:
         try:
             send_discord_message("🎙️ Đang tạo phụ đề tiếng Trung (Faster-Whisper)...")
-            fw_result = fw_model.transcribe(video_path, language="zh",  vad_filter=True,
-                                            temperature=0,
-                                            no_speech_threshold=0.6,
-                                            hallucination_silence_threshold=1.2)
+            tmp_wav = os.path.splitext(video_path)[0] + ".clean.wav"
+            try:
+                _export_filtered_wav(video_path, tmp_wav)
+            except Exception as e:
+                send_discord_message(f"⚠️ Lỗi khi xuất WAV lọc: {e}")
+                raise
+            fw_result = fw_model.transcribe(
+                tmp_wav,
+                vad_filter=True,
+                vad_parameters=dict(
+                    min_silence_duration_ms=800,  # chỉ cắt khi silence đủ dài
+                    speech_pad_ms=600,            # đệm trước/sau nhiều hơn
+                    threshold=0.45,               # dễ nhận là speech hơn
+                )
+            )
             # faster-whisper may return (segments, info) tuple
             if isinstance(fw_result, tuple) and len(fw_result) >= 1:
                 segments = fw_result[0] or []
@@ -925,6 +941,136 @@ def transcribe(video_path, task_id: Optional[str] = None,passwisper:bool = False
     # All attempts failed → stop the process
     send_discord_message("❌ Dịch phụ đề sang tiếng Việt thất bại sau 3 lần. Dừng tiến trình.")
     raise RuntimeError(f"translate_srt_file failed after {attempts} attempts: {last_err}")
+
+def create_chinese_gemini_srt(video_path: str, passwisper: bool = False) -> str:
+    """Generate Chinese subtitles using the POST transcribe API (Gemini)."""
+    srt_path = video_path.replace(".mp4", ".srt")
+    if os.path.exists(srt_path):
+        send_discord_message("ℹ️ Phát hiện phụ đề tiếng Trung đã tồn tại, trả về ngay:", srt_path)
+        return srt_path
+
+    tmp_wav = os.path.splitext(video_path)[0] + ".gemini.wav"
+    try:
+        run_logged_subprocess([
+            "ffmpeg", "-y", "-i", video_path, "-ar", "16000", "-ac", "1", "-vn", tmp_wav
+        ], check=True)
+        result = _create_srt_from_post_api_with_retries(tmp_wav, output_srt=srt_path)
+        if not result:
+            raise RuntimeError("POST transcribe failed to produce a valid SRT")
+        send_discord_message("✅ Đã tạo phụ đề tiếng Trung bằng POST transcribe API:", result[0])
+        return result[0]
+    finally:
+        try:
+            if os.path.exists(tmp_wav):
+                os.remove(tmp_wav)
+        except Exception:
+            pass
+def _export_filtered_wav(video_path: str, wav_path: str) -> None:
+    cmd = [
+        "ffmpeg", "-y", "-i", video_path,
+        "-vn",
+        "-ac", "1",
+        "-ar", "16000",
+        "-af", "highpass=f=80,lowpass=f=8000",
+        "-c:a", "pcm_s16le",
+        wav_path
+    ]
+    run_logged_subprocess(cmd, check=True)
+
+
+def create_chinese_srt(video_path: str, passwisper: bool = False) -> str:
+    """Generate Chinese subtitles from a video without any translation or trimming."""
+    srt_path = video_path.replace(".mp4", ".srt")
+    if os.path.exists(srt_path):
+        send_discord_message("ℹ️ Phát hiện phụ đề tiếng Trung đã tồn tại, trả về ngay:", srt_path)
+        return srt_path
+
+    tmp_wav = os.path.splitext(video_path)[0] + ".clean.wav"
+    try:
+        _export_filtered_wav(video_path, tmp_wav)
+    except Exception as e:
+        send_discord_message(f"⚠️ Lỗi khi xuất WAV lọc: {e}")
+        raise
+
+    segments = []
+    fw_model = get_fast_whisper_model()
+    if fw_model is not None and not passwisper:
+        try:
+            send_discord_message("🎙️ Tạo phụ đề tiếng Trung (Faster-Whisper)...")
+            fw_result  = fw_model.transcribe(
+                tmp_wav,
+                vad_filter=True,
+                vad_parameters=dict(
+                    min_silence_duration_ms=800,  # chỉ cắt khi silence đủ dài
+                    speech_pad_ms=600,            # đệm trước/sau nhiều hơn
+                    threshold=0.45,               # dễ nhận là speech hơn
+                )
+            )
+            if isinstance(fw_result, tuple) and len(fw_result) >= 1:
+                segments = fw_result[0] or []
+            elif isinstance(fw_result, dict) and "segments" in fw_result:
+                    segments = fw_result.get("segments", [])
+            else:
+                try:
+                    segments = [s for s in fw_result]
+                except Exception:
+                    segments = []
+        except Exception as e_fw:
+            send_discord_message(f"⚠️ Faster-Whisper failed for Chinese srt: {e_fw}")
+            traceback.print_exc()
+    elif not passwisper:
+        send_discord_message("⚠️ Faster-Whisper không khả dụng, thử Whisper local...")
+        try:
+            wm = get_whisper_model()
+            if wm is not None:
+                send_discord_message("🎙️ Tạo phụ đề tiếng Trung (Whisper python)...")
+                try:
+                    wh_res = wm.transcribe(video_path, language="zh")
+                    segments = wh_res.get('segments', []) if isinstance(wh_res, dict) else []
+                except Exception as e_wh:
+                    send_discord_message(f"⚠️ Whisper transcription failed: {e_wh}")
+        except Exception as e_wm:
+            send_discord_message(f"⚠️ Không thể khởi tạo Whisper local: {e_wm}")
+
+    if not segments:
+        send_discord_message("⚠️ Không có kết quả Faster-Whisper — dùng Gemini STT cho phụ đề tiếng Trung...")
+        tmp_wav = os.path.splitext(video_path)[0] + ".gemini.wav"
+        try:
+            run_logged_subprocess(["ffmpeg", "-y", "-i", video_path, "-ar", "16000", "-ac", "1", "-vn", tmp_wav], check=True)
+            result = _create_srt_from_post_api_with_retries(tmp_wav, output_srt=srt_path)
+            if result:
+                send_discord_message("✅ Đã tạo phụ đề tiếng Trung bằng POST transcribe API:", srt_path)
+                return srt_path
+            send_discord_message("⚠️ POST transcribe không trả về SRT hợp lệ")
+        finally:
+            try:
+                if os.path.exists(tmp_wav):
+                    os.remove(tmp_wav)
+            except Exception:
+                pass
+
+    segments = _normalize_segments(segments)
+    _write_srt_segments(srt_path, segments)
+    send_discord_message("✅ Đã tạo phụ đề tiếng Trung:", srt_path)
+
+    try:
+        if _srt_contains_keywords(srt_path):
+            send_discord_message("ℹ️ Phát hiện từ khoá đặc biệt → ghi đè bằng POST transcribe API...")
+            tmp_wav = os.path.splitext(video_path)[0] + ".gemini.wav"
+            try:
+                run_logged_subprocess(["ffmpeg", "-y", "-i", video_path, "-ar", "16000", "-ac", "1", "-vn", tmp_wav], check=True)
+                _create_srt_from_post_api_with_retries(tmp_wav, output_srt=srt_path)
+            finally:
+                try:
+                    if os.path.exists(tmp_wav):
+                        os.remove(tmp_wav)
+                except Exception:
+                    pass
+    except Exception as e_kw:
+        send_discord_message(f"⚠️ Re-transcribe keywords failed: {e_kw}")
+        traceback.print_exc()
+
+    return srt_path
 
 
 def burn_subtitles_tiktok(video_path: str, srt_path: str, output_path: str | None = None) -> str:
@@ -1236,6 +1382,66 @@ def _parse_time_object_to_seconds(obj) -> float:
 
     total = h * 3600 + m * 60 + s + ms / 1000.0
     return float(total)
+
+
+_SENTENCE_SPLIT_PATTERN = re.compile(r'.+?[。.!?！？；;:]+|.+$', re.UNICODE)
+
+
+def _split_text_into_chunks(text: str) -> list[str]:
+    if not text:
+        return []
+    parts = [part.strip() for part in _SENTENCE_SPLIT_PATTERN.findall(text) if part.strip()]
+    if not parts:
+        parts = [text.strip()]
+    return parts or [text.strip()]
+
+
+def _coerce_to_seconds(value) -> float:
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value)
+        except Exception:
+            try:
+                return _parse_srt_timestamp_to_seconds(value)
+            except Exception:
+                return 0.0
+    return 0.0
+
+
+def _split_segment_into_chunks(segment: dict) -> list[dict]:
+    text = (segment.get("text") or "").strip()
+    if not text:
+        return [segment]
+    texts = _split_text_into_chunks(text)
+    if len(texts) <= 1:
+        return [segment]
+    start = _coerce_to_seconds(segment.get("start", 0.0))
+    end = _coerce_to_seconds(segment.get("end", start + 2.0))
+    if end <= start:
+        end = start + 0.2 * len(texts)
+    duration = end - start
+    total = len(texts)
+    chunks = []
+    for idx, chunk_text in enumerate(texts):
+        chunk_start = start + duration * idx / total
+        chunk_end = start + duration * (idx + 1) / total
+        if idx == total - 1:
+            chunk_end = end
+        chunks.append({
+            "start": chunk_start,
+            "end": chunk_end,
+            "text": chunk_text
+        })
+    return chunks
+
+
+def _expand_segments_by_length(segments: list) -> list:
+    result = []
+    for seg in segments:
+        result.extend(_split_segment_into_chunks(seg))
+    return result
 
 
 def create_bilingual_srt_from_gemini(audio_path: str, out_zh: str | None = None, out_vi: str | None = None, api_key: Optional[str] = None, model: str = "gemini-2.5-flash") -> tuple[str, str]:

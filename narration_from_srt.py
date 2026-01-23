@@ -6,6 +6,7 @@ import subprocess
 import tempfile
 import uuid
 import math
+import time
 from typing import List, Tuple, Dict, Any, Callable
 
 import pysubs2
@@ -13,6 +14,7 @@ import pysubs2
 from GoogleTTS import text_to_wav
 from DiscordMethod import send_discord_message
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_SAMPLE_FMT = "s16"
 
 def _compute_dynamic_speaking_rate(
     text: str,
@@ -64,6 +66,7 @@ def apply_voice_fx(in_path: str, out_path: str, atempo: float = 1.6) -> str:
         "ffmpeg", "-y", "-i", in_path,
         "-af", fx,
         "-c:a", "flac",
+        "-sample_fmt", DEFAULT_SAMPLE_FMT,
         out_path
     ]
     print( "Applying voice FX:", " ".join(cmd))
@@ -80,18 +83,31 @@ def gemini_voice_fx(in_path: str, out_path: str, atempo: float = 1.18) -> str:
         atempo: Speed-up factor inside the Gemini FX chain.
     """
     fx = (
-        f"asetrate=44100*1.3,aresample=44100,atempo={atempo},"
-        "highpass=f=80,lowpass=f=8000,bass=g=6:f=120,treble=g=-6:f=6000,dynaudnorm=f=150:g=15,volume=6dB"
+        "aresample=48000,"
+        f"rubberband=pitch=1.09051,"
+        f"atempo={atempo},"
+        "highpass=f=90,"
+        "lowpass=f=9000,"
+        "bass=g=3:f=120,"
+        "acompressor=threshold=-18dB:ratio=3:attack=5:release=100,"
+        "alimiter=limit=0.95"
     )
+
     cmd = [
-        "ffmpeg", "-y", "-i", in_path,
+        "ffmpeg", "-y",
+        "-i", in_path,
         "-af", fx,
+        "-ar", "48000",
+        "-ac", "2",
+        "-sample_fmt", "s16",
         "-c:a", "flac",
         out_path
     ]
     print("Applying Gemini voice FX:", " ".join(cmd))
     run_logged_subprocess(cmd, check=True, capture_output=True)
     return out_path
+
+
 
 
 def normalize_audio_to_flac(in_path: str, out_path: str, sr: int = 48000, ac: int = 2) -> str:
@@ -103,6 +119,7 @@ def normalize_audio_to_flac(in_path: str, out_path: str, sr: int = 48000, ac: in
         "ffmpeg", "-y",
         "-i", in_path,
         "-ar", str(sr), "-ac", str(ac),
+        "-sample_fmt", DEFAULT_SAMPLE_FMT,
         "-c:a", "flac",
         out_path
     ]
@@ -127,6 +144,7 @@ def make_silence(duration: float, out_path: str, sr: int = 48000) -> str:
         "-f", "lavfi", "-i", f"anullsrc=r={sr}:cl=stereo",
         "-t", str(max(0.0, duration)),
         "-ar", str(sr), "-ac", "2",
+        "-sample_fmt", DEFAULT_SAMPLE_FMT,
         "-c:a", "flac",
         out_path
     ]
@@ -145,6 +163,7 @@ def trim_silence(in_path: str, out_path: str, threshold_db: int = -40) -> str:
         "ffmpeg", "-y", "-i", in_path,
         "-af", filt,
         "-ar", "48000", "-ac", "2",
+        "-sample_fmt", DEFAULT_SAMPLE_FMT,
         "-c:a", "flac",
         out_path
     ]
@@ -178,6 +197,7 @@ def fit_audio_to_slot(in_path: str, slot_duration: float, out_path: str) -> str:
         "ffmpeg", "-y", "-i", in_path,
         "-af", ",".join(filters),
         "-ar", "48000", "-ac", "2",
+        "-sample_fmt", DEFAULT_SAMPLE_FMT,
         "-c:a", "flac",
         out_path
     ]
@@ -204,6 +224,7 @@ def accelerate_audio(in_path: str, out_path: str, ratio: float, sr: int = 48000,
         "ffmpeg", "-y", "-i", in_path,
         "-af", filter_chain,
         "-ar", str(sr), "-ac", str(ac),
+        "-sample_fmt", DEFAULT_SAMPLE_FMT,
         "-c:a", "flac",
         out_path
     ]
@@ -214,46 +235,91 @@ def accelerate_audio(in_path: str, out_path: str, ratio: float, sr: int = 48000,
 def concat_audio(parts: List[str], out_path: str) -> str:
     # Use concat demuxer for reliable concatenation
     # Ensure each part is 48kHz stereo FLAC; if not, transcode to a temp file
+    if not parts:
+        send_discord_message("⚠️ concat_audio: No parts to concatenate")
+        make_silence(0.5, out_path)
+        return out_path
+    
+    # Create temp directory in same location as output file
+    work_dir = os.path.dirname(out_path) or "."
+    temp_dir = os.path.join(work_dir, "concat_temp")
+    os.makedirs(temp_dir, exist_ok=True)
+    
+    send_discord_message(f"🔗 concat_audio: Processing {len(parts)} parts...")
     norm_parts = []
-    for p in parts:
-        # create normalized temp file
+    for idx, p in enumerate(parts):
+        # Verify source exists
+        if not os.path.exists(p):
+            send_discord_message(f"⚠️ Part {idx+1} not found: {p}")
+            continue
+        
+        size_kb = os.path.getsize(p) / 1024
+        # send_discord_message(f"  Part {idx+1}: {size_kb:.1f}KB")
+        
+        # Create normalized file in work directory
         try:
-            nf = tempfile.NamedTemporaryFile("wb", delete=False, suffix=".flac")
-            nf.close()
+            norm_file = os.path.join(temp_dir, f"norm_{idx}.flac")
             cmd = [
                 "ffmpeg", "-y", "-i", p,
-                "-ar", "48000", "-ac", "2", "-c:a", "flac",
-                nf.name
+                "-ar", "48000", "-ac", "2", "-sample_fmt", DEFAULT_SAMPLE_FMT, "-c:a", "flac",
+                norm_file
             ]
             run_logged_subprocess(cmd, check=True, capture_output=True)
-            norm_parts.append(nf.name)
-        except Exception:
+            
+            # Verify normalized file
+            norm_size = os.path.getsize(norm_file) / 1024
+            norm_dur = ffprobe_duration(norm_file)
+            # send_discord_message(f"    Normalized: {norm_size:.1f}KB, {norm_dur:.2f}s")
+            norm_parts.append(norm_file)
+        except Exception as e:
+            send_discord_message(f"⚠️ Failed to normalize part {idx+1}: {e}, using original")
             # fallback to original if conversion fails
             norm_parts.append(p)
 
+    if not norm_parts:
+        send_discord_message("⚠️ No parts to concatenate after normalization")
+        make_silence(0.5, out_path)
+        return out_path
+
     try:
-        with tempfile.NamedTemporaryFile("w", delete=False, suffix=".txt") as f:
+        # Write concat list in work directory
+        list_path = os.path.join(temp_dir, "concat_list.txt")
+        with open(list_path, "w", encoding="utf-8") as f:
             for p in norm_parts:
-                f.write(f"file '{p}'\n")
-            list_path = f.name
-        cmd = [
-            "ffmpeg", "-y",
-            "-f", "concat", "-safe", "0", "-i", list_path,
-            "-ar", "48000", "-ac", "2", "-c:a", "flac",
-            out_path
-        ]
-        run_logged_subprocess(cmd, check=True, capture_output=True)
-    finally:
+                # Use absolute path and proper escaping for concat demuxer
+                abs_path = os.path.abspath(p)
+                f.write(f"file '{abs_path}'\n")
+        
+        # Log concat list contents for debugging
+        with open(list_path, "r", encoding="utf-8") as f:
+            list_contents = f.read()
+            send_discord_message(f"📝 Concat list ({len(norm_parts)} files):\n{list_contents[:500]}")
+        
+            cmd = [
+                "ffmpeg", "-y",
+                "-f", "concat", "-safe", "0", "-i", list_path,
+                "-ar", "48000", "-ac", "2", "-sample_fmt", DEFAULT_SAMPLE_FMT, "-c:a", "flac",
+                out_path
+            ]
+        send_discord_message(f"🔨 Running ffmpeg concat...")
+        
+        # Capture stderr to see warnings
+        result = run_logged_subprocess(cmd, check=True, capture_output=True, log_command=True, text=True)
+       
+        
+        final_size = os.path.getsize(out_path) / 1024
+        final_dur = ffprobe_duration(out_path)
+        send_discord_message(f"✅ concat_audio complete: {final_dur:.2f}s, {final_size:.1f}KB")
+    except Exception as e:
+        send_discord_message(f"❌ concat_audio failed: {e}")
+    # finally:
+        # Cleanup temp directory
         try:
-            os.unlink(list_path)
-        except Exception:
-            pass
-        for p in norm_parts:
-            try:
-                if p not in parts:
-                    os.unlink(p)
-            except Exception:
-                pass
+            import shutil
+            if os.path.exists(temp_dir):
+                shutil.rmtree(temp_dir)
+        except Exception as e:
+            send_discord_message(f"⚠️ Failed to cleanup temp dir: {e}")
     return out_path
 
 
@@ -326,7 +392,7 @@ def build_narration_from_srt(srt_path: str, out_audio: str, voice_name: str = "v
                 natural_src = fx_func(src_wav, natural_fx)
             natural = os.path.join(tmpdir, f"{srt_base}_nat_{line_idx}.flac")
             # Convert to FLAC (no time-stretch)
-            run_logged_subprocess(["ffmpeg", "-y", "-i", natural_src, "-c:a", "flac", natural], check=True, capture_output=True)
+            run_logged_subprocess(["ffmpeg", "-y", "-i", natural_src, "-sample_fmt", DEFAULT_SAMPLE_FMT, "-c:a", "flac", natural], check=True, capture_output=True)
             parts.append(natural)
             current_t = adj_start + ffprobe_duration(natural)
         else:
@@ -347,6 +413,341 @@ def build_narration_from_srt(srt_path: str, out_audio: str, voice_name: str = "v
     return final_audio
 
 
+# def build_narration_schedule(
+#     srt_path: str,
+#     out_audio: str,
+#     voice_name: str = "vi-VN-Standard-C",
+#     speaking_rate: float = 1.0,
+#     lead: float = 0.2,
+#     meta_out: str | None = None,
+#     trim: bool = False,
+#     trim_threshold_db: int = -40,
+#     rate_mode: int = 0,
+#     apply_fx: bool = False,
+#     tmp_subdir: str | None = None,
+#     no_overlap: bool = True,
+#     max_speed_rate: float = 1.25,
+#     max_lead_overlap: float = 0.2,
+#     voice_fx_func: Callable[[str, str], str] | None = None,
+#     chunk_duration: float | None = None,
+#     narration_atempo: float = 1.18,
+#     slot_duration_scale: float = 1.0,
+#     regeneration_attempt: int = 0,
+# ) -> Tuple[str, str]:
+#     """Generate per-line audio, then mix by scheduling each clip at its start time using adelay.
+    
+#     Args:
+#         chunk_duration: Maximum duration for narration. If provided and narration exceeds this,
+#                         all pieces will be regenerated with adjusted atempo to fit.
+    
+#     Returns (final_audio_path, metadata_json_path)."""
+#     # Ensure module references are clear
+#     import os as _os
+#     import time as _time
+    
+#     subs = pysubs2.load(srt_path, encoding="utf-8")
+#     subs.events.sort(key=lambda ev: ev.start)
+#     # Use provided voice FX function or default to apply_voice_fx
+#     fx_func = voice_fx_func if voice_fx_func is not None else apply_voice_fx
+#     # Place temp files under BASE_DIR/temp_narr_sched/<tmp_subdir> if provided
+#     tmpdir = _os.path.join(BASE_DIR, "temp_narr_sched", tmp_subdir) if tmp_subdir else _os.path.join(BASE_DIR, "temp_narr_sched")
+#     _os.makedirs(tmpdir, exist_ok=True)
+#     # Create subfolders to reduce per-directory file counts (tts, norm, fx, piece, trim)
+#     tts_dir = _os.path.join(tmpdir, "tts")
+#     norm_dir = _os.path.join(tmpdir, "norm")
+#     fx_dir = _os.path.join(tmpdir, "fx")
+#     piece_dir = _os.path.join(tmpdir, "piece")
+#     trim_dir = _os.path.join(tmpdir, "trim")
+#     for d in (tts_dir, norm_dir, fx_dir, piece_dir, trim_dir):
+#         _os.makedirs(d, exist_ok=True)
+
+#     items: List[Dict[str, Any]] = []
+#     # Cursor to enforce non-overlapping playback when requested
+#     cursor_t = 0.0
+#     # readable prefix from srt filename
+#     srt_base = os.path.splitext(os.path.basename(srt_path))[0]
+#     piece_idx = 0
+#     for ev in subs:
+#         start = ev.start / 1000.0
+#         end = ev.end / 1000.0
+#         if end <= start:
+#             continue
+#         adj_start = max(0.0, start - max(0.0, lead))
+
+#         text = pysubs2.SSAEvent(text=ev.text).text
+#         text = text.replace("\\N", " ").strip()
+#         piece_idx += 1
+#         raw_wav = _os.path.join(tts_dir, f"{srt_base}_tts_{piece_idx}.wav")
+#         raw_wav_vi = _os.path.join(tts_dir, f"{srt_base}.vi_tts_{piece_idx}.wav")
+#         # Speaking rate: dynamic when rate_mode=1, else fixed base_rate
+#         slot = end - start
+#         norm_wav = _os.path.join(norm_dir, f"norm_{srt_base}_{piece_idx}.flac")
+        
+#         # Check if cached TTS exists (either format)
+#         if _os.path.exists(raw_wav_vi):
+#             # Prefer .vi_tts format if exists
+#             src_wav = raw_wav_vi
+#         elif _os.path.exists(raw_wav):
+#             # Use regular _tts format
+#             src_wav = raw_wav
+#         else:
+#             # Generate new TTS
+#             rate_use = _compute_dynamic_speaking_rate(text, slot, base_rate=speaking_rate) if rate_mode == 1 else speaking_rate
+#             res = text_to_wav(text, raw_wav, voice_name=voice_name, speaking_rate=rate_use, sendNotify=False)
+#             if not res or not _os.path.exists(raw_wav):
+#                 # Skip TTS failure by inserting no audio for this item
+#                 continue
+#             src_wav = raw_wav
+
+#         # Normalize TTS output to 48kHz stereo FLAC to avoid container/codec duration bugs
+#         try:
+#             normalize_audio_to_flac(src_wav, norm_wav)
+#             src_wav = norm_wav
+#         except Exception:
+#             pass  # Keep using src_wav if normalization fails
+        
+#         if trim:
+#             trimmed = _os.path.join(trim_dir, f"{srt_base}_trim_{piece_idx}.wav")
+#             trim_silence(src_wav, trimmed, threshold_db=trim_threshold_db)
+#             src_wav = trimmed
+#         # Produce a piece fitted to the slot to reduce overlaps when scheduling
+#         # Apply FX if requested, then fit piece to slot to reduce overlaps
+#         slot_src = src_wav
+#         if apply_fx:
+#             slot_fx = _os.path.join(fx_dir, f"{srt_base}_fx_{piece_idx}.flac")
+#             # Use default atempo from fx_func (1.6 or 1.18) - speed adjustment only for long pieces
+#             slot_src = fx_func(src_wav, slot_fx,atempo=narration_atempo)
+#         piece = _os.path.join(piece_dir, f"{srt_base}_piece_{piece_idx}.flac")
+#         # For scheduled narration we prefer to keep the natural TTS duration
+#         # to avoid cutting a sentence when the subtitle slot ends. Convert
+#         # the source to FLAC preserving its full length. If conversion fails,
+#         # fall back to fitting to the slot to ensure a piece exists.
+#         piece_created = False
+#         try:
+#             result = run_logged_subprocess([
+#                 "ffmpeg", "-y", "-i", slot_src,
+#                 "-ar", "48000", "-ac", "2", "-sample_fmt", DEFAULT_SAMPLE_FMT, "-c:a", "flac", piece
+#             ], check=True, capture_output=True)
+#             # Ensure file is fully written (important for Linux)
+#             if _os.path.exists(piece) and _os.path.getsize(piece) > 0:
+#                 piece_created = True
+#         except Exception:
+#             pass
+        
+#         if not piece_created:
+#             # Fallback: fit to slot to ensure a piece exists
+#             fit_audio_to_slot(slot_src, slot, piece)
+        
+#         # Wait briefly for file system sync on Linux
+#         if not _os.name == 'nt':  # Not Windows
+#             _time.sleep(0.01)  # 10ms delay for file sync
+        
+#         dur = ffprobe_duration(piece)
+#         if dur <= 0:
+#             # Fallback: use source duration if probe fails
+#             dur = ffprobe_duration(slot_src) if _os.path.exists(slot_src) else slot
+
+#         # Apply slot_duration_scale to reduce allowed duration during regeneration
+#         soft_allow = (slot + 0.2) * slot_duration_scale
+#         allowed_duration = soft_allow
+#         speed_capped = False
+#         if dur > allowed_duration:
+#             # Keep narration within the slot by gradually speeding it up in small steps.
+#             orig_piece = piece
+#             orig_dur = dur
+#             target_ratio = min(
+#                 max(orig_dur / max(allowed_duration, 1e-6), 1.0),
+#                 max_speed_rate,
+#             )
+#             if target_ratio >= max_speed_rate:
+#                 speed_capped = True
+#             current_ratio = 1.0
+#             attempt = 0
+#             while dur > allowed_duration and current_ratio < target_ratio:
+#                 attempt += 1
+#                 remaining = target_ratio - current_ratio
+#                 # Use a finer increment near the end for smoother durations
+#                 delta = 0.05
+#                 next_ratio = min(current_ratio + delta, target_ratio)
+#                 if next_ratio <= current_ratio:
+#                     break
+#                 fast_piece = _os.path.join(piece_dir, f"{srt_base}_piece_{piece_idx}_fast_{attempt}.flac")
+#                 try:
+#                     accelerate_audio(orig_piece, fast_piece, next_ratio)
+#                     if not _os.path.exists(fast_piece):
+#                         break
+#                     piece = fast_piece
+#                     new_dur = ffprobe_duration(piece)
+#                     if new_dur <= 0 or new_dur >= dur:
+#                         break
+#                     dur = new_dur
+#                     current_ratio = next_ratio
+#                 except Exception:
+#                     break
+
+#         # Enforce sequential narration if no_overlap=True while keeping pacing natural.
+#         eff_start = adj_start
+#         if no_overlap:
+#             if speed_capped:
+#                 eff_start = max(
+#                     max(0.0, adj_start - max_lead_overlap),
+#                     cursor_t + 0.05,
+#                 )
+#             else:
+#                 eff_start = max(adj_start, cursor_t + 0.05)
+        
+#         # # From 2nd regeneration attempt onwards: check if piece ends after subtitle and scale it
+#         # if regeneration_attempt >= 1:
+#         #     piece_end = eff_start + dur
+#         #     subtitle_end = end  # from ev.end
+#         #     if piece_end > subtitle_end:
+#         #         # Narration overflows subtitle: compress piece to fit exactly within subtitle
+#         #         available_time = subtitle_end - eff_start
+#         #         if available_time > 0.1:  # Minimum 0.1s to avoid zero/negative duration
+#         #             scale_ratio = dur / available_time
+#         #             # Apply accelerate_audio to compress piece
+#         #             attempt_scale = 0
+#         #             while dur > available_time and scale_ratio < max_speed_rate * 2:
+#         #                 attempt_scale += 1
+#         #                 scaled_piece = _os.path.join(piece_dir, f"{srt_base}_piece_{piece_idx}_scale_{attempt_scale}.flac")
+#         #                 try:
+#         #                     accelerate_audio(piece, scaled_piece, min(scale_ratio, max_speed_rate * 2))
+#         #                     if _os.path.exists(scaled_piece):
+#         #                         piece = scaled_piece
+#         #                         new_dur = ffprobe_duration(piece)
+#         #                         if new_dur > 0 and new_dur < dur:
+#         #                             dur = new_dur
+#         #                             if dur <= available_time:
+#         #                                 break
+#         #                     # Increase ratio for next attempt if still not fitting
+#         #                     scale_ratio *= 1.1
+#         #                 except Exception:
+#         #                     break
+        
+#         cursor_t = eff_start + dur
+#         items.append({"start": eff_start, "duration": dur, "file": piece,"end": eff_start + dur, "subtitle_end": end})
+
+#     if not items:
+#         # create a tiny silent file to avoid downstream failures
+#         _os.makedirs(_os.path.dirname(out_audio) or ".", exist_ok=True)
+#         make_silence(0.5, out_audio)
+#         meta_path = meta_out or _os.path.splitext(out_audio)[0] + ".schedule.json"
+#         with open(meta_path, "w", encoding="utf-8") as f:
+#             json.dump({"items": []}, f, ensure_ascii=False, indent=2)
+#         return out_audio, meta_path
+
+#     # Save metadata JSON
+#     meta_path = meta_out or _os.path.splitext(out_audio)[0] + ".schedule.json"
+#     _os.makedirs(_os.path.dirname(meta_path) or ".", exist_ok=True)
+#     with open(meta_path, "w", encoding="utf-8") as f:
+#         json.dump({"items": items}, f, ensure_ascii=False, indent=2)
+
+#     # ✅ PHƯƠNG PHÁP MỚI: GHÉP TUẦN TỰ VỚI SILENCE CHÍNH XÁC
+#     # Tạo danh sách pieces + silence theo thứ tự thời gian
+#     # Concat tất cả lại để tránh rè nhiễu từ adelay/amix
+    
+#     send_discord_message(f"🔨 Ghép {len(items)} đoạn narration với silence chính xác...")
+    
+#     # Tạo thư mục cho silence files
+#     silence_dir = _os.path.join(tmpdir, "silence")
+#     _os.makedirs(silence_dir, exist_ok=True)
+    
+#     # Danh sách các file để concat (piece + silence)
+#     concat_parts: List[str] = []
+#     concat_cursor = 0.0  # Vị trí hiện tại trong timeline
+    
+#     for idx, item in enumerate(items):
+#         start_time = item["start"]
+#         piece_file = item["file"]
+#         piece_dur = item["duration"]
+        
+#         # Tính khoảng cách cần chèn silence
+#         gap = start_time - concat_cursor
+        
+#         if gap > 0.001:  # Nếu có khoảng cách > 1ms
+#             # Tạo silence file với duration chính xác
+#             silence_file = _os.path.join(silence_dir, f"silence_{idx}_{gap:.3f}s.flac")
+#             make_silence(gap, silence_file, sr=48000)
+#             concat_parts.append(silence_file)
+#             # send_discord_message(f"  Silence {idx}: {gap:.3f}s")
+        
+#         # Thêm piece vào danh sách concat
+#         concat_parts.append(piece_file)
+#     #    send_discord_message(f"  Piece {idx+1}: {piece_dur:.3f}s @ {start_time:.3f}s")
+        
+#         # Cập nhật cursor
+#         concat_cursor = start_time + piece_dur
+    
+#     # Ghép tất cả pieces + silence lại bằng concat_audio
+#     send_discord_message(f"🔗 Nối {len(concat_parts)} files (pieces + silence)...")
+#     concat_audio(concat_parts, out_audio)
+    
+#     # Verify final output
+#     final_dur = ffprobe_duration(out_audio)
+#     final_size_kb = _os.path.getsize(out_audio) / 1024
+#     send_discord_message(f"✅ Narration hoàn tất: {final_dur:.2f}s, {final_size_kb:.1f}KB")
+#     # ⚠️ Check if narration exceeds chunk duration BEFORE building (faster than probing after)
+#     if chunk_duration is not None:
+#         # Check last narration piece end time instead of waiting for final file
+#         last_narration_end = max(it["end"] for it in items)
+#         if last_narration_end > chunk_duration:
+#             send_discord_message(f"⚠️ Narration end time ({last_narration_end:.2f}s) exceeds video duration ({chunk_duration:.2f}s). Increasing atempo... (attempt {regeneration_attempt + 1})")
+            
+#             # Increment narration_atempo by 0.05
+#             new_atempo = narration_atempo + 0.05
+            
+#             # Clear cache to force reprocessing (keep TTS .wav files)
+#             import shutil
+#             try:
+#                 for subdir in [norm_dir, fx_dir, piece_dir, trim_dir]:
+#                     if _os.path.exists(subdir):
+#                         shutil.rmtree(subdir)
+#                         _os.makedirs(subdir, exist_ok=True)
+#             except Exception:
+#                 pass
+            
+#             send_discord_message(f"🔧 Old atempo: {narration_atempo:.2f} → New atempo: {new_atempo:.2f}")
+            
+#             # Regenerate with increased atempo
+#             return build_narration_schedule(
+#                 srt_path=srt_path,
+#                 out_audio=out_audio,
+#                 voice_name=voice_name,
+#                 speaking_rate=speaking_rate,
+#                 lead=lead,
+#                 meta_out=meta_out,
+#                 trim=trim,
+#                 trim_threshold_db=trim_threshold_db,
+#                 rate_mode=rate_mode,
+#                 apply_fx=apply_fx,
+#                 tmp_subdir=tmp_subdir,
+#                 no_overlap=no_overlap,
+#                 max_speed_rate=max_speed_rate,
+#                 max_lead_overlap=max_lead_overlap,
+#                 voice_fx_func=voice_fx_func,
+#                 chunk_duration=chunk_duration,
+#                 narration_atempo=new_atempo,
+#                 slot_duration_scale=slot_duration_scale,
+#                 regeneration_attempt=regeneration_attempt + 1,
+#             )
+    
+#     # Cleanup temporary files: keep only WAV files (remove generated .flac and other aux files)
+#     try:
+#         for root, _, files in _os.walk(tmpdir):
+#             for fname in files:
+#                 path = _os.path.join(root, fname)
+#                 # Skip WAV files; keep them. Also avoid touching final outputs.
+#                 if fname.lower().endswith('.wav'):
+#                     continue
+#                 try:
+#                     _os.remove(path)
+#                 except Exception:
+#                     pass
+#     except Exception:
+#         pass
+
+#     return out_audio, meta_path
+
 def build_narration_schedule(
     srt_path: str,
     out_audio: str,
@@ -360,27 +761,40 @@ def build_narration_schedule(
     apply_fx: bool = False,
     tmp_subdir: str | None = None,
     no_overlap: bool = True,
-    max_speed_rate: float = 1.15,
-    max_lead_overlap: float = 0.8,
+    max_speed_rate: float = 1.25,
+    max_lead_overlap: float = 0.2,
     voice_fx_func: Callable[[str, str], str] | None = None,
+    chunk_duration: float | None = None,
+    narration_atempo: float = 1.18,
+    slot_duration_scale: float = 1.0,
+    regeneration_attempt: int = 0,
 ) -> Tuple[str, str]:
     """Generate per-line audio, then mix by scheduling each clip at its start time using adelay.
+    
+    Args:
+        chunk_duration: Maximum duration for narration. If provided and narration exceeds this,
+                        all pieces will be regenerated with adjusted atempo to fit.
+    
     Returns (final_audio_path, metadata_json_path)."""
+    # Ensure module references are clear
+    import os as _os
+    import time as _time
+    
     subs = pysubs2.load(srt_path, encoding="utf-8")
     subs.events.sort(key=lambda ev: ev.start)
     # Use provided voice FX function or default to apply_voice_fx
     fx_func = voice_fx_func if voice_fx_func is not None else apply_voice_fx
     # Place temp files under BASE_DIR/temp_narr_sched/<tmp_subdir> if provided
-    tmpdir = os.path.join(BASE_DIR, "temp_narr_sched", tmp_subdir) if tmp_subdir else os.path.join(BASE_DIR, "temp_narr_sched")
-    os.makedirs(tmpdir, exist_ok=True)
+    tmpdir = _os.path.join(BASE_DIR, "temp_narr_sched", tmp_subdir) if tmp_subdir else _os.path.join(BASE_DIR, "temp_narr_sched")
+    _os.makedirs(tmpdir, exist_ok=True)
     # Create subfolders to reduce per-directory file counts (tts, norm, fx, piece, trim)
-    tts_dir = os.path.join(tmpdir, "tts")
-    norm_dir = os.path.join(tmpdir, "norm")
-    fx_dir = os.path.join(tmpdir, "fx")
-    piece_dir = os.path.join(tmpdir, "piece")
-    trim_dir = os.path.join(tmpdir, "trim")
+    tts_dir = _os.path.join(tmpdir, "tts")
+    norm_dir = _os.path.join(tmpdir, "norm")
+    fx_dir = _os.path.join(tmpdir, "fx")
+    piece_dir = _os.path.join(tmpdir, "piece")
+    trim_dir = _os.path.join(tmpdir, "trim")
     for d in (tts_dir, norm_dir, fx_dir, piece_dir, trim_dir):
-        os.makedirs(d, exist_ok=True)
+        _os.makedirs(d, exist_ok=True)
 
     items: List[Dict[str, Any]] = []
     # Cursor to enforce non-overlapping playback when requested
@@ -398,24 +812,24 @@ def build_narration_schedule(
         text = pysubs2.SSAEvent(text=ev.text).text
         text = text.replace("\\N", " ").strip()
         piece_idx += 1
-        raw_wav = os.path.join(tts_dir, f"{srt_base}_tts_{piece_idx}.wav")
-        raw_wav_vi = os.path.join(tts_dir, f"{srt_base}.vi_tts_{piece_idx}.wav")
+        raw_wav = _os.path.join(tts_dir, f"{srt_base}_tts_{piece_idx}.wav")
+        raw_wav_vi = _os.path.join(tts_dir, f"{srt_base}.vi_tts_{piece_idx}.wav")
         # Speaking rate: dynamic when rate_mode=1, else fixed base_rate
         slot = end - start
-        norm_wav = os.path.join(norm_dir, f"norm_{srt_base}_{piece_idx}.flac")
+        norm_wav = _os.path.join(norm_dir, f"norm_{srt_base}_{piece_idx}.flac")
         
         # Check if cached TTS exists (either format)
-        if os.path.exists(raw_wav_vi):
+        if _os.path.exists(raw_wav_vi):
             # Prefer .vi_tts format if exists
             src_wav = raw_wav_vi
-        elif os.path.exists(raw_wav):
+        elif _os.path.exists(raw_wav):
             # Use regular _tts format
             src_wav = raw_wav
         else:
             # Generate new TTS
             rate_use = _compute_dynamic_speaking_rate(text, slot, base_rate=speaking_rate) if rate_mode == 1 else speaking_rate
             res = text_to_wav(text, raw_wav, voice_name=voice_name, speaking_rate=rate_use, sendNotify=False)
-            if not res or not os.path.exists(raw_wav):
+            if not res or not _os.path.exists(raw_wav):
                 # Skip TTS failure by inserting no audio for this item
                 continue
             src_wav = raw_wav
@@ -428,16 +842,17 @@ def build_narration_schedule(
             pass  # Keep using src_wav if normalization fails
         
         if trim:
-            trimmed = os.path.join(trim_dir, f"{srt_base}_trim_{piece_idx}.wav")
+            trimmed = _os.path.join(trim_dir, f"{srt_base}_trim_{piece_idx}.wav")
             trim_silence(src_wav, trimmed, threshold_db=trim_threshold_db)
             src_wav = trimmed
         # Produce a piece fitted to the slot to reduce overlaps when scheduling
         # Apply FX if requested, then fit piece to slot to reduce overlaps
         slot_src = src_wav
         if apply_fx:
-            slot_fx = os.path.join(fx_dir, f"{srt_base}_fx_{piece_idx}.flac")
-            slot_src = fx_func(src_wav, slot_fx)
-        piece = os.path.join(piece_dir, f"{srt_base}_piece_{piece_idx}.flac")
+            slot_fx = _os.path.join(fx_dir, f"{srt_base}_fx_{piece_idx}.flac")
+            # Use default atempo from fx_func (1.6 or 1.18) - speed adjustment only for long pieces
+            slot_src = fx_func(src_wav, slot_fx,atempo=narration_atempo)
+        piece = _os.path.join(piece_dir, f"{srt_base}_piece_{piece_idx}.flac")
         # For scheduled narration we prefer to keep the natural TTS duration
         # to avoid cutting a sentence when the subtitle slot ends. Convert
         # the source to FLAC preserving its full length. If conversion fails,
@@ -449,7 +864,7 @@ def build_narration_schedule(
                 "-ar", "48000", "-ac", "2", "-c:a", "flac", piece
             ], check=True, capture_output=True)
             # Ensure file is fully written (important for Linux)
-            if os.path.exists(piece) and os.path.getsize(piece) > 0:
+            if _os.path.exists(piece) and _os.path.getsize(piece) > 0:
                 piece_created = True
         except Exception:
             pass
@@ -459,16 +874,16 @@ def build_narration_schedule(
             fit_audio_to_slot(slot_src, slot, piece)
         
         # Wait briefly for file system sync on Linux
-        import time
-        if not os.name == 'nt':  # Not Windows
-            time.sleep(0.01)  # 10ms delay for file sync
+        if not _os.name == 'nt':  # Not Windows
+            _time.sleep(0.01)  # 10ms delay for file sync
         
         dur = ffprobe_duration(piece)
         if dur <= 0:
             # Fallback: use source duration if probe fails
-            dur = ffprobe_duration(slot_src) if os.path.exists(slot_src) else slot
+            dur = ffprobe_duration(slot_src) if _os.path.exists(slot_src) else slot
 
-        soft_allow = slot + 0.2
+        # Apply slot_duration_scale to reduce allowed duration during regeneration
+        soft_allow = (slot + 0.2) * slot_duration_scale
         allowed_duration = soft_allow
         speed_capped = False
         if dur > allowed_duration:
@@ -491,10 +906,10 @@ def build_narration_schedule(
                 next_ratio = min(current_ratio + delta, target_ratio)
                 if next_ratio <= current_ratio:
                     break
-                fast_piece = os.path.join(piece_dir, f"{srt_base}_piece_{piece_idx}_fast_{attempt}.flac")
+                fast_piece = _os.path.join(piece_dir, f"{srt_base}_piece_{piece_idx}_fast_{attempt}.flac")
                 try:
                     accelerate_audio(orig_piece, fast_piece, next_ratio)
-                    if not os.path.exists(fast_piece):
+                    if not _os.path.exists(fast_piece):
                         break
                     piece = fast_piece
                     new_dur = ffprobe_duration(piece)
@@ -515,62 +930,277 @@ def build_narration_schedule(
                 )
             else:
                 eff_start = max(adj_start, cursor_t + 0.05)
+        
+        # # From 2nd regeneration attempt onwards: check if piece ends after subtitle and scale it
+        # if regeneration_attempt >= 1:
+        #     piece_end = eff_start + dur
+        #     subtitle_end = end  # from ev.end
+        #     if piece_end > subtitle_end:
+        #         # Narration overflows subtitle: compress piece to fit exactly within subtitle
+        #         available_time = subtitle_end - eff_start
+        #         if available_time > 0.1:  # Minimum 0.1s to avoid zero/negative duration
+        #             scale_ratio = dur / available_time
+        #             # Apply accelerate_audio to compress piece
+        #             attempt_scale = 0
+        #             while dur > available_time and scale_ratio < max_speed_rate * 2:
+        #                 attempt_scale += 1
+        #                 scaled_piece = _os.path.join(piece_dir, f"{srt_base}_piece_{piece_idx}_scale_{attempt_scale}.flac")
+        #                 try:
+        #                     accelerate_audio(piece, scaled_piece, min(scale_ratio, max_speed_rate * 2))
+        #                     if _os.path.exists(scaled_piece):
+        #                         piece = scaled_piece
+        #                         new_dur = ffprobe_duration(piece)
+        #                         if new_dur > 0 and new_dur < dur:
+        #                             dur = new_dur
+        #                             if dur <= available_time:
+        #                                 break
+        #                     # Increase ratio for next attempt if still not fitting
+        #                     scale_ratio *= 1.1
+        #                 except Exception:
+        #                     break
+        
         cursor_t = eff_start + dur
-        items.append({"start": eff_start, "duration": dur, "file": piece,"end": eff_start + dur})
+        items.append({"start": eff_start, "duration": dur, "file": piece,"end": eff_start + dur, "subtitle_end": end})
 
     if not items:
         # create a tiny silent file to avoid downstream failures
-        os.makedirs(os.path.dirname(out_audio) or ".", exist_ok=True)
+        _os.makedirs(_os.path.dirname(out_audio) or ".", exist_ok=True)
         make_silence(0.5, out_audio)
-        meta_path = meta_out or os.path.splitext(out_audio)[0] + ".schedule.json"
+        meta_path = meta_out or _os.path.splitext(out_audio)[0] + ".schedule.json"
         with open(meta_path, "w", encoding="utf-8") as f:
             json.dump({"items": []}, f, ensure_ascii=False, indent=2)
         return out_audio, meta_path
 
     # Save metadata JSON
-    meta_path = meta_out or os.path.splitext(out_audio)[0] + ".schedule.json"
-    os.makedirs(os.path.dirname(meta_path) or ".", exist_ok=True)
+    meta_path = meta_out or _os.path.splitext(out_audio)[0] + ".schedule.json"
+    _os.makedirs(_os.path.dirname(meta_path) or ".", exist_ok=True)
     with open(meta_path, "w", encoding="utf-8") as f:
         json.dump({"items": items}, f, ensure_ascii=False, indent=2)
 
-    # Build a silence+pieces timeline by concatenating silence gaps and speech in order
-    segments: List[str] = []
-    timeline_cursor = 0.0
-    silence_idx = 0
-    for it in items:
-        gap = max(0.0, it["start"] - timeline_cursor)
-        if gap > 1e-3:
-            silence_path = os.path.join(tmpdir, f"{srt_base}_sched_silence_{silence_idx}.flac")
-            make_silence(gap, silence_path)
-            segments.append(silence_path)
-            timeline_cursor += gap
-            silence_idx += 1
-        segments.append(it["file"])
-        timeline_cursor = it["end"]
-
-    tail_silence = os.path.join(tmpdir, f"{srt_base}_sched_tail.flac")
-    make_silence(1.0, tail_silence)
-    segments.append(tail_silence)
-
-    concat_audio(segments, out_audio)
+    # ✅ STUDIO-GRADE APPROACH: silence baseline + adelay overlay
+    # Create a silent timeline, then overlay each piece at exact position using adelay
+    # This prevents ANY overlap and is standard in professional audio mixing
+    
+    # Calculate total timeline duration (last item end + 1s buffer)
+    total_duration = max(it["end"] for it in items) + 1.0
+    
+    # ⚠️ Check if narration exceeds chunk duration and regenerate if needed
+    # if chunk_duration is not None and total_duration > chunk_duration:
+    #     send_discord_message(f"⚠️ Narration duration ({total_duration:.2f}s) exceeds chunk duration ({chunk_duration:.2f}s). Regenerating... (attempt {regeneration_attempt + 1})")
+        
+    #     # Calculate required speed ratio to fit narration into chunk
+    #     base_ratio = total_duration / chunk_duration
+    #     # Amplify the delta to converge faster (10x acceleration for rapid convergence)
+    #     delta = base_ratio - 1.0
+    #     amplified_delta = delta * 45.0
+    #     required_ratio = min(1.0 + amplified_delta, 2.0)
+        
+    #     # Adjust speaking_rate and max_speed_rate for regeneration
+    #     new_speaking_rate = speaking_rate * required_ratio
+    #     new_max_speed_rate = max_speed_rate * required_ratio
+    #     # Calculate slot_duration_scale to force more pieces into speed-up loop (cumulative)
+    #     new_slot_duration_scale = slot_duration_scale / required_ratio
+        
+    #     send_discord_message(f"🔧 Old: speaking_rate={speaking_rate:.3f}, max_speed_rate={max_speed_rate:.3f}, slot_scale={slot_duration_scale:.3f}")
+    #     send_discord_message(f"🔧 New: speaking_rate={new_speaking_rate:.3f}, max_speed_rate={new_max_speed_rate:.3f}, slot_scale={new_slot_duration_scale:.3f}, ratio={required_ratio:.3f}")
+        
+    #     # Clear cache directory to force reprocessing with new max_speed_rate
+    #     # Keep TTS .wav files since speaking_rate doesn't affect them much
+    #     # Speed is controlled by fx_func (atempo) and accelerate_audio (max_speed_rate)
+    #     import shutil
+    #     try:
+    #         # Delete processed subdirectories but keep tts_dir with .wav files
+    #         for subdir in [norm_dir, fx_dir, piece_dir, trim_dir]:
+    #             if _os.path.exists(subdir):
+    #                 shutil.rmtree(subdir)
+    #                 _os.makedirs(subdir, exist_ok=True)
+    #     except Exception:
+    #         pass
+        
+    #     # Recursively regenerate with adjusted parameters and incremented attempt counter
+    #     return build_narration_schedule(
+    #         srt_path=srt_path,
+    #         out_audio=out_audio,
+    #         voice_name=voice_name,
+    #         speaking_rate=new_speaking_rate,
+    #         lead=lead,
+    #         meta_out=meta_out,
+    #         trim=trim,
+    #         trim_threshold_db=trim_threshold_db,
+    #         rate_mode=rate_mode,
+    #         apply_fx=apply_fx,
+    #         tmp_subdir=tmp_subdir,
+    #         no_overlap=no_overlap,
+    #         max_speed_rate=new_max_speed_rate,
+    #         max_lead_overlap=max_lead_overlap,
+    #         voice_fx_func=voice_fx_func,
+    #         chunk_duration=chunk_duration,  # Pass through to verify after regeneration
+    #         narration_atempo=narration_atempo,
+    #         slot_duration_scale=new_slot_duration_scale,
+    #         regeneration_attempt=regeneration_attempt + 1,
+    #     )
+    
+    # ⚠️ If too many pieces (>80), build in batches to avoid ffmpeg filter_complex limit
+    MAX_BATCH_SIZE = 80
+    if len(items) > MAX_BATCH_SIZE:
+        send_discord_message(f"📦 Building narration in batches ({len(items)} pieces, {(len(items) + MAX_BATCH_SIZE - 1) // MAX_BATCH_SIZE} batches)...")
+        
+        batch_outputs = []
+        num_batches = (len(items) + MAX_BATCH_SIZE - 1) // MAX_BATCH_SIZE
+        
+        for batch_idx in range(num_batches):
+            start_idx = batch_idx * MAX_BATCH_SIZE
+            end_idx = min((batch_idx + 1) * MAX_BATCH_SIZE, len(items))
+            batch_items = items[start_idx:end_idx]
+            
+            # Calculate batch duration (from first item start to last item end)
+            batch_start = batch_items[0]["start"]
+            batch_end = batch_items[-1]["end"]
+            batch_duration = batch_end - batch_start + 1.0
+            
+            # Build this batch
+            batch_file = _os.path.join(_os.path.dirname(out_audio), f"batch_{batch_idx}.flac")
+            
+            cmd: List[str] = ["ffmpeg", "-y"]
+            cmd += ["-f", "lavfi", "-i", f"anullsrc=r=48000:cl=stereo:d={batch_duration}"]
+            
+            for it in batch_items:
+                cmd += ["-i", it["file"]]
+            
+            delays = []
+            labels = []
+            for idx, it in enumerate(batch_items, start=1):
+                # Adjust delay relative to batch start
+                ms = max(0, int((it["start"] - batch_start) * 1000))
+                lbl = f"a{idx}"
+                delays.append(f"[{idx}:a]adelay={ms}|{ms}[{lbl}]")
+                labels.append(f"[{lbl}]")
+            
+            filter_complex = ";".join(delays) + f";[0:a]{''.join(labels)}amix=inputs={len(batch_items)+1}:duration=longest:normalize=0"
+            
+            cmd += ["-filter_complex", filter_complex, "-ar", "48000", "-ac", "2", "-c:a", "flac", batch_file]
+            run_logged_subprocess(cmd, check=True, capture_output=True)
+            
+            # Verify batch file
+            batch_dur_actual = ffprobe_duration(batch_file)
+            batch_size_kb = _os.path.getsize(batch_file) / 1024
+            send_discord_message(f"📦 Batch {batch_idx+1}: {len(batch_items)} pieces, expected={batch_duration:.2f}s, actual={batch_dur_actual:.2f}s, size={batch_size_kb:.1f}KB")
+            
+            batch_outputs.append({"file": batch_file, "start": batch_start, "duration": batch_duration, "actual_duration": batch_dur_actual})
+        
+        # Concatenate batches directly (no gaps needed - each batch has its own timeline)
+        # Each batch was built with anullsrc baseline + adelay, so just concat sequentially
+        concat_parts = [batch["file"] for batch in batch_outputs]
+        
+        send_discord_message(f"🔗 Nối {len(concat_parts)} batches tuần tự...")
+        concat_audio(concat_parts, out_audio)
+        
+        # Verify final output
+        final_dur = ffprobe_duration(out_audio)
+        final_size_kb = _os.path.getsize(out_audio) / 1024
+        send_discord_message(f"✅ Final narration: duration={final_dur:.2f}s, size={final_size_kb:.1f}KB")
+        
+        # Cleanup batch files
+        try:
+            for batch in batch_outputs:
+                _os.remove(batch["file"])
+            for part in concat_parts:
+                if "gap_" in part:
+                    _os.remove(part)
+        except Exception:
+            pass
+            
+    else:
+        # Original single-pass approach for <=80 pieces
+        # Build ffmpeg command with anullsrc baseline as input [0]
+        cmd: List[str] = ["ffmpeg", "-y"]
+        cmd += ["-f", "lavfi", "-i", f"anullsrc=r=48000:cl=stereo:d={total_duration}"]
+        
+        # Add all pieces as inputs [1], [2], ..., [N]
+        for it in items:
+            cmd += ["-i", it["file"]]
+        
+        # Build filter_complex: adelay each piece, then amix with baseline
+        delays = []
+        labels = []
+        for idx, it in enumerate(items, start=1):  # Start from 1 because [0] is anullsrc
+            ms = max(0, int(it["start"] * 1000))
+            lbl = f"a{idx}"
+            delays.append(f"[{idx}:a]adelay={ms}|{ms}[{lbl}]")
+            labels.append(f"[{lbl}]")
+        
+        # amix: baseline [0:a] + all delayed pieces
+        filter_complex = ";".join(delays) + f";[0:a]{''.join(labels)}amix=inputs={len(items)+1}:duration=longest:normalize=0"
+        
+        cmd += [
+            "-filter_complex", filter_complex,
+            "-c:a", "flac",
+            out_audio
+        ]
+        
+        # send_discord_message(cmd) 
+        run_logged_subprocess(cmd, check=True, capture_output=True)
+    # ⚠️ Check if narration exceeds chunk duration BEFORE building (faster than probing after)
+    if chunk_duration is not None:
+        # Check last narration piece end time instead of waiting for final file
+        last_narration_end = max(it["end"] for it in items)
+        if last_narration_end > chunk_duration:
+            send_discord_message(f"⚠️ Narration end time ({last_narration_end:.2f}s) exceeds video duration ({chunk_duration:.2f}s). Increasing atempo... (attempt {regeneration_attempt + 1})")
+            
+            # Increment narration_atempo by 0.05
+            new_atempo = narration_atempo + 0.05
+            
+            # Clear cache to force reprocessing (keep TTS .wav files)
+            import shutil
+            try:
+                for subdir in [norm_dir, fx_dir, piece_dir, trim_dir]:
+                    if _os.path.exists(subdir):
+                        shutil.rmtree(subdir)
+                        _os.makedirs(subdir, exist_ok=True)
+            except Exception:
+                pass
+            
+            send_discord_message(f"🔧 Old atempo: {narration_atempo:.2f} → New atempo: {new_atempo:.2f}")
+            
+            # Regenerate with increased atempo
+            return build_narration_schedule(
+                srt_path=srt_path,
+                out_audio=out_audio,
+                voice_name=voice_name,
+                speaking_rate=speaking_rate,
+                lead=lead,
+                meta_out=meta_out,
+                trim=trim,
+                trim_threshold_db=trim_threshold_db,
+                rate_mode=rate_mode,
+                apply_fx=apply_fx,
+                tmp_subdir=tmp_subdir,
+                no_overlap=no_overlap,
+                max_speed_rate=max_speed_rate,
+                max_lead_overlap=max_lead_overlap,
+                voice_fx_func=voice_fx_func,
+                chunk_duration=chunk_duration,
+                narration_atempo=new_atempo,
+                slot_duration_scale=slot_duration_scale,
+                regeneration_attempt=regeneration_attempt + 1,
+            )
+    
     # Cleanup temporary files: keep only WAV files (remove generated .flac and other aux files)
     try:
-        for root, _, files in os.walk(tmpdir):
+        for root, _, files in _os.walk(tmpdir):
             for fname in files:
-                path = os.path.join(root, fname)
+                path = _os.path.join(root, fname)
                 # Skip WAV files; keep them. Also avoid touching final outputs.
                 if fname.lower().endswith('.wav'):
                     continue
                 try:
-                    os.remove(path)
+                    _os.remove(path)
                 except Exception:
                     pass
     except Exception:
         pass
 
     return out_audio, meta_path
-
-
 def mix_narration_into_video(video_path: str, narration_path: str, out_path: str, narration_volume_db: float = 6.0, replace_audio: bool = False, shift_sec: float = 0.7, extend_video: bool = False, video_volume_db: float = -4.0) -> str:
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
 
@@ -617,14 +1247,9 @@ def mix_narration_into_video(video_path: str, narration_path: str, out_path: str
 
     pre_chain = ",".join(pre) if pre else ""
     bg_gain = 0.4 * (10 ** (video_volume_db / 20))
+    nar_gain = 1.4 * (10 ** (narration_volume_db / 20))
     nar_prefix = f"[1:a]{pre_chain}," if pre_chain else "[1:a]"
-    nar_chain = (
-        f"{nar_prefix}"
-        "aresample=48000,"
-        "volume=1.0,"
-        "alimiter=limit=0.97"
-        "[nar]"
-    )
+    nar_chain = f"{nar_prefix}aresample=48000,volume={nar_gain:.6f}[nar]"
     vid_pre = f"[0:a]aresample=48000,volume={bg_gain:.6f}[bg]"
 
     if need_pad:

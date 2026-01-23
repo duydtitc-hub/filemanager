@@ -218,11 +218,15 @@
               <label>Start URL (tập 1)</label>
               <input type="text" name="start_url" placeholder="Start URL" required>
               <label>Tiêu đề (tùy chọn)</label>
-              <input type="text" name="titles" placeholder="Tiêu đề">
+              <input type="text" name="title" placeholder="Tiêu đề">
               <label>Số tập tối đa</label>
               <input type="number" name="max_episodes" placeholder="Số tập tối đa" min="1">
-              <label>Render mode (0/1/2)</label>
-              <input type="text" name="render_mode" placeholder="0">
+              <label>Render mode</label>
+              <select name="render_mode" class="form-select">
+                <option value="0" selected>0 – Thuyết minh + phụ đề (mặc định)</option>
+                <option value="1">1 – Chỉ thuyết minh (không burn phụ đề)</option>
+                <option value="2">2 – Chỉ phụ đề (không tạo TTS)</option>
+              </select>
               <label>Tốc độ tối đa thuyết minh</label>
               <input type="number" name="narration_max_speed_rate" value="1.2" step="0.05" min="0.5">
               <label>Gemini atempo</label>
@@ -460,7 +464,7 @@
     <!-- Tagify JS -->
     <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.min.js" crossorigin="anonymous"></script>
     <script>  
-    window.APP_HOST = 'https://sandbox.travel.com.vn/file'
+    window.APP_HOST = 'http://localhost:8000'  // <-- Thay đổi nếu cần
       function apiUrl(path){ return (window.APP_HOST? window.APP_HOST.replace(/\/$/, '') : '') + path }
       async function postJson(path, body){
         try{
@@ -715,11 +719,16 @@
           }
         }catch(e){ }
 
+        const renderModeRaw = f.render_mode && f.render_mode.value ? Number(f.render_mode.value) : 0;
+        const renderMode = [0, 1, 2].includes(renderModeRaw) ? renderModeRaw : 0;
+        const addNarration = renderMode !== 2;
+        const withSubtitles = renderMode !== 1;
+
         const b = {
           start_url: f.start_url.value.trim(),
-          titles: f.titles.value.trim(),
+          title: f.title.value.trim(),
           max_episodes: f.max_episodes.value ? Number(f.max_episodes.value) : undefined,
-          render_mode: f.render_mode.value.trim(),
+          render_mode: renderMode,
           narration_max_speed_rate: f.narration_max_speed_rate && f.narration_max_speed_rate.value ? Number(f.narration_max_speed_rate.value) : 1.2,
             narration_atempo: f.narration_atempo && f.narration_atempo.value ? Number(f.narration_atempo.value) : 1.6,
           voice: (f.voice ? f.voice.value : ''),
@@ -727,7 +736,9 @@
           tiktok_tags: _tiktok_tags,
           cookies: f.cookies && f.cookies.value ? f.cookies.value.trim() : undefined,
           upload_duration_hours: f.upload_duration_hours && f.upload_duration_hours.value ? Number(f.upload_duration_hours.value) : undefined,
-          bg_choice: f.bg_choice && f.bg_choice.value ? f.bg_choice.value.trim() : undefined
+          bg_choice: f.bg_choice && f.bg_choice.value ? f.bg_choice.value.trim() : undefined,
+          add_narration: addNarration ? 'true' : 'false',
+          with_subtitles: withSubtitles ? 'true' : 'false'
         };
         let btn = f.querySelector('button[type=submit]') || document.getElementById('processSeriesSubmitBtn');
         if(btn) btn.disabled = true;

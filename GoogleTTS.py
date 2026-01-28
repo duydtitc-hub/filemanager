@@ -51,7 +51,7 @@ def text_to_wav(text: str, output_path: str, voice_name: str = "vi-VN-Standard-C
             
 if __name__ == "__main__":
     # Example usage
-    text = "Xin chào, đây là ví dụ chuyển văn bản thành giọng nói sử dụng Google TTS."
+    text = "Hà Nội, trái tim của Việt Nam, là một thành phố ngàn năm văn hiến với bề dày lịch sử và văn hóa độc đáo. Bước chân trên những con phố cổ kính quanh Hồ Hoàn Kiếm, du khách như được du hành ngược thời gian, chiêm ngưỡng kiến trúc Pháp cổ điển hòa quyện với nét kiến trúc truyền thống Việt Nam. "
     output_wav_path = "output.wav"
     text_to_wav(text, output_wav_path, voice_name="vi-VN-Standard-C", speaking_rate=1.0)
 

@@ -501,12 +501,17 @@ async function listPath(path=''){
     const nameSpan = document.createElement('span')
     nameSpan.className = 'folder-name'
     nameSpan.textContent = f.name
+    // Open folder when clicking the name
     nameSpan.onclick = ()=>{ const next = path ? path + '/' + f.name : f.name; listPath(next) }
+
+    // Also open folder when clicking anywhere on the folder wrapper for better UX on mobile
+    wrapper.onclick = ()=>{ const next = path ? path + '/' + f.name : f.name; listPath(next) }
 
     const delBtn = document.createElement('button')
     delBtn.className = 'btn-del'
     delBtn.textContent = 'X'
     delBtn.title = 'Xóa album'
+    // stopPropagation so clicking delete doesn't trigger wrapper onclick
     delBtn.onclick = async (ev)=>{ ev.stopPropagation(); if(!confirm('Xóa album "' + f.name + '" và tất cả nội dung?')) return; const rel = path ? path + '/' + f.name : f.name; const r = await fetch(apiUrl('/api/delete'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:rel})}); const j=await r.json(); if(j.ok) listPath(path); else alert(j.error||'error') }
 
     const meta = document.createElement('div')
@@ -824,6 +829,8 @@ function closePlayer(){
   try{ if(modalAudio){ modalAudio.pause(); modalAudio.removeAttribute('src'); modalAudio.load(); modalAudio.style.display='none' } }catch(e){}
   try{ if(modalImage){ modalImage.removeAttribute('src'); modalImage.style.display='none' } }catch(e){}
   modal.setAttribute('aria-hidden','true')
+  try{ const p = qs('#modalPlaylist'); if(p) p.style.display = 'none' }catch(e){}
+  try{ const s = qs('#modalPlaylistSidebar'); if(s) { s.classList.remove('open'); s.setAttribute('aria-hidden','true') } }catch(e){}
 }
 
 qs('#modalClose')?.addEventListener('click', closePlayer)
@@ -1054,3 +1061,172 @@ document.addEventListener('click', (e)=>{
   panel.setAttribute('aria-hidden','true')
 })
   
+// --- Playlist playback + swipe controls for modal player ---
+// Globals
+window.__playlist = []
+window.__playlistIndex = -1
+window.__playlistMode = false
+
+// Render playlist UI helper (exposed globally so playAtIndex can call it anytime)
+window.renderPlaylistUI = function(list, currentIndex){
+  try{
+    // Render into both modal list and sidebar list (if present)
+    const containers = [qs('#modalPlaylistList'), qs('#modalPlaylistListSidebar')].filter(Boolean)
+    if(!containers.length) return
+    if(!list || !list.length){ containers.forEach(c=> c.innerHTML = ''); return }
+    containers.forEach(container => {
+      container.innerHTML = ''
+      list.forEach((it, idx)=>{
+        const div = document.createElement('div')
+        div.className = 'playlist-item' + (idx === currentIndex ? ' playing' : '')
+        div.textContent = (idx+1) + '. ' + it.name
+        div.dataset.idx = String(idx)
+        // keep click handler simple; delegation also exists
+        div.addEventListener('click', (ev)=>{ ev.stopPropagation(); playAtIndex(idx) })
+        container.appendChild(div)
+      })
+      const cur = container.querySelector('.playlist-item.playing')
+      if(cur){ try{ cur.scrollIntoView({block:'nearest', behavior:'smooth'}) }catch(e){} }
+    })
+  }catch(e){ console.warn('renderPlaylistUI', e) }
+}
+
+function buildPlaylistFromDOM(){
+  try{
+    const cards = document.querySelectorAll('#files .card')
+    const items = []
+    cards.forEach(c => {
+      const nameEl = c.querySelector('.thumb-name')
+      if(!nameEl) return
+      const name = nameEl.textContent.trim()
+      const ext = (name.split('.').pop() || '').toLowerCase()
+      if(['mp4','webm','ogg'].includes(ext)){
+        const rel = currentPath ? (currentPath + '/' + name) : name
+        items.push({ rel, name })
+      }
+    })
+    // sort by name (natural locale) to satisfy "sắp xếp theo tên"
+    items.sort((a,b)=> a.name.localeCompare(b.name))
+    return items
+  }catch(e){ return [] }
+}
+
+function playAtIndex(idx){
+  const list = window.__playlist || []
+  if(!list || idx < 0 || idx >= list.length) return
+  const item = list[idx]
+  window.__playlistIndex = idx
+  window.__playlistMode = true
+  // reuse openPlayer to show modal and set video src
+  try{ openPlayer(item.rel, item.name, 'video') }catch(e){}
+  const v = qs('#modalVideo')
+  if(v){
+    v.addEventListener('loadedmetadata', function _playOnce(){ v.removeEventListener('loadedmetadata', _playOnce); try{ v.play().catch(()=>{}) }catch(e){} })
+  }
+  // update playlist UI highlight
+  try{ if(typeof window.renderPlaylistUI === 'function') window.renderPlaylistUI(window.__playlist, window.__playlistIndex) }catch(e){}
+}
+
+function playNext(){
+  if(!window.__playlist || window.__playlist.length === 0) return
+  if(window.__playlistIndex < window.__playlist.length - 1) playAtIndex(window.__playlistIndex + 1)
+  else window.__playlistMode = false
+}
+
+function playPrev(){
+  if(!window.__playlist || window.__playlist.length === 0) return
+  if(window.__playlistIndex > 0) playAtIndex(window.__playlistIndex - 1)
+}
+
+// Attach handlers when DOM ready
+setTimeout(()=>{
+  const playBtn = qs('#modalPlayPlaylist')
+  const modalVideo = qs('#modalVideo')
+  const modalMedia = qs('#modalMedia')
+  if(playBtn){
+    playBtn.addEventListener('click', ()=>{
+      // build playlist from current folder and start from current file
+      const list = buildPlaylistFromDOM()
+      if(!list || !list.length) return alert('Không có video trong thư mục để phát.')
+      window.__playlist = list
+      // determine current filename from download link (modalDownload.download)
+      const download = qs('#modalDownload')
+      const fname = (download && download.download) ? download.download : null
+      let startIdx = 0
+      if(fname){ const found = list.findIndex(i=> i.name === fname); if(found >= 0) startIdx = found }
+      playAtIndex(startIdx)
+    })
+  }
+
+  if(modalVideo){
+    modalVideo.addEventListener('ended', ()=>{ if(window.__playlistMode) playNext() })
+  }
+
+  // show/hide playlist list button
+  const showBtn = qs('#modalShowPlaylist')
+  if(showBtn){
+    showBtn.addEventListener('click', ()=>{
+      // Toggle sliding sidebar instead of modal list
+      const sidebar = qs('#modalPlaylistSidebar')
+      if(!sidebar) return
+      try{
+        if(!window.__playlist || !window.__playlist.length){
+          const list = buildPlaylistFromDOM()
+          if(!list || !list.length){ alert('Không có video trong thư mục để hiển thị.'); return }
+          window.__playlist = list
+          const download = qs('#modalDownload')
+          const fname = (download && download.download) ? download.download : null
+          let curIdx = 0
+          if(fname){ const found = list.findIndex(i=> i.name === fname); if(found >= 0) curIdx = found }
+          window.__playlistIndex = curIdx
+          try{ if(typeof window.renderPlaylistUI === 'function') window.renderPlaylistUI(window.__playlist, window.__playlistIndex) }catch(e){}
+        } else {
+          try{ if(typeof window.renderPlaylistUI === 'function') window.renderPlaylistUI(window.__playlist, window.__playlistIndex) }catch(e){}
+        }
+      }catch(e){}
+      const open = sidebar.classList.contains('open')
+      if(open) { sidebar.classList.remove('open'); sidebar.setAttribute('aria-hidden','true') }
+      else { sidebar.classList.add('open'); sidebar.setAttribute('aria-hidden','false') }
+    })
+  }
+
+  // local bridge to global renderer (kept for backwards compatibility)
+  function renderPlaylistUI(list, currentIndex){
+    try{ if(typeof window.renderPlaylistUI === 'function') window.renderPlaylistUI(list, currentIndex) }catch(e){}
+  }
+
+  // initialize click delegation for playlist items (in case rendered later)
+  // delegation for both modal list and sidebar list
+  ;['#modalPlaylistList', '#modalPlaylistListSidebar'].forEach(sel => {
+    const el = qs(sel)
+    if(!el) return
+    el.addEventListener('click', (e)=>{
+      const item = e.target && e.target.closest && e.target.closest('.playlist-item')
+      if(!item) return
+      const idx = Number(item.dataset.idx)
+      if(!Number.isNaN(idx)) playAtIndex(idx)
+    })
+  })
+
+  // swipe gestures (mobile): swipe up -> next, swipe down -> prev
+  if(modalMedia){
+    let touchStartY = null
+    modalMedia.addEventListener('touchstart', (e)=>{ try{ touchStartY = e.changedTouches[0].clientY }catch(_){} }, {passive:true})
+    modalMedia.addEventListener('touchend', (e)=>{
+      try{
+        const y = e.changedTouches[0].clientY
+        if(touchStartY === null) return
+        const dy = y - touchStartY
+        if(Math.abs(dy) < 40) return
+        if(dy < 0){ /* swipe up */ if(window.__playlistMode) playNext(); else { /* if not in playlist, try building and play next */ const list = buildPlaylistFromDOM(); const cur = qs('#modalDownload') && qs('#modalDownload').download; if(list.length){ const found = list.findIndex(i=> i.name === cur); if(found >= 0) { window.__playlist = list; playAtIndex(found+1) } } } }
+        else { /* swipe down */ if(window.__playlistMode) playPrev(); else { const list = buildPlaylistFromDOM(); const cur = qs('#modalDownload') && qs('#modalDownload').download; if(list.length){ const found = list.findIndex(i=> i.name === cur); if(found > 0) { window.__playlist = list; playAtIndex(found-1) } } } }
+      }catch(e){}
+      touchStartY = null
+    }, {passive:true})
+  }
+
+  // sidebar close button
+  const sidebarHide = qs('#modalPlaylistHide')
+  if(sidebarHide){ sidebarHide.addEventListener('click', ()=>{ const s = qs('#modalPlaylistSidebar'); if(s){ s.classList.remove('open'); s.setAttribute('aria-hidden','true') } }) }
+}, 400)
+

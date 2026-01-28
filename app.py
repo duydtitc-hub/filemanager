@@ -3651,7 +3651,7 @@ def concat_crop_audio_with_titles(video_paths, audio_path, output_path="final.mp
     pad_h = 40
     title_filters.append(
         f"drawtext=fontfile='{font_path}':text='{wrapped_text.upper()}':"
-        f"fontcolor=white:fontsize=30:box=1:boxcolor=black@1:boxborderw=20:"
+        f"fontcolor=white:fontsize=38:box=1:boxcolor=black@1:boxborderw=20:"
         f"text_align=center:"
         f"x=(w-text_w)/2:y=(h-text_h-line_h)/2:"
         f"enable='between(t,{start_time},{start_time+3})'"
@@ -3850,7 +3850,7 @@ def split_video_by_hour_with_title(input_path, base_title=None, font_path="times
             pad_h = 40
             drawtext = (
                 f"drawtext=fontfile='{font_path}':text='{wrapped_text.upper()}':"
-                f"fontcolor=white:fontsize=30:box=1:boxcolor=black@1:boxborderw=20:"
+                f"fontcolor=white:fontsize=38:box=1:boxcolor=black@1:boxborderw=20:"
                 f"text_align=center:"
                 f"x=(w-text_w)/2:y=(h-text_h-line_h)/2:enable='between(t,0,3)':boxborderw={pad_h}"
             )
@@ -8648,7 +8648,7 @@ def render_tiktok_video_from_audio_part(
                 f"drawtext=fontfile='{font_path}':"
                 f"text='{wrapped_text.upper()}':"
                 f"fontcolor=white:"
-                f"fontsize=30:"
+                f"fontsize=38:"
                 f"text_align=center:"
                 f"box=1:"
                 f"boxcolor=black@1:"
@@ -11380,7 +11380,7 @@ def _prepare_title_and_bg_filters(title: str | None, bg_choice: str | None, rend
             
             drawtext_filter = (
                 f"drawtext=fontfile='{font_path_try}':text_align=center:text='{wrapped_text.upper()}':"
-                f"fontcolor=white:fontsize=30:box=1:boxcolor=black@0.6:boxborderw=20:"
+                f"fontcolor=white:fontsize=38:box=1:boxcolor=black@0.6:boxborderw=20:"
                 f"x=(w-text_w)/2:y=(h-text_h)/2:enable='between(t,0,3)'"
             )
         except Exception as e:
@@ -11810,8 +11810,8 @@ async def process_series(
                 if g_idx not in group_map:
                     return False
                 prefixes = [
-                    os.path.join(run_dir, f"{base_title_val}_Tap_{g_idx}"),
-                    os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx}"),
+                    os.path.join(run_dir, f"{base_title_val}_Tap_{g_idx:02d}"),
+                    os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx:02d}"),
                 ]
                 # Match main group file and any split parts like _P1, _P2...
                 patterns = []
@@ -12037,13 +12037,13 @@ async def process_series(
                         parts = math.ceil(group_dur / 3600)
                         for p in range(parts):
                             start = p * 3600
-                            outp = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx}_P{p+1}.mp4")
+                            outp = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx:02d}_P{p+1}.mp4")
                             run_logged_subprocess(['ffmpeg', '-y', '-ss', str(start), '-i', group_out, '-t', '3600', '-c', 'copy', outp], check=True)
                             final_files.append(outp)
                         # Immediately announce each split part for this group (Drive upload removed)
                         try:
                             for p in range(parts):
-                                outp = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx}_P{p+1}.mp4")
+                                outp = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx:02d}_P{p+1}.mp4")
                                 if os.path.exists(outp):
                                     try:
                                         rel = to_project_relative_posix(outp)
@@ -12085,7 +12085,7 @@ async def process_series(
                                     tags_list = []
                                 # schedule each split part sequentially
                                 for idx_p in range(parts):
-                                    outp = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx}_P{idx_p+1}.mp4")
+                                    outp = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx:02d}_P{idx_p+1}.mp4")
                                     scheduled = {
                                         'scheduled_at': int(start_time + idx_p * spacing) if spacing else int(start_time),
                                         'video_path': to_project_relative_posix(outp),
@@ -12219,7 +12219,7 @@ async def process_series(
                     # Per-episode force-rebuild flag: set True when we delete artefacts
                     force_rebuild = False
                     # Deterministic filenames based on provided title and episode index (no hash)
-                    ep_label = f"{base_title_val}_Tap_{i}"
+                    ep_label = f"{base_title_val}_Tap_{i:02d}"
                     out_video = os.path.join(run_dir, f"{ep_label}.mp4")
                     # download filename should be distinct to avoid colliding with group/final names
                     dl_video = os.path.join(run_dir, f"{ep_label}_download.mp4")
@@ -13087,7 +13087,7 @@ async def process_series(
                                         break
                                     grp_paths.append(vpath)
                                 if all_ready and grp_paths:
-                                    group_out_path = os.path.join(final_dir, f"{base_title_val}_Tap_{g_local}.mp4")
+                                    group_out_path = os.path.join(final_dir, f"{base_title_val}_Tap_{g_local:02d}.mp4")
                                     _render_group_batch([(g_local, grp_paths, group_out_path)])
                                     try:
                                         group_existing[g_local] = True
@@ -13138,8 +13138,8 @@ async def process_series(
                         try:
                             send_discord_message(f"♻️ Nhóm {g_idx} đã có video group, bỏ qua render.")
                             prefixes = [
-                                os.path.join(run_dir, f"{base_title_val}_Tap_{g_idx}"),
-                                os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx}"),
+                                os.path.join(run_dir, f"{base_title_val}_Tap_{g_idx:02d}"),
+                                os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx:02d}"),
                             ]
                             existing: list[str] = []
                             for pref in prefixes:
@@ -13166,7 +13166,7 @@ async def process_series(
                     if not grp:
                         # Nothing to concatenate for this group (all episodes failed/absent)
                         continue
-                    group_out = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx}.mp4")
+                    group_out = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx:02d}.mp4")
                     groups_to_render.append((g_idx, grp, group_out))
 
             # Concatenate each group separately and add a short title overlay indicating starting episode
@@ -13457,7 +13457,7 @@ async def process_series_episodes(
                     # Per-episode force-rebuild flag: set True when we delete artefacts
                     force_rebuild = False
                     # Deterministic filenames based on provided title and episode index (no hash)
-                    ep_label = f"{base_title_val}_Tap_{i}"
+                    ep_label = f"{base_title_val}_Tap_{i:02d}"
                     out_video = os.path.join(run_dir, f"{ep_label}.mp4")
                     # download filename should be distinct to avoid colliding with group/final names
                     dl_video = os.path.join(run_dir, f"{ep_label}_download.mp4")
@@ -14350,7 +14350,7 @@ async def process_series_episodes(
                 if render_full:
                     group_out = os.path.join(final_dir, f"{base_title_val}_FULL.mp4")
                 else:
-                    group_out = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx}.mp4")
+                    group_out = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx:02d}.mp4")
                 # Prefer concat-copy when all files are compatible; otherwise re-encode with efficient CRF
                 try:
                     if _can_concat_copy(grp):
@@ -14407,7 +14407,7 @@ async def process_series_episodes(
                         wrapped_text = wrap_text(title_text, max_chars_per_line=33)
                         drawtext = (
                             f"drawtext=fontfile='{font_path_try}':text_align=center:text='{wrapped_text.upper()}':"
-                            f"fontcolor=white:fontsize=30:box=1:boxcolor=black@0.6:boxborderw=20:"
+                            f"fontcolor=white:fontsize=38:box=1:boxcolor=black@0.6:boxborderw=20:"
                             f"x=(w-text_w)/2:y=(h-text_h)/2:enable='between(t,0,3)'"
                         )
                         tmp_title = group_out + ".title.mp4"
@@ -14433,13 +14433,13 @@ async def process_series_episodes(
                     parts = math.ceil(group_dur / 3600)
                     for p in range(parts):
                         start = p * 3600
-                        outp = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx}_P{p+1}.mp4")
+                        outp = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx:02d}_P{p+1}.mp4")
                         run_logged_subprocess(['ffmpeg', '-y', '-ss', str(start), '-i', group_out, '-t', '3600', '-c', 'copy', outp], check=True)
                         final_files.append(outp)
                     # Immediately announce and upload each split part for this group
                     try:
                         for p in range(parts):
-                            outp = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx}_P{p+1}.mp4")
+                            outp = os.path.join(final_dir, f"{base_title_val}_Tap_{g_idx:02d}_P{p+1}.mp4")
                             if os.path.exists(outp):
                                 try:
                                     rel = to_project_relative_posix(outp)
@@ -14555,12 +14555,12 @@ def delete_episode_assets(
     """Delete selected assets for a given episode.
 
     Filenames follow the convention used by process_series:
-      - raw video:        {title}_Tap_{ep}.mp4
-      - zh/raw srt:       {title}_Tap_{ep}.srt
-      - vi srt:           {title}_Tap_{ep}.vi.srt
-      - burned preview:   {title}_Tap_{ep}.tiktok.mp4
-      - narration flac:   {title}_Tap_{ep}.nar.flac
-      - narrated video:   {title}_Tap_{ep}.nar.mp4
+    - raw video:        {title}_Tap_{ep:02d}.mp4
+    - zh/raw srt:       {title}_Tap_{ep:02d}.srt
+    - vi srt:           {title}_Tap_{ep:02d}.vi.srt
+    - burned preview:   {title}_Tap_{ep:02d}.tiktok.mp4
+    - narration flac:   {title}_Tap_{ep:02d}.nar.flac
+    - narrated video:   {title}_Tap_{ep:02d}.nar.mp4
 
     If `components` is not provided, all above assets are deleted.
     """
@@ -14596,7 +14596,7 @@ def delete_episode_assets(
 
     # Helper to collect candidate paths for an episode inside a given folder
     def _candidate_paths(folder: str, ep: int):
-        label = f"{base}_Tap_{ep}"
+        label = f"{base}_Tap_{ep:02d}"
         return {
             'raw': os.path.join(folder, f"{label}.mp4"),
             'srt_zh': os.path.join(folder, f"{label}.srt"),

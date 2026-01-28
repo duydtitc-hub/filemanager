@@ -12,6 +12,18 @@
     </script>
     <style>
       .breadcrumb-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+      /* Modal playlist list */
+      #modalPlaylist{ display:none; max-height:220px; overflow:auto; margin-top:8px; padding:8px; border-top:1px solid #eee }
+      .playlist-item{ padding:6px 8px; cursor:pointer; border-radius:6px }
+      .playlist-item:hover{ background:rgba(0,0,0,0.04) }
+      .playlist-item.playing{ background:#0d6efd; color:#fff; font-weight:600 }
+      /* Sliding sidebar playlist */
+      #modalPlaylistSidebar{
+        position:fixed; right:0; top:0; height:100%; width:320px; max-width:90%; background:#fff; box-shadow:-8px 0 24px rgba(0,0,0,0.2); transform: translateX(100%); transition: transform 260ms ease; z-index:12000; display:flex; flex-direction:column;}
+      #modalPlaylistSidebar.open{ transform: translateX(0) }
+      #modalPlaylistSidebar .sidebar-header{ display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid #eee }
+      #modalPlaylistSidebar .sidebar-body{ padding:10px; overflow:auto; flex:1 }
+      #modalPlaylistSidebar .sidebar-close{ background:none;border:0;padding:6px 8px;cursor:pointer }
     </style>
     <link rel="stylesheet" href="style.css">
     <!-- Bootstrap 5 -->
@@ -184,6 +196,22 @@
         </div>
         <div class="modal-actions">
           <a id="modalDownload" class="btn" href="#" download>Download</a>
+          <button id="modalPlayPlaylist" class="btn btn-primary">Play playlist</button>
+          <button id="modalShowPlaylist" class="btn btn-outline-secondary">Show list</button>
+        </div>
+        <div id="modalPlaylist">
+          <div style="font-size:0.9rem;margin-bottom:6px;color:#666">Playlist (click an item to play)</div>
+          <div id="modalPlaylistList" role="list"></div>
+        </div>
+        <!-- Sliding sidebar playlist (right) -->
+        <div id="modalPlaylistSidebar" aria-hidden="true">
+          <div class="sidebar-header">
+            <div style="font-weight:600">Playlist</div>
+            <div>
+              <button id="modalPlaylistHide" class="sidebar-close">✕</button>
+            </div>
+          </div>
+          <div class="sidebar-body" id="modalPlaylistListSidebar"></div>
         </div>
       </div>
     </div>
